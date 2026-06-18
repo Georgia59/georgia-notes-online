@@ -17,26 +17,28 @@
 
 1. 生成后的文件统一放入 `files/课程目录/`。
 2. 未经用户最终确认的待检查成品必须先放入 `review/课程目录/`。
-3. 用户明确要求发布后，才将文件移动到 `files/课程目录/`。
-4. 每次发布文件后，必须更新 `data/files.json`。
-5. 每次发布文件后，必须更新 `tasks/task-log.md`。
+3. 待检查成品进入 `review/` 时，必须同时生成 `*.publish-draft.json` 给用户检查。
+4. 发布草案必须包含 `metadata`、`review_path`、`website_url`、`download_url_after_publish` 和 `needs_user_review`。
+5. 用户明确要求发布后，才将文件移动到 `files/课程目录/`。
+6. 每次发布文件后，必须更新 `data/files.json`。
+7. 每次发布文件后，必须更新 `tasks/task-log.md`。
 4. 文件命名使用日期 + 英文短名 + 类型，例如：
 
 ```text
 2026-06-17-acute-osteomyelitis-review.pdf
 ```
 
-6. 网页 `index.html` 应读取或展示 `data/files.json` 中的文件列表。
-7. 每份正式资料应在首页、封面、页脚或文末保留免责声明。
-8. 当前默认课程目录固定为 `imaging`、`diagnostics`、`preventive-medicine`、`pharmacoeconomics`、`surgery`、`others`。
-9. 系统必须保持可扩展；新增课程时，可新增 `files/新课程目录/`，并在 `data/files.json` 中使用新的 `category`。
-10. 下载站只作为成品文件仓库，不预设每次必须生成的文件格式；具体输出 PDF、Word、PPT、HTML 或其他格式，由单次任务策略决定。
-11. 同一份笔记的多个格式版本应使用相同的 `note_id`，网页应合并为一条笔记并显示多个下载选项。
-12. 首页资料卡片的核心信息为名称、 一句话简介、下载方式；`description` 应尽量控制为一句话。
-13. 下载站按课程分区展示资料，不设置全站搜索；每个课程区块保留本课程内部搜索。
-14. 发布前必须运行 `scripts/pre_publish_check.py` 和 `scripts/validate_files.py`。
-15. `data/files.json` 字段规范以 `docs/files-json-fields.md` 为准。
-16. 用户确认发布 `review/` 中的文件时，优先使用 `scripts/publish_review_file.py` 完成移动、索引更新和任务日志记录。
+8. 网页 `index.html` 应读取或展示 `data/files.json` 中的文件列表。
+9. 每份正式资料应在首页、封面、页脚或文末保留免责声明。
+10. 当前默认课程目录固定为 `imaging`、`diagnostics`、`preventive-medicine`、`pharmacoeconomics`、`surgery`、`others`。
+11. 系统必须保持可扩展；新增课程时，可新增 `files/新课程目录/`，并在 `data/files.json` 中使用新的 `category`。
+12. 下载站只作为成品文件仓库，不预设每次必须生成的文件格式；具体输出 PDF、Word、PPT、HTML 或其他格式，由单次任务策略决定。
+13. 同一份笔记的多个格式版本应使用相同的 `note_id`，网页应合并为一条笔记并显示多个下载选项。
+14. 首页资料卡片的核心信息为名称、 一句话简介、下载方式；`description` 应尽量控制为一句话。
+15. 下载站按课程分区展示资料，不设置全站搜索；每个课程区块保留本课程内部搜索。
+16. 发布前必须运行 `scripts/pre_publish_check.py` 和 `scripts/validate_files.py`。
+17. `data/files.json` 字段规范以 `docs/files-json-fields.md` 为准。
+18. 用户确认发布 `review/` 中的文件时，优先使用 `scripts/publish_review_file.py --metadata` 根据发布草案完成移动、索引更新和任务日志记录。
 
 ## 来源与医学准确性
 
