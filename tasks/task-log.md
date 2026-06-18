@@ -16,3 +16,4 @@
 - 增加 `scripts/publish_review_file.py`，用于将已确认文件从 `review/` 发布到 `files/` 并更新索引。
 - 将下载站首页改为 Claude-like 暖白配色、加大课程导航、单课程内容面板和居中免责声明。
 - 发布资料：预防医学名词解释汇总，类型：PDF，路径：`files/preventive-medicine/2026-06-18-preventive-medicine-terms-summary.pdf`，日期：2026-06-18。
+- 将首页右上角改为动态资料统计，移除卡片标签展示，并将预防医学名词解释来源改为“预防医学学习指导”。

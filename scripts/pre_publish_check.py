@@ -28,13 +28,15 @@ SKIP_DIRS = {
     "__pycache__",
 }
 
-RAW_SOURCE_EXTENSIONS = {
+SOURCE_FILE_EXTENSIONS = {
     ".ppt",
     ".pptx",
     ".pdf",
     ".doc",
     ".docx",
 }
+
+RAW_SOURCE_MARKERS = ("原始", "未整理", "课件原文", "教材原文", "扫描原文")
 
 LOCAL_PATH_PATTERNS = [
     re.compile(r"(?<![A-Za-z])[A-Za-z]:[\\/](?![\\/])[^\s\"'<>]+"),
@@ -113,7 +115,7 @@ def check_index():
         file_path = REPO_ROOT / path_value if path_value else None
         if file_path and file_path.exists():
             suffix = file_path.suffix.lower()
-            if suffix in RAW_SOURCE_EXTENSIONS and "整理" not in source_value and "成品" not in source_value:
+            if suffix in SOURCE_FILE_EXTENSIONS and any(marker in source_value for marker in RAW_SOURCE_MARKERS):
                 errors.append(
                     f"第 {index} 条可能是原始资料而非整理成品：{path_value}。"
                 )

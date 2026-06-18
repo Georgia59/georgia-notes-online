@@ -78,7 +78,7 @@ a {
   font-size: clamp(1rem, 2vw, 1.28rem);
 }
 
-.publish-note {
+.library-stats {
   min-width: 290px;
   border: 1px solid var(--line);
   border-radius: 20px;
@@ -86,17 +86,17 @@ a {
   background: rgba(255, 250, 245, 0.72);
 }
 
-.publish-note strong,
-.publish-note span {
+.library-stats strong,
+.library-stats span {
   display: block;
 }
 
-.publish-note strong {
+.library-stats strong {
   color: var(--accent-strong);
   font-size: 1.08rem;
 }
 
-.publish-note span {
+.library-stats span {
   margin-top: 4px;
   color: var(--muted);
   font-size: 0.98rem;
@@ -281,25 +281,6 @@ a {
   margin: 0;
 }
 
-.tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin: 0 0 22px;
-}
-
-.tag {
-  display: inline-flex;
-  align-items: center;
-  min-height: 30px;
-  border-radius: 999px;
-  padding: 3px 12px;
-  background: var(--tag-bg);
-  color: var(--tag-text);
-  font-size: 0.84rem;
-  font-weight: 700;
-}
-
 .download-block {
   margin-top: auto;
 }
@@ -366,7 +347,7 @@ a {
     padding-top: 42px;
   }
 
-  .publish-note {
+  .library-stats {
     min-width: 0;
     width: 100%;
   }

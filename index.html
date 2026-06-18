@@ -14,9 +14,9 @@
           <p class="site-kicker">医学课程复习资料下载站</p>
           <p class="site-subtitle">只发布整理后的系统性笔记；按课程查找，按格式下载。</p>
         </div>
-        <aside class="publish-note" aria-label="发布规则">
-          <strong>公开资料库</strong>
-          <span>原始资料保留在本地</span>
+        <aside class="library-stats" aria-label="资料统计">
+          <strong id="totalNoteCount">0 条笔记</strong>
+          <span id="courseCoverage">等待发布资料</span>
         </aside>
       </div>
     </header>
@@ -75,6 +75,8 @@
       const courseNavEl = document.getElementById("courseNav");
       const statusEl = document.getElementById("status");
       const coursePanelEl = document.getElementById("coursePanel");
+      const totalNoteCountEl = document.getElementById("totalNoteCount");
+      const courseCoverageEl = document.getElementById("courseCoverage");
       const activeCourseCountEl = document.getElementById("activeCourseCount");
       const courseSearchEl = document.getElementById("courseSearch");
       const fileGridEl = document.getElementById("fileGrid");
@@ -194,8 +196,6 @@
       }
 
       function renderFileCard(note) {
-        const tags = Array.isArray(note.tags) ? note.tags : [];
-        const tagHtml = tags.map((tag) => `<span class="tag">${escapeHtml(tag)}</span>`).join("");
         const downloadableFiles = Array.isArray(note.files) ? note.files : [note];
         const typeLabel = note.types && note.types.length ? note.types.join(" / ") : note.type || "未知";
         const downloadHtml = downloadableFiles
@@ -214,7 +214,6 @@
               <div><dt>来源</dt><dd>${escapeHtml(note.source || "未填写")}</dd></div>
               <div><dt>类型</dt><dd>${escapeHtml(typeLabel)}</dd></div>
             </dl>
-            <div class="tags" aria-label="标签">${tagHtml || '<span class="tag">未标注</span>'}</div>
             <div class="download-block">
               <div class="download-label">下载方式</div>
               <div class="download-list">${downloadHtml}</div>
@@ -244,6 +243,8 @@
         state.courses = buildCourses(state.notes);
 
         if (!state.files.length || !state.courses.length) {
+          totalNoteCountEl.textContent = "0 条笔记";
+          courseCoverageEl.textContent = "等待发布资料";
           courseNavEl.hidden = true;
           coursePanelEl.hidden = true;
           statusEl.hidden = false;
@@ -253,6 +254,8 @@
         }
 
         statusEl.hidden = true;
+        totalNoteCountEl.textContent = `${state.notes.length} 条笔记`;
+        courseCoverageEl.textContent = `覆盖 ${state.courses.length} 门课程`;
         if (!state.activeCourseId || !state.courses.some((course) => course.id === state.activeCourseId)) {
           state.activeCourseId = state.courses[0].id;
         }
