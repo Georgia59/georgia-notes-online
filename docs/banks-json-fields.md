@@ -9,7 +9,6 @@
   "course": "实验诊断学",
   "title": "实验诊断学期末选择题题库",
   "code": "ABC123",
-  "questionCount": 1200,
   "status": "已整理",
   "lastUpdated": "2026-06-18",
   "source": "课堂题库 + 错题整理",
@@ -37,7 +36,6 @@
     {
       "title": "绪论",
       "code": "ABC123",
-      "questionCount": 80,
       "status": "已整理",
       "lastUpdated": "2026-06-18",
       "source": "章节题库整理",
@@ -45,8 +43,7 @@
     },
     {
       "title": "外科无菌原则",
-      "code": "DEF456",
-      "questionCount": 120
+      "code": "DEF456"
     }
   ]
 }

@@ -44,11 +44,6 @@ def validate_qr(value, label, errors):
         errors.append(f"{label} 的二维码图片不存在：{value}")
 
 
-def validate_question_count(value, label, errors):
-    if value is not None and (not isinstance(value, int) or value < 0):
-        errors.append(f"{label} 的 questionCount 必须是非负整数。")
-
-
 def validate_date(value, label, errors):
     if value and not DATE_PATTERN.match(str(value)):
         errors.append(f"{label} 的 lastUpdated 必须是 YYYY-MM-DD。")
@@ -104,7 +99,6 @@ def main():
                     if not item.get("title"):
                         errors.append(f"{item_label} 缺少必填字段：title")
                     validate_code(item.get("code"), item_label, seen_codes, errors)
-                    validate_question_count(item.get("questionCount"), item_label, errors)
                     validate_date(item.get("lastUpdated"), item_label, errors)
                     validate_qr(item.get("qr", ""), item_label, errors)
                     for field, value in item.items():
@@ -112,10 +106,7 @@ def main():
                             errors.append(f"{item_label} 的 {field} 含本地路径：{value}")
         else:
             validate_code(bank.get("code"), label, seen_codes, errors)
-            if bank.get("questionCount") is None:
-                errors.append(f"{label} 缺少必填字段：questionCount")
 
-        validate_question_count(bank.get("questionCount"), label, errors)
         validate_date(bank.get("lastUpdated"), label, errors)
         validate_qr(bank.get("qr", ""), label, errors)
 

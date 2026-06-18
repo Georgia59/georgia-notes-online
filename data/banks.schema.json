@@ -15,7 +15,7 @@
     ],
     "oneOf": [
       {
-        "required": ["code", "questionCount"]
+        "required": ["code"]
       },
       {
         "required": ["items"]
@@ -34,10 +34,6 @@
       },
       "code": {
         "type": "string"
-      },
-      "questionCount": {
-        "type": "integer",
-        "minimum": 0
       },
       "status": {
         "type": "string"
@@ -61,17 +57,13 @@
         "items": {
           "type": "object",
           "additionalProperties": false,
-          "required": ["title", "code", "questionCount"],
+          "required": ["title", "code"],
           "properties": {
             "title": {
               "type": "string"
             },
             "code": {
               "type": "string"
-            },
-            "questionCount": {
-              "type": "integer",
-              "minimum": 0
             },
             "status": {
               "type": "string"

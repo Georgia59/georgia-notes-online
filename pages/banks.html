@@ -78,7 +78,6 @@
           bank.course,
           bank.title,
           bank.code,
-          bank.questionCount,
           bank.status,
           bank.lastUpdated,
           bank.source,
@@ -86,7 +85,6 @@
           ...getBankItems(bank).flatMap((item) => [
             item.title,
             item.code,
-            item.questionCount,
             item.status,
             item.lastUpdated,
             item.source,
@@ -105,15 +103,11 @@
         return Array.isArray(bank.items) ? bank.items : [];
       }
 
-      function getQuestionCountText(value) {
-        return Number.isInteger(value) ? `${value} 题` : "未填写";
-      }
-
       function renderCodeBlock(code) {
         return `
           <div class="bank-code-block">
             <span class="bank-code">${escapeHtml(code || "未填写")}</span>
-            <button class="copy-code-button" type="button" data-code="${escapeHtml(code || "")}">复制佛脚码</button>
+            <button class="copy-code-button" type="button" data-code="${escapeHtml(code || "")}">复制</button>
           </div>
         `;
       }
@@ -144,7 +138,6 @@
                     <section class="bank-chapter">
                       <div class="bank-chapter-heading">
                         <h3>${chapterNumber}. ${escapeHtml(item.title || "未命名章节")}</h3>
-                        <span>${escapeHtml(getQuestionCountText(item.questionCount))}</span>
                       </div>
                       <dl class="bank-meta is-compact">
                         <div><dt>状态</dt><dd>${escapeHtml(item.status || bank.status || "未填写")}</dd></div>
@@ -165,7 +158,7 @@
 
       function renderBankCard(bank) {
         const collection = isBankCollection(bank);
-        const countText = collection ? `${getBankItems(bank).length} 个章节` : getQuestionCountText(bank.questionCount);
+        const chapterText = collection ? `${getBankItems(bank).length} 个章节` : "";
 
         return `
           <article class="bank-card${collection ? " is-collection" : ""}" data-search="${escapeHtml(bank.searchText)}">
@@ -175,7 +168,7 @@
             </div>
             <dl class="bank-meta">
               <div><dt>课程</dt><dd>${escapeHtml(bank.course || "未填写")}</dd></div>
-              <div><dt>题量</dt><dd>${escapeHtml(countText)}</dd></div>
+              ${collection ? `<div><dt>章节</dt><dd>${escapeHtml(chapterText)}</dd></div>` : ""}
               <div><dt>更新</dt><dd>${escapeHtml(bank.lastUpdated || "未填写")}</dd></div>
               <div><dt>来源</dt><dd>${escapeHtml(bank.source || "未填写")}</dd></div>
             </dl>
