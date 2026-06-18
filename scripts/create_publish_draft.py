@@ -49,7 +49,7 @@ def save_json(path, data):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="生成发布前草案：复制文件到 review/ 并写入待检查元数据。")
+    parser = argparse.ArgumentParser(description="仅在用户要求上传/发布时，复制文件到 review/ 并生成发布草案。")
     parser.add_argument("--input-path", required=True, help="已生成的成品文件路径。")
     parser.add_argument("--dest-name", help="发布后的文件名；默认沿用输入文件名。")
     parser.add_argument("--note-id", help="同一笔记多格式共用的稳定英文短名。")
@@ -140,4 +140,3 @@ def main():
 
 if __name__ == "__main__":
     sys.exit(main())
-

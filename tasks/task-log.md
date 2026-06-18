@@ -17,4 +17,4 @@
 - 将下载站首页改为 Claude-like 暖白配色、加大课程导航、单课程内容面板和居中免责声明。
 - 发布资料：预防医学名词解释汇总，类型：PDF，路径：`files/preventive-medicine/2026-06-18-preventive-medicine-terms-summary.pdf`，日期：2026-06-18。
 - 将首页右上角改为动态资料统计，移除卡片标签展示，并将预防医学名词解释来源改为“预防医学学习指导”。
-- 增加发布草案流程：先生成 `review/*.publish-draft.json` 供用户检查，确认后再按草案发布到网站。
+- 调整发布草案流程：普通生成不自动进入 `review/`；只有用户明确要求上传、发布或生成发布草案时，才复制到 `review/` 并生成 `*.publish-draft.json`。
