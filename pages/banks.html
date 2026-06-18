@@ -136,16 +136,15 @@
             </summary>
             <div class="bank-chapter-list">
               ${items
-                .map((item, index) => {
-                  const chapterNumber = String(index + 1).padStart(2, "0");
-                  return `
+                .map(
+                  (item) => `
                     <section class="bank-chapter">
-                      <h3>${chapterNumber}. ${escapeHtml(item.title || "未命名章节")}</h3>
+                      <h3>${escapeHtml(item.title || "未命名章节")}</h3>
                       ${renderCodeBlock(item.code)}
                       ${renderQr(item.qr, item.title)}
                     </section>
-                  `;
-                })
+                  `
+                )
                 .join("")}
             </div>
           </details>
