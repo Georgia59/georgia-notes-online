@@ -1,0 +1,1637 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>预防医学名词解释 - 高速交互背诵系统</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Tailwind Configuration for colors and custom classes -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#f0f9ff',
+              100: '#e0f2fe',
+              500: '#0284c7',
+              600: '#0369a1',
+              700: '#075985',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    /* Custom Scrollbars */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #f1f5f9;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+    /* Simple Active States */
+    .btn-active {
+      transform: scale(0.98);
+    }
+    /* Blurry transition for easy memory test in study sheet */
+    .blur-text {
+      filter: blur(5px);
+      transition: filter 0.2s ease;
+      user-select: none;
+    }
+    .blur-text:hover {
+      filter: blur(0px);
+      user-select: auto;
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col antialiased selection:bg-brand-100">
+
+  <!-- Header -->
+  <header id="app-header" class="bg-white border-b border-slate-200 sticky top-0 z-30 transition-all duration-300">
+    <div class="max-w-6xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <div class="p-2 bg-brand-50 text-brand-600 rounded-lg">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+          </svg>
+        </div>
+        <div>
+          <h1 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+            预防医学名词解释 <span class="text-xs bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded font-medium">高速默背</span>
+          </h1>
+          <p class="text-xs text-slate-500">已自动排除第二、三章 | 专为高效、ADHD友好、键盘流设计</p>
+        </div>
+      </div>
+
+      <!-- Quick Session Controls -->
+      <div class="flex items-center gap-3">
+        <!-- Sprint Mode Badge -->
+        <span id="sprint-badge" class="hidden text-xs bg-amber-100 text-amber-800 px-2.5 py-1 rounded-full font-medium flex items-center gap-1 animate-pulse">
+          ⚡ 10题冲刺中
+        </span>
+        <!-- Focus Mode Toggle -->
+        <button id="toggle-focus" class="text-xs font-medium text-slate-600 hover:text-brand-600 px-3 py-1.5 bg-slate-100 hover:bg-brand-50 rounded-lg transition-colors flex items-center gap-1">
+          <span id="focus-icon">👁️</span> <span id="focus-text">专注模式</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Layout -->
+  <div class="max-w-6xl mx-auto px-4 py-6 flex-1 grid grid-cols-1 lg:grid-cols-4 gap-6 w-full">
+    
+    <!-- Sidebar Controls (Hidden in absolute focus) -->
+    <aside id="app-sidebar" class="lg:col-span-1 space-y-6 transition-all duration-300">
+      <!-- 模式选择 -->
+      <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+        <h2 class="text-sm font-semibold text-slate-900 border-b pb-2 flex items-center gap-2">
+          <span>🎯</span> 选择学习模式
+        </h2>
+        <div class="space-y-2" id="mode-selectors">
+          <button data-mode="study-sheet" class="mode-btn w-full text-left px-3 py-2.5 rounded-xl text-sm font-medium border transition-all flex items-center justify-between bg-brand-50 border-brand-500 text-brand-700">
+            <span>📖 对照浏览模式</span>
+            <span class="text-xs font-normal text-brand-500">无压力对照记</span>
+          </button>
+          <button data-mode="term-to-def" class="mode-btn w-full text-left px-3 py-2.5 rounded-xl text-sm font-medium border border-slate-100 text-slate-600 hover:bg-slate-50 transition-all flex items-center justify-between">
+            <span>🔍 看名词 ➔ 默背解释</span>
+          </button>
+          <button data-mode="clue-to-term" class="mode-btn w-full text-left px-3 py-2.5 rounded-xl text-sm font-medium border border-slate-100 text-slate-600 hover:bg-slate-50 transition-all flex items-center justify-between">
+            <span>💡 看关键词 ➔ 反推名词</span>
+          </button>
+          <button data-mode="differentiation" class="mode-btn w-full text-left px-3 py-2.5 rounded-xl text-sm font-medium border border-slate-100 text-slate-600 hover:bg-slate-50 transition-all flex items-center justify-between">
+            <span>⚖️ 易混名词辨析</span>
+          </button>
+          <button data-mode="wrong-review" class="mode-btn w-full text-left px-3 py-2.5 rounded-xl text-sm font-medium border border-slate-100 text-slate-600 hover:bg-slate-50 transition-all flex items-center justify-between relative">
+            <span>❌ 错题本/难点复习</span>
+            <span id="wrong-count-badge" class="bg-rose-100 text-rose-700 text-xs px-1.5 py-0.5 rounded-full font-bold">0</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- 章节筛选 -->
+      <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-4" id="chapter-filter-box">
+        <div class="flex justify-between items-center border-b pb-2">
+          <h2 class="text-sm font-semibold text-slate-900 flex items-center gap-2">
+            <span>📂</span> 章节筛选
+          </h2>
+          <button id="toggle-all-chapters" class="text-xs text-brand-600 hover:underline">全选/取消</button>
+        </div>
+        <div class="max-h-60 overflow-y-auto space-y-1.5 pr-1" id="chapter-list">
+          <!-- Chapters will be generated here -->
+        </div>
+      </div>
+
+      <!-- 特效/设置 -->
+      <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+        <h2 class="text-sm font-semibold text-slate-900 border-b pb-2 flex items-center gap-2">
+          <span>⚙️</span> 背诵设置
+        </h2>
+        <div class="space-y-3">
+          <!-- Auto-Next Switch -->
+          <div class="flex items-center justify-between">
+            <span class="text-xs text-slate-600">自评后自动下一题</span>
+            <label class="relative inline-flex items-center cursor-pointer">
+              <input type="checkbox" id="auto-next-toggle" class="sr-only peer" checked>
+              <div class="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-emerald-500"></div>
+            </label>
+          </div>
+          <!-- Sprint Config -->
+          <div class="flex items-center justify-between">
+            <span class="text-xs text-slate-600">10题冲刺模式</span>
+            <label class="relative inline-flex items-center cursor-pointer">
+              <input type="checkbox" id="sprint-toggle" class="sr-only peer">
+              <div class="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-amber-500"></div>
+            </label>
+          </div>
+          <!-- Clear Wrongs -->
+          <button id="clear-wrongs-btn" class="w-full py-1.5 text-center text-xs text-rose-600 hover:bg-rose-50 border border-dashed border-rose-200 rounded-lg transition-colors font-medium">
+            🗑️ 清空本地错题本
+          </button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Memorize Interface -->
+    <main id="app-main" class="lg:col-span-3 space-y-6 flex flex-col justify-start">
+      
+      <!-- Session Performance & Progress bar (Hidden in study-sheet mode) -->
+      <div id="stats-panel" class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm grid grid-cols-2 sm:grid-cols-4 gap-4 items-center">
+        <!-- Progress -->
+        <div class="col-span-2">
+          <div class="flex justify-between text-xs text-slate-500 mb-1">
+            <span>当前进度 (<span id="progress-text">0/0</span>)</span>
+            <span id="round-text" class="text-brand-600 font-bold">第 1 轮循环</span>
+          </div>
+          <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+            <div id="progress-bar" class="bg-brand-500 h-full w-0 transition-all duration-300"></div>
+          </div>
+        </div>
+        <!-- Stats -->
+        <div class="flex justify-between sm:justify-center gap-2 items-center border-l border-slate-100 pl-2">
+          <span class="text-xs text-slate-500">掌握率:</span>
+          <span id="mastery-rate" class="text-sm font-bold text-emerald-600">0%</span>
+        </div>
+        <div class="flex justify-between sm:justify-center gap-2 items-center border-l border-slate-100 pl-2">
+          <span class="text-xs text-slate-500">模糊/忘记:</span>
+          <span id="forgot-count" class="text-sm font-bold text-rose-500">0</span>
+        </div>
+      </div>
+
+      <!-- Flashcard Core Container (Used for active recall) -->
+      <div id="flashcard" class="bg-white rounded-3xl border-2 border-slate-200 shadow-md p-6 sm:p-10 flex-1 flex flex-col justify-between min-h-[420px] transition-all hover:shadow-lg relative">
+        
+        <!-- Card Top Details -->
+        <div class="flex items-center justify-between border-b border-slate-100 pb-3 mb-6">
+          <span id="card-chapter" class="text-xs font-semibold uppercase tracking-wider bg-slate-100 text-slate-600 px-3 py-1 rounded-full">
+            加载中...
+          </span>
+          <span class="text-xs text-slate-400 font-medium">
+            💡 支持空格键(确认/翻牌) & 数字键 1-3
+          </span>
+        </div>
+
+        <!-- Question View (Term OR Clue depending on mode) -->
+        <div class="flex-1 flex flex-col justify-center my-4">
+          <!-- Side Indicator for ADHD (Mode/Status) -->
+          <div class="text-center">
+            
+            <!-- Look at Clue, guess Term Clue Area -->
+            <div id="clue-display-area" class="hidden mb-6 p-4 bg-amber-50 rounded-2xl text-slate-700 italic border border-amber-100 max-w-2xl mx-auto">
+              <span class="block text-xs font-bold uppercase tracking-wider text-amber-600 mb-1">【释义线索】</span>
+              <p id="clue-text" class="text-base sm:text-lg font-medium"></p>
+            </div>
+
+            <!-- Main Big Display Text -->
+            <h3 id="term-display" class="text-3xl sm:text-4xl md:text-5xl font-black text-slate-900 tracking-tight leading-relaxed max-w-3xl mx-auto py-4 break-words">
+              ...
+            </h3>
+            
+            <p id="term-english" class="text-sm sm:text-base text-slate-400 font-medium mt-1 mb-8"></p>
+          </div>
+
+          <!-- Answer Region (Initially Hidden) -->
+          <div id="answer-area" class="hidden space-y-6 mt-4 border-t border-slate-100 pt-6 animate-fade-in">
+            
+            <!-- Keywords Block -->
+            <div>
+              <span class="inline-block text-xs font-bold uppercase tracking-wider bg-indigo-50 text-indigo-600 px-2.5 py-1 rounded mb-2">🔑 记忆核心词</span>
+              <div id="answer-keywords" class="flex flex-wrap gap-2 pt-1">
+                <!-- Keyword Tags -->
+              </div>
+            </div>
+
+            <!-- Full Answer -->
+            <div>
+              <span class="inline-block text-xs font-bold uppercase tracking-wider bg-brand-50 text-brand-700 px-2.5 py-1 rounded mb-2">📖 完整释义</span>
+              <p id="answer-full" class="text-base sm:text-lg text-slate-800 leading-relaxed font-normal bg-slate-50 p-4 rounded-2xl border border-slate-100">
+                ...
+              </p>
+            </div>
+
+            <!-- Differentiation Tip -->
+            <div id="diff-section" class="hidden p-4 bg-emerald-50 rounded-2xl border border-emerald-100">
+              <span class="block text-xs font-bold uppercase tracking-wider text-emerald-800 mb-1">⚖️ 易混对比与记忆法</span>
+              <p id="answer-diff" class="text-sm text-emerald-900 leading-relaxed"></p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Interactive Single-button to reveal -->
+        <div id="reveal-container" class="mt-8 flex justify-center">
+          <button id="reveal-btn" class="w-full sm:w-auto px-10 py-4 bg-brand-500 hover:bg-brand-600 text-white rounded-2xl font-bold text-lg shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2">
+            <span>我想好了</span> <span class="text-xs bg-brand-700 text-brand-100 px-2 py-0.5 rounded">空格键</span>
+          </button>
+        </div>
+
+        <!-- Self Evaluation System (Initially Hidden) -->
+        <div id="eval-container" class="hidden mt-8 grid grid-cols-3 gap-3">
+          <button id="eval-easy" data-eval="easy" class="py-4 px-3 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border-2 border-emerald-200 rounded-2xl font-bold text-sm sm:text-base flex flex-col items-center justify-center gap-1 transition-all">
+            <span class="text-xl">😎 会了</span>
+            <span class="text-xs font-normal opacity-80">键盘 1</span>
+          </button>
+          <button id="eval-vague" data-eval="vague" class="py-4 px-3 bg-amber-50 hover:bg-amber-100 text-amber-800 border-2 border-amber-200 rounded-2xl font-bold text-sm sm:text-base flex flex-col items-center justify-center gap-1 transition-all">
+            <span class="text-xl">🤔 模糊</span>
+            <span class="text-xs font-normal opacity-80">5题后重现 (键盘 2)</span>
+          </button>
+          <button id="eval-forgot" data-eval="forgot" class="py-4 px-3 bg-rose-50 hover:bg-rose-100 text-rose-800 border-2 border-rose-200 rounded-2xl font-bold text-sm sm:text-base flex flex-col items-center justify-center gap-1 transition-all">
+            <span class="text-xl">😩 不会</span>
+            <span class="text-xs font-normal opacity-80">2题后重现 (键盘 3)</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Reference study sheet container (Used for easy learning/comparison) -->
+      <div id="study-sheet-container" class="hidden space-y-4">
+        <!-- Search, filter and quick operations -->
+        <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex flex-wrap items-center justify-between gap-4">
+          <div class="relative flex-1 min-w-[280px]">
+            <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400 pointer-events-none">🔍</span>
+            <input type="text" id="sheet-search" placeholder="输入名称、英文或关键词快速检索对照..." class="w-full pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500">
+          </div>
+          <div class="flex items-center gap-2">
+            <button id="toggle-sheet-blur" class="text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 px-3.5 py-2 rounded-xl transition-all">
+              🫣 全体遮挡 (划过显现)
+            </button>
+            <button id="toggle-sheet-reveal" class="text-xs font-bold text-brand-700 bg-brand-50 hover:bg-brand-100 px-3.5 py-2 rounded-xl transition-all">
+              👁️ 全体明文显现
+            </button>
+          </div>
+        </div>
+
+        <!-- Render target list -->
+        <div id="study-sheet-list" class="space-y-4 max-h-[80vh] overflow-y-auto pr-1">
+          <!-- Dynamic generated reference elements go here -->
+        </div>
+      </div>
+      
+    </main>
+  </div>
+
+  <!-- Summary Modal (10-Question Sprint Mode finish) -->
+  <div id="summary-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-50 hidden">
+    <div class="bg-white rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl border border-slate-100 flex flex-col items-center text-center animate-fade-in">
+      <div class="w-16 h-16 bg-brand-50 text-brand-600 rounded-2xl flex items-center justify-center text-3xl mb-4">🏆</div>
+      <h3 class="text-xl font-bold text-slate-900">冲刺轮结束！</h3>
+      <p class="text-slate-500 text-sm mt-1">您已经完成了 10 道题目高速背诵，以下是您的本次战斗简报：</p>
+      
+      <div class="w-full bg-slate-50 p-4 rounded-2xl my-6 space-y-3">
+        <div class="flex justify-between text-sm">
+          <span class="text-slate-500">掌握率</span>
+          <span id="modal-mastery" class="font-bold text-emerald-600">0%</span>
+        </div>
+        <div class="flex justify-between text-sm">
+          <span class="text-slate-500">斩获“熟练”</span>
+          <span id="modal-easy-count" class="font-bold text-slate-800">0 题</span>
+        </div>
+        <div class="flex justify-between text-sm">
+          <span class="text-slate-500">添加至错题库</span>
+          <span id="modal-wrong-count" class="font-bold text-rose-500">0 题</span>
+        </div>
+      </div>
+
+      <div class="flex gap-3 w-full">
+        <button id="modal-wrong-only-btn" class="flex-1 py-3 bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold rounded-xl text-sm transition-all">
+          只背错题
+        </button>
+        <button id="modal-restart-btn" class="flex-1 py-3 bg-brand-500 hover:bg-brand-600 text-white font-bold rounded-xl text-sm transition-all shadow-md shadow-brand-500/20">
+          再来一次冲刺
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main JavaScript Implementation -->
+  <script>
+    // --- DATABASE (Excluding Ch.2 & Ch.3 as requested) ---
+    const TERMS_DB = [
+      // 第一章 绪论
+      { id: "1-1", ch: "第一章 绪论", name: "预防医学", eng: "preventive medicine", 
+        keywords: ["应用学科", "个体和确定的群体", "促进和维护健康", "三特点：整体性、针对性、主动性"], 
+        def: "是医学的一门应用学科，以个体和确定的群体为对象，目的是促进和维护健康，预防疾病、失能和早逝。其特点包括思维的整体性、服务的针对性和实践的主动性。",
+        diff: "与临床医学相对，临床医学以病人为中心进行治疗，预防医学则以个体和确定的群体为对象。" },
+      { id: "1-2", ch: "第一章 绪论", name: "公共卫生", eng: "public health", 
+        keywords: ["保障公众健康/健康公平", "政府主导/社会协同", "多学科知识", "预防控制风险", "全民健康"], 
+        def: "以保障公众健康与健康公平为导向的公共事业，由政府主导、社会协同，运用多学科知识预防疾病、控制健康风险，改善人群生理、心理及社会适应能力，提高全民健康水平。",
+        diff: "公共卫生侧重于‘政府与社会’维度的管理与多学科协同落地，预防医学是其医学科学支柱。" },
+      { id: "1-3", ch: "第一章 绪论", name: "健康", eng: "health", 
+        keywords: ["WHO定义", "无疾病/虚弱", "身体/心理/社会幸福的完好状态", "三维度"], 
+        def: "不仅是无疾病或虚弱，而是身体、心理和社会幸福的完好状态(WHO定义)。健康是日常生活的资源，包含身体健康、心理健康和社会健康三个维度。",
+        diff: "记住：不仅是‘没生病’。包含：生理、心理、社会功能状态完好。" },
+      { id: "1-4", ch: "第一章 绪论", name: "健康决定因素", eng: "determinants of health", 
+        keywords: ["影响健康状态", "四大类：社会经济环境、物质环境、个人因素、卫生服务"], 
+        def: "影响个体或群体健康状态的因素。分为四类：社会经济环境(收入、教育、文化等)，物质环境(物理、化学、生物因素及建成环境)，个人因素(婴幼儿发育、卫生习惯、遗传等)，卫生服务(可及性、质量、公平性)。",
+        diff: "可用作问答题考点。常错把‘卫生服务’遗漏。" },
+      { id: "1-5", ch: "第一章 绪论", name: "健康生态学模型", eng: "health ecological model", 
+        keywords: ["核心层（个体生物学）", "行为层", "人际网络层", "生活工作层", "宏观政策层", "五层交互"], 
+        def: "解释健康影响因素的框架，强调健康是核心层(个体生物学)、行为层、人际网络层、生活工作层、宏观政策层五层因素交互作用的结果。特点包括多重性、交互性和多维性。",
+        diff: "像同心圆一样，内到外五层：生物属性 ➔ 个体行为 ➔ 社区网络 ➔ 生活工作 ➔ 社会大环境政策。" },
+      { id: "1-6", ch: "第一章 绪论", name: "三级预防", eng: "preventions at three levels", 
+        keywords: ["一级病因", "二级临床前期三早", "三级防止恶化/促康复"], 
+        def: "根据健康与疾病连续谱制定的预防策略。一级预防：病因预防（如健康教育、免疫接种）；二级预防：临床前期“三早”（早发现、早诊断、早治疗）；三级预防：对已患病者防恶化、促康复。",
+        diff: "极重点！注意二级预防是针对‘临床前期’的筛检与诊断，三级针对‘已确诊临床期’的限制残损。" },
+      { id: "1-7", ch: "第一章 绪论", name: "根本性预防", eng: "primordial prevention", 
+        keywords: ["一级预防的特殊形式", "源头消除", "立法/禁烟"], 
+        def: "一级预防的特殊形式，在健康危险因素进入环境前采取的根本性措施(如立法禁止有害化学物、公共场所禁烟)，从源头消除健康威胁。",
+        diff: "与普通一级预防的区别在于，它注重从‘社会和法律根源’扼杀危险因素进入生活圈的机会。" },
+      { id: "1-8", ch: "第一章 绪论", name: "预防的高危策略", eng: "high-risk strategy of prevention", 
+        keywords: ["高风险个体", "针对性强/见效快", "全人群疾病负担减少有限"], 
+        def: "针对疾病高风险个体进行干预(如高血压患者用药)。优点为针对性强、见效快；局限性是对全人群疾病负担减少有限。",
+        diff: "与全人群策略相对。好比只拔掉露出水面的钉子，无法解决‘路面整体有很多小沙砾’的群组危害。" },
+      { id: "1-9", ch: "第一章 绪论", name: "预防的全人群策略", eng: "population strategy of prevention", 
+        keywords: ["全人群影响因素", "整体风险左移", "大收益", "Rose预防医学"], 
+        def: "针对影响全人群的健康决定因素进行干预(如控烟立法、减盐政策)。通过小幅降低人群整体风险水平(风险分布左移)，获得巨大健康收益(Rose预防医学策略)。",
+        diff: "对比：高危策略拔钉子，全人群策略是把整段路的危险级别降低。" },
+      { id: "1-10", ch: "第一章 绪论", name: "五星级医生", eng: "“five-star” doctor", 
+        keywords: ["WHO提出", "医疗提供者", "决策者", "教育者", "领导者", "服务管理者", "防治结合"], 
+        def: "WHO 提出的未来医生角色要求，需具备五项能力：卫生保健提供者、医疗决策者、健康教育者、社区卫生领导者、服务管理者。体现“防治结合”和以健康为中心的医学理念。",
+        diff: "5星职能口诀：看病、决策、宣教、领导、管理。" },
+
+      // 第四章 环境卫生
+      { id: "4-1", ch: "第四章 环境卫生", name: "环境", eng: "environment", 
+        keywords: ["空间及因素总体", "直接或间接影响", "人类生存和发展"], 
+        def: "是指围绕人群的空间及其中能直接或间接影响人类生存 and 发展的各种因素的总体。",
+        diff: "基础概念，注意包含物质因素和非物质因素。" },
+      { id: "4-2", ch: "第四章 环境卫生", name: "大气圈", eng: "atmosphere", 
+        keywords: ["地球周围空气层", "对流、平流、中间、热成、逸散"], 
+        def: "主要指围绕地球周围的空气层，可划分为对流层、平流层、中间层、热成层和逸散层(外大气层)。",
+        diff: "注意人类生活最密切的是‘对流层’。" },
+      { id: "4-3", ch: "第四章 环境卫生", name: "环境因素", eng: "environmental factors", 
+        keywords: ["无机/有机组成", "非物质因素"], 
+        def: "是环境中的各种无机和有机的组成成分以及非物质因素。",
+        diff: "涵盖物理、化学、生物与社会环境因素。" },
+      { id: "4-4", ch: "第四章 环境卫生", name: "一次污染物", eng: "primary pollutant", 
+        keywords: ["污染源直接排入", "未发生变化", "如SO2"], 
+        def: "是指从污染源直接排入环境未发生变化的污染物，如二氧化硫等。",
+        diff: "关键：‘未发生物理化学改变’。" },
+      { id: "4-5", ch: "第四章 环境卫生", name: "二次污染物", eng: "secondary pollutant", 
+        keywords: ["一次污染物变化", "理化性质/毒性改变", "如光化学烟雾"], 
+        def: "是指某些一次污染物进入环境后在物理、化学或生物学作用下，或与其他物质发生反应而形成与初始污染物的理化性质和毒性完全不同的新的污染物。",
+        diff: "性质通常比一次污染物更不稳定，危害可能更大。" },
+      { id: "4-6", ch: "第四章 环境卫生", name: "室内空气污染", eng: "indoor air pollution", 
+        keywords: ["释放污染源", "通风不佳", "近期/远期/潜在危害"], 
+        def: "室内引入能释放污染物的污染源或室内环境通风不佳导致室内空气中污染物在浓度或种类上不断增加，当污染物在有限的空间达到一定浓度后，对人体身心健康产生直接或间接的、近期或远期的，或者潜在的有害影响，称为室内空气污染。",
+        diff: "注意：不仅仅是室外污染物飘入，主要是‘室内自生或滞留’。" },
+      { id: "4-7", ch: "第四章 环境卫生", name: "水体富营养化", eng: "eutrophication", 
+        keywords: ["氮磷污染", "藻类暴发", "溶解氧下降", "水质恶化"], 
+        def: "含磷、氮等污水污染造成水体中藻类大量繁殖，使水中有机物增加、溶解氧下降，导致水质恶化的现象，称为水体富营养化。",
+        diff: "重点词：磷、氮过剩，浮游藻类疯长，消耗水中氧气，鱼类大量缺氧死亡。" },
+      { id: "4-8", ch: "第四章 环境卫生", name: "健康效应谱", eng: "spectrum of health effects", 
+        keywords: ["不同级别效应", "人群中分布"], 
+        def: "不同级别的效应在人群中的分布称为健康效应谱。",
+        diff: "污染危害不是非死即伤的，从体内微小生化改变到最终死亡，有一个‘金字塔式’的级别分布。" },
+      { id: "4-9", ch: "第四章 环境卫生", name: "生物标志物", eng: "biomarker", 
+        keywords: ["发病机制关联", "机体微观测定改变", "接触、效应、易感性"], 
+        def: "是生物体内发生的与发病机制有关联的关键事件的指示物，是机体由于接触各种环境因子所引起机体器官、细胞、亚细胞的生化、生理、免疫和遗传等任何可测定的改变。",
+        diff: "分为接触标志物、效应标志物、易感性标志物，是环境医学研究微观毒性的核心指标。" },
+      { id: "4-10", ch: "第四章 环境卫生", name: "环境污染性疾病", eng: "environmental pollution-induced disease", 
+        keywords: ["污染因素导致", "暴露人群患病"], 
+        def: "凡能污染环境，使环境质量恶化，而直接或间接使人患病的环境污染因素，统称为环境污染性致病因素，由此在暴露人群中引发的疾病称为环境污染性疾病。",
+        diff: "有具体的公害历史背景，如日本水俣病(甲基汞中毒)。" },
+      { id: "4-11", ch: "第四章 环境卫生", name: "人群易感性", eng: "population susceptibility", 
+        keywords: ["同一暴露条件", "反应强度差异", "易感人群/高危人群"], 
+        def: "在同一环境暴露条件下，人体对环境异常变化的反应强度及性质不同，对某些污染物特别敏感的人群称易感人群或高危人群，这种现象称为人群易感性。",
+        diff: "由于基因、年龄、营养等差异导致‘同等污染下，有的人先发病、病情重’。" },
+      { id: "4-12", ch: "第四章 环境卫生", name: "环境污染", eng: "environmental pollution", 
+        keywords: ["自然或人为", "超过自净能力", "质量下降/恶化", "影响人体/生物"], 
+        def: "由于各种自然或人为的原因，进入环境的污染物数量超过环境的自净能力，造成环境质量下降和恶化，直接或间接影响人体和其他生物的健康，称为环境污染。",
+        diff: "关键核心点是‘超过自净能力’。" },
+      { id: "4-13", ch: "第四章 环境卫生", name: "污染物的迁移", eng: "migration of pollutant", 
+        keywords: ["空间位置相对移动", "富集、分散、消失"], 
+        def: "污染物在环境中所发生的空间位置相对移动及其所引起的富集、分散和消失的过程称为污染物的迁移。",
+        diff: "主要指物理、化学介质流动（如风吹、水流）带着走。" },
+      { id: "4-14", ch: "第四章 环境卫生", name: "转化", eng: "transformation", 
+        keywords: ["化学或生物作用", "改变存在形态", "转变为不同物质"], 
+        def: "是指污染物在环境中主要经过化学或生物的作用改变其存在形态或转变为不同物质的过程。",
+        diff: "与迁移不同，转化会生成‘新物质’（如无机汞转为甲基汞）。" },
+      { id: "4-15", ch: "第四章 环境卫生", name: "蓄积", eng: "accumulation", 
+        keywords: ["吸收 > 代谢排泄", "高浓度富集于组织器官"], 
+        def: "污染物的吸收速度超过代谢与排泄的速度，以相对较高的浓度富集于某些组织或器官的现象称为蓄积。",
+        diff: "铅在骨骼蓄积，甲基汞在脑蓄积。" },
+      { id: "4-16", ch: "第四章 环境卫生", name: "生物地球化学性疾病", eng: "biogeochemical disease", 
+        keywords: ["地壳元素分布不均", "过多或过少", "特异性疾病"], 
+        def: "由于地壳表面化学元素分布的不均匀性，某些地区的水和/或土壤中某些元素过多或过少，当地居民通过饮水、食物等途径摄入这些元素过多或过少，而引起某些特异性疾病，称为生物地球化学性疾病。",
+        diff: "纯属自然地理地理地质原因引起，别名‘地方病’。" },
+      { id: "4-17", ch: "第四章 环境卫生", name: "碘缺乏病", eng: "iodine deficiency disorders", 
+        keywords: ["胚胎发育至成人", "摄碘不足系列病", "甲状腺肿/克汀病"], 
+        def: "是指从胚胎发育至成人期由碘摄入量不足而引起的一系列病症。不同程度碘缺乏在人类不同发育期可引起不同的损伤，地方性甲状腺肿和地方性克汀病是碘缺乏病最明显的表现形式。",
+        diff: "全称IDD，注意是全生命周期的系列疾病表现。" },
+      { id: "4-18", ch: "第四章 环境卫生", name: "地方性甲状腺肿", eng: "endemic goiter", 
+        keywords: ["地区环境缺碘", "地方病", "甲状腺肿大"], 
+        def: "是一种主要由地区性环境缺碘引起的地方病，是碘缺乏病的主要表现形式之一，其主要症状是甲状腺肿大。",
+        diff: "俗称‘大脖子病’。" },
+      { id: "4-19", ch: "第四章 环境卫生", name: "地方性克汀病", eng: "endemic cretinsim", 
+        keywords: ["碘缺乏地区", "严重", "呆、小、聋、哑、瘫", "神经/甲功减退"], 
+        def: "是在碘缺乏地区出现的比较严重的碘缺乏病。患者出生后即有不同程度的智力低下，体格矮小，听力障碍，神经运动障碍和甲状腺功能减退，伴有甲状腺肿。可概括为呆、小、聋、哑、瘫。",
+        diff: "极重点记口诀：呆、小、聋、哑、瘫！胚胎期严重缺碘导致。" },
+      { id: "4-20", ch: "第四章 环境卫生", name: "地方性氟中毒", eng: "endemic fluorosis", 
+        keywords: ["摄氟过量", "氟骨症和氟斑牙", "慢性全身性"], 
+        def: "是由于一定地区的环境中氟元素过多，而致生活在该环境中的居民经饮水、食物和空气等途径长期摄入过量氟所引起的以氟骨症和氟斑牙为主要特征的一种慢性全身性疾病，又称地方性氟病。",
+        diff: "主要病征是看牙（氟斑牙）和看骨头（关节变形、骨硬化）。" },
+      { id: "4-21", ch: "第四章 环境卫生", name: "氟斑牙", eng: "dental fluorosis", 
+        keywords: ["牙发育期", "氟过量", "釉面改变/着色/缺损", "早期表现"], 
+        def: "又称氟牙症或斑釉，是因牙釉质在发育期摄入了过多氟导致的牙体组织疾病。多发生于恒牙，是氟中毒的早期表现。主要表现为釉面光泽度改变，釉面着色，釉面缺损。",
+        diff: "注意时间点：必须在‘牙齿发育期’摄入过量氟，成年后再高氟通常不产生典型氟斑牙。" },
+      { id: "4-22", ch: "第四章 环境卫生", name: "地方性砷中毒", eng: "endemic arsenism", 
+        keywords: ["自饮水/煤烟", "皮肤色素异常/角化/坏疽/癌变", "末梢神经炎"], 
+        def: "是由于长期自饮用水、室内煤烟、食物等环境介质中摄入过量的砷而引起的一种生物地球化学性疾病。临床上以末梢神经炎、皮肤色素代谢异常、掌跖部皮肤角化、肢端缺血坏疽、皮肤癌变为主要表现，是一种伴有多系统、多脏器受损的慢性全身性疾病。",
+        diff: "三主症：皮肤花斑（色素沉着/脱失）、手掌脚底角化、肢端坏疽。" },
+      { id: "4-23", ch: "第四章 环境卫生", name: "乌脚病", eng: "blackfoot disease", 
+        keywords: ["下肢远端脚趾", "间歇性跛行", "皮肤发黑/坏死", "血管栓塞"], 
+        def: "此种病变多发生于下肢远端脚趾部位，早期以间歇性跛行为主要表现，久之脚趾皮肤发黑、坏死(黑脚病)，患者主诉脚背、脚趾发凉，颜色苍白，足背动脉搏动减弱或消失。失活、坏死、发黑的皮肤可部分自行脱落，或需手术切除。",
+        diff: "在我国台湾由于深井水含砷量过高引起的末梢动静脉阻塞。" },
+      { id: "4-24", ch: "第四章 环境卫生", name: "危险度评估", eng: "risk assessment", 
+        keywords: ["系统评价", "危害/暴露评估", "有害暴露对人类/生态", "不确定性"], 
+        def: "主要通过毒理学研究结合人群流行病学调查资料，系统评价有害环境因素暴露对人类和生态的潜在损害作用，并对损害作用的相关证据强度或风险评估的不确定性进行评价。",
+        diff: "包括四个经典步骤：危害识别、剂量-反应关系评定、暴露评定、危险度特征分析。" },
+      { id: "4-25", ch: "第四章 环境卫生", name: "基准剂量", eng: "benchmark dose (BMD)", 
+        keywords: ["剂量-反应", "受试物引起比例反应", "95%可信区间下限"], 
+        def: "依据动物实验剂量-反应关系的结果，用一定的统计学模型求得的受试物引起一定比例(定量资料为10%，定性资料为5%)动物出现阳性反应剂量的95%CI下限值。",
+        diff: "现代毒理学中用来代替NOAEL的定量阈值计算点。" },
+      { id: "4-26", ch: "第四章 环境卫生", name: "危害识别", eng: "hazard identification", 
+        keywords: ["识别引起危害", "首要步骤", "定性评价"], 
+        def: "指识别环境因素在机体、系统或(亚)人群是否引起有害效应及有害效应的种类和性质，是危险度评估的首要步骤，属于定性评价。",
+        diff: "注意是‘定性’，回答‘有无危害/是什么危害’的问题。" },
+
+      // 第五章 职业卫生与职业医学
+      { id: "5-1", ch: "第五章 职业卫生与职业医学", name: "职业性有害因素", eng: "occupational hazards", 
+        keywords: ["职业活动中存在", "健康/安全/作业能力", "有害因素/条件"], 
+        def: "是指在职业活动中产生和/或存在的，并可能对职业人群的健康、人身安全及作业能力造成有害影响的因素或条件。",
+        diff: "来源包括：生产过程（化学、物理、生物）、劳动过程、生产环境。" },
+      { id: "5-2", ch: "第五章 职业卫生与职业医学", name: "生产性毒物", eng: "industrial toxicant", 
+        keywords: ["工艺过程中使用/产生", "作业环境中的毒物"], 
+        def: "是指生产工艺过程中使用或产生的，存在于作业环境中的毒物。",
+        diff: "可以是原料、中间体、辅助材料、副产品或废气等。" },
+      { id: "5-3", ch: "第五章 职业卫生与职业医学", name: "职业中毒", eng: "occupational poisoning", 
+        keywords: ["生产性毒物引起", "中毒"], 
+        def: "由生产性毒物引起的中毒称为职业中毒。",
+        diff: "国家法定职业病的重要类别。" },
+      { id: "5-4", ch: "第五章 职业卫生与职业医学", name: "刺激性气体", eng: "irritant gas", 
+        keywords: ["眼、呼吸道黏膜、皮肤", "刺激作用", "多具腐蚀性"], 
+        def: "是指对眼、呼吸道黏膜及皮肤具有刺激作用的一类气态物质，包括常态下的气体以及通过蒸发、升华或挥发而形成蒸气或气体的液体和固体物质，多具腐蚀性。",
+        diff: "如氯气、氨气、光气。常考：光气刺激性弱但水溶性低可进入深部呼吸道引起肺水肿。" },
+      { id: "5-5", ch: "第五章 职业卫生与职业医学", name: "窒息性气体", eng: "asphyxiating gas", 
+        keywords: ["吸入引起缺氧", "氧供给、运输、利用障碍", "缺氧窒息"], 
+        def: "是指被吸入后引起氧的供给、摄取、运输和利用发生障碍，使全身组织细胞得不到或不能利用氧，而导致组织细胞缺氧窒息的一类有害气体的总称。",
+        diff: "一氧化碳(运输阻断)、氰化氢(呼吸链抑制，即利用阻断)、硫化氢。" },
+      { id: "5-6", ch: "第五章 职业卫生与职业医学", name: "生产性粉尘", eng: "industrial dust", 
+        keywords: ["生产产生", "较长时间悬浮", "固体颗粒物"], 
+        def: "是指生产过程中产生的并能较长时间悬浮于生产环境中的固体颗粒物，是污染作业环境、损害劳动者健康的重要职业性有害因素。",
+        diff: "关键特征是‘较长时间悬浮’，可导致尘肺病。" },
+      { id: "5-7", ch: "第五章 职业卫生与职业医学", name: "可吸入粉尘", eng: "inhalable dust", 
+        keywords: ["直径小于15μm", "进入呼吸道"], 
+        def: "是指空气动力学直径小于15µm的可进入呼吸道的颗粒物。",
+        diff: "与呼吸性粉尘做对比：直径更大，但能进入鼻、咽腔。" },
+      { id: "5-8", ch: "第五章 职业卫生与职业医学", name: "呼吸性粉尘", eng: "respirable dust", 
+        keywords: ["直径小于5μm", "到达深部/肺泡区"], 
+        def: "是指空气动力学直径小于5µm的可随呼吸到达呼吸道深部和肺泡区的颗粒物。",
+        diff: "极重要！这是导致尘肺病（肺纤维化）的最关键粉尘粒径范围。" },
+      { id: "5-9", ch: "第五章 职业卫生与职业医学", name: "尘肺病", eng: "pneumoconiosis", 
+        keywords: ["长期吸入生产性粉尘", "肺内阻留", "肺组织弥漫性纤维化"], 
+        def: "长期吸入生产性粉尘并有粉尘在肺内阻留，从而引起的以肺组织弥漫性纤维化为主的全身性疾病。",
+        diff: "我国最主要的、人数最多的法定职业病。以矽肺最常见。" },
+      { id: "5-10", ch: "第五章 职业卫生与职业医学", name: "高温作业", eng: "hot environment work", 
+        keywords: ["高气温/热辐射/高气湿", "异常气象条件", "湿球黑球温度指数(WBGT)"], 
+        def: "是指有高气温，或有强烈的热辐射，或伴有高气湿相结合的异常气象条件、湿球黑球温度指数(WBGT)超过规定限值的作业。",
+        diff: "必须了解WBGT指数作为定量限值标准。" },
+      { id: "5-11", ch: "第五章 职业卫生与职业医学", name: "中暑", eng: "heat stroke", 
+        keywords: ["热平衡/水盐紊乱", "中枢神经/心血管功能障碍", "急性热致疾病"], 
+        def: "是指高温环境下由于热平衡和/或水盐代谢紊乱等而引起的一种以中枢神经系统和/或心血管系统功能障碍为主的急性热致疾病。",
+        diff: "分先兆中暑、轻症中暑和重症中暑（热射病、热痉挛、热衰竭）。" },
+      { id: "5-12", ch: "第五章 职业卫生与职业医学", name: "生产性噪声", eng: "industrial noise", 
+        keywords: ["生产产生", "噪声"], 
+        def: "是指生产过程中产生的噪声。",
+        diff: "可引起永久性听阈位移、噪声聋。" },
+      { id: "5-13", ch: "第五章 职业卫生与职业医学", name: "局部振动病", eng: "local vibration disease", 
+        keywords: ["长期手传振动", "手部末梢循环/神经功能障碍", "白指"], 
+        def: "是指长期从事手传振动作业引起的以手部末梢循环障碍和/或手臂神经功能障碍为主的疾病。",
+        diff: "典型表现是冷水激发后手指发白（振动性白指）。" },
+      { id: "5-14", ch: "第五章 职业卫生与职业医学", name: "非电离辐射", eng: "non-ionizing radiation", 
+        keywords: ["量子能量 < 12 eV", "不引起生物体电离"], 
+        def: "是指量子能量小于12电子伏特(eV)，不能引起生物体电离的电磁辐射。",
+        diff: "如紫外线、红外线、激光、射频辐射。对比：电离辐射（X射线、γ射线，其能量高）。" },
+      { id: "5-15", ch: "第五章 职业卫生与职业医学", name: "职业紧张", eng: "occupational stress", 
+        keywords: ["工作需求 > 个体应对能力", "生理和心理压力"], 
+        def: "是指在某种职业条件下，工作需求超过个体应对能力而产生的生理和心理压力。",
+        diff: "现代职业卫生的研究热点（过度加班、精神负担）。" },
+      { id: "5-16", ch: "第五章 职业卫生与职业医学", name: "工效学", eng: "ergonomics", 
+        keywords: ["以人为中心", "人、机、环境关系", "安全、舒适、高效"], 
+        def: "是以人为中心，研究人、机器设备和环境之间的相互关系，目的是实现人在生产劳动及其他活动中的健康、安全、舒适，同时提高工作效率。",
+        diff: "宗旨：‘让机器适合人，让环境适合人’，减少职业性骨骼肌肉系统损伤。" },
+      { id: "5-17", ch: "第五章 职业卫生与职业医学", name: "职业性损害", eng: "occupational disorders", 
+        keywords: ["有害因素作用", "劳动者健康/劳动能力", "不同程度损害"], 
+        def: "是指职业性有害因素在一定条件下对劳动者健康和劳动能力产生不同程度的损害。",
+        diff: "包含：职业病、工作有关疾病和工伤。" },
+      { id: "5-18", ch: "第五章 职业卫生与职业医学", name: "职业病", eng: "occupational disease", 
+        keywords: ["法定/广义", "功能性或器质性改变", "影响劳动能力", "有法律保障"], 
+        def: "广义上的职业病是指职业性有害因素作用于人体的强度与时间超过一定限度时，人体不能代偿其所造成的功能性或器质性病理改变，从而出现相应的临床症状和体征，影响劳动能力。",
+        diff: "我国有法定职业病分类目录（目前共10类110多种）。法定职业病具有法律特征、必须由专门诊断机构确诊。" },
+      { id: "5-19", ch: "第五章 职业卫生与职业医学", name: "工作有关疾病", eng: "work-related disease", 
+        keywords: ["多因素相关", "职业因素显露/原有疾病加重", "职业性多发病"], 
+        def: "是一类与多因素相关的疾病。在职业活动中，由于职业性有害因素等多种因素的作用，劳动者罹患某种疾病或潜在疾病显露或原有疾病加重，又称职业性多发病。",
+        diff: "注意与法定‘职业病’区分。它没有国家赔偿法定的排他因果链（如程序员的颈椎病、高血压，是非法定的）。" },
+      { id: "5-20", ch: "第五章 职业卫生与职业医学", name: "职业性外伤", eng: "occupational injury", 
+        keywords: ["工伤", "意外事故", "工作时间和工作场所内"], 
+        def: "又称工伤，属于工作中的意外事故引起的伤害，主要指在工作时间和工作场所内，因工作原因由意外事故造成的职业从事者的健康损害。",
+        diff: "急性伤害，外因主导。" },
+      { id: "5-21", ch: "第五章 职业卫生与职业医学", name: "个人防护用品", eng: "PPE", 
+        keywords: ["最大限度减少避免", "事故伤害和危害", "随身穿戴"], 
+        def: "是指个人用于最大限度地减少或避免由于暴露于职业性有害因素所导致的事故伤害和职业危害而随身穿(佩)戴的用品。",
+        diff: "简称PPE。是工程控制无效后的‘最后一道防线’。" },
+      { id: "5-22", ch: "第五章 职业卫生与职业医学", name: "职业卫生服务", eng: "occupational health services", 
+        keywords: ["工作场所提供", "预防性的", "使工作符合健康要求"], 
+        def: "是一种在工作场所或其附近提供的全面保护劳动者健康的服务，内容是预防性的，目的是使工作符合劳动者的健康要求。",
+        diff: "由用人单位提供，强调预防性服务。" },
+      { id: "5-23", ch: "第五章 职业卫生与职业医学", name: "职业健康监护", eng: "occupational health surveillance", 
+        keywords: ["预防目的", "职业接触史", "医学健康检查", "连续性监测分析反馈"], 
+        def: "是以预防为目的，根据劳动者的职业接触史，通过定期或不定期的医学健康检查和健康相关资料的收集，连续性地监测劳动者的健康状况，分析劳动者健康变化与所接触的职业病危害因素的关系，并及时地将健康检查和资料分析结果报告给用人单位和劳动者本人，以便及时采取干预措施，保护劳动者健康。",
+        diff: "包含上岗前、在岗期间、离岗时体检，和应急健康体检。" },
+      { id: "5-24", ch: "第五章 职业卫生与职业医学", name: "工作场所健康促进", eng: "workplace health promotion", 
+        keywords: ["职业健康促进", "改善工作条件", "改变不健康生活方式", "生命质量提高"], 
+        def: "也称为职业健康促进(occupational health promotion)，是指采取综合干预措施，以改善工作条件，改变劳动者不健康生活方式和行为，控制健康危险因素，预防职业病，减少工作有关疾病的发生，促进和提高劳动者健康和生命质量为目的的活动。",
+        diff: "将公共卫生的健康促进理念延伸到工厂/写字楼现场。" },
+      { id: "5-25", ch: "第五章 职业卫生与职业医学", name: "职业病的三级预防", eng: "three levels of prevention in occupational health", 
+        keywords: ["一病因预防/控制源头", "二早期检测诊断", "三积极治疗促进康复"], 
+        def: "第一级预防又称病因预防，是从根本上消除或控制职业性有害因素对劳动者的作用和损害；第二级预防是早期检测和诊断人体受到职业性有害因素所致的健康损害；第三级预防是指在患病以后，给予积极治疗 and 促进康复的措施。",
+        diff: "预防医学核心策略在职业病领域的具象化。最理想是一级预防（以无毒代替有毒）。" },
+
+      // 第六章 食物与健康
+      { id: "6-1", ch: "第六章 食物与健康", name: "营养", eng: "nutrition", 
+        keywords: ["摄取、消化、吸收、代谢", "满足生理/生长/更新", "生物学过程"], 
+        def: "是机体从外界环境中摄取食物，经过体内消化、吸收和代谢，以满足机体生理功能、生长发育、组织更新和身体活动必需的生物学过程。",
+        diff: "注意：‘营养’是个动态的生物学过程，不是指‘营养素’本身。" },
+      { id: "6-2", ch: "第六章 食物与健康", name: "膳食营养素参考摄入量", eng: "DRIs", 
+        keywords: ["EAR, RNI, AI, UL, AMDR", "合理摄入/避免缺乏和过量", "每日平均"], 
+        def: "是为了保证人体合理摄入营养素，避免缺乏和过量，以及降低慢性病风险，在推荐膳食营养素供给量的基础上发展起来的每日平均膳食营养素摄入量的一组参考值。包括平均需要量、推荐摄入量、适宜摄入量、可耐受最高摄入量、宏量营养素可接受范围、降低膳食相关非传染性疾病风险的建议摄入量和特定建议值。",
+        diff: "核心考点！DRIs是由好几个数值（RNI, EAR, AI, UL）组成的参考值集合。" },
+      { id: "6-3", ch: "第六章 食物与健康", name: "推荐摄入量", eng: "RNI", 
+        keywords: ["满足97%-98%个体需要", "特定群体", "每日膳食供给量(RDA)"], 
+        def: "是可满足某一特定性别、年龄及生理状况群体中97%-98% 个体需要量的摄入水平，相当于传统的每日膳食中营养素供给量。",
+        diff: "RNI 相当于 EAR + 2SD。能够满足绝大多数人需要。" },
+      { id: "6-4", ch: "第六章 食物与健康", name: "宏量营养素可接受范围", eng: "AMDR", 
+        keywords: ["脂肪/蛋白质/碳水化合物理想范围", "占能量百分比", "具有上下限"], 
+        def: "是脂肪、蛋白质和碳水化合物理想的摄入量范围，该范围可以提供 these 必需营养素的需要，并且有利于降低慢性病的发生危险，常用占能量摄入量的百分比表示。其显著的特点之一是具有上限和下限。",
+        diff: "区别于微量营养素。因为能量素多了也致病，所以强调‘百分比范围且有上下限’。" },
+      { id: "6-5", ch: "第六章 食物与健康", name: "必需氨基酸", eng: "essential amino acid (EAA)", 
+        keywords: ["体内不能合成/速度慢", "必须从食物获取"], 
+        def: "是在体内不能合成或合成速度不能满足机体需要，必须从食物中获取的氨基酸。",
+        diff: "人体共9种必需氨基酸（婴儿10种）。口诀：‘携一两只书本单色来’。" },
+      { id: "6-6", ch: "第六章 食物与健康", name: "正氮平衡", eng: "positive nitrogen balance", 
+        keywords: ["摄入氮 > 排出氮", "婴幼儿/青少年/孕妇/乳母"], 
+        def: "是婴幼儿、青少年、孕妇和乳母为了满足组织细胞增长和泌乳的需要，摄入氮量大于排出氮量，即为正氮平衡。",
+        diff: "体内合成蛋白质大于分解蛋白质。对比：负氮平衡（饥饿、消耗性疾病）。" },
+      { id: "6-7", ch: "第六章 食物与健康", name: "必需脂肪酸", eng: "essential fatty acid (EFA)", 
+        keywords: ["人体必需", "自身不能合成", "多不饱和脂肪酸"], 
+        def: "是人体必需的、自身不能合成的、必须由食物供给的多不饱和脂肪酸。",
+        diff: "包括亚油酸、α-亚麻酸。" },
+      { id: "6-8", ch: "第六章 食物与健康", name: "膳食纤维", eng: "dietary fiber", 
+        keywords: ["不能被人体吸收多糖", "不能被消化酶水解", "植物细胞壁复合碳水"], 
+        def: "是不能被人体利用的多糖，即不能被人胃肠道中消化酶所消化的且不被人体吸收利用的多糖，主要来自植物细胞壁的复合碳水化合物，包括纤维素、半纤维素、果胶及木质素等。",
+        diff: "常考：不提供能量但有促进肠胃蠕动、降低胆固醇和延缓葡萄糖吸收的重要生理功能。" },
+      { id: "6-9", ch: "第六章 食物与健康", name: "食物的热效应", eng: "thermic effect of food", 
+        keywords: ["额外能量消耗", "摄食引起", "消化运输代谢贮存"], 
+        def: "是人体由于摄取食物所引起的额外能量消耗，是食物的消化、运输、代谢和贮存活动中所额外消耗的能量。",
+        diff: "旧称‘食物特殊动力作用’。蛋白质的食物热效应最高，高达30%。" },
+      { id: "6-10", ch: "第六章 食物与健康", name: "必需微量元素", eng: "essential microelements", 
+        keywords: ["组织中浓度 < 250μg/g", "减少导致功能受损", "生物活性结构"], 
+        def: "元素在组织中浓度不超过250µg/g，若该元素的摄入量减少到低于某一限值，总会导致一种重要生理功能的损伤，或该元素是机体内生物活性物质有机结构的组成成分。",
+        diff: "铁、锌、硒、碘等。注意与常量元素（钙、镁、钾等）进行浓度上的划分区分。" },
+      { id: "6-11", ch: "第六章 食物与健康", name: "食源性疾病", eng: "foodborne diseases", 
+        keywords: ["致病因素通过食品", "感染性/中毒性", "包含食物中毒"], 
+        def: "是指食品中致病因素进入人体引起的感染性、中毒性等疾病，包括食物中毒。",
+        diff: "概念范畴大到包含寄生虫等。" },
+      { id: "6-12", ch: "第六章 食物与健康", name: "口腔生殖系综合征", eng: "orogenital syndrome", 
+        keywords: ["核黄素(VB2)缺乏", "口角炎/眼睑缘炎/阴囊皮炎"], 
+        def: "是一组由于核黄素(维生素B2)缺乏而出现的口角炎、眼睑缘炎、阴囊(阴唇)皮炎、鼻翼两侧脂溢性皮炎等口腔和阴部炎症综合征，故称此现象为“口腔生殖系综合征”。",
+        diff: "核黄素(维生素B2)最经典的临床缺乏症，好发于集体生活的学生或常素食者。" },
+      { id: "6-13", ch: "第六章 食物与健康", name: "平衡膳食", eng: "balanced diet", 
+        keywords: ["合理膳食", "种类齐全数量充足比例合适", "促进健康/防病"], 
+        def: "即为合理膳食，是指提供给机体种类齐全、数量充足、比例合适的能量和各种营养素，并与机体的需要保持平衡，进而达到合理营养、促进健康、预防疾病的膳食。",
+        diff: "营养学的终极实践追求目标。" },
+      { id: "6-14", ch: "第六章 食物与健康", name: "营养不良", eng: "malnutrition", 
+        keywords: ["缺乏或过剩", "异常/疾病状态"], 
+        def: "是由于一种或一种以上营养素的缺乏或过剩所造成的机体健康异常或疾病状态。",
+        diff: "切记：‘营养过剩（肥胖、高脂血症）’也是营养不良的一种！" },
+      { id: "6-15", ch: "第六章 食物与健康", name: "营养风险筛查", eng: "nutrition risk screening", 
+        keywords: ["发现营养问题", "评估是否需要干预"], 
+        def: "是发现患者是否存在营养问题和是否需要进一步进行全面营养评估的过程。",
+        diff: "一般在住院24小时内由护士/医生快速测定。" },
+      { id: "6-16", ch: "第六章 食物与健康", name: "营养评估", eng: "nutrition assessment", 
+        keywords: ["临床资料收集", "身体测量/生化指标", "状态分类分度"], 
+        def: "是在大量临床资料中收集相关资料，如一般状况、饮食情况、身体测量指标和生化指标，按营养状态对患者进行分类，分为营养良好或营养不良，并评估患者营养不良的程度，从而进行相应的营养治疗。",
+        diff: "比‘筛查’更深入、更专业，是临床营养师的工作核心。" },
+      { id: "6-17", ch: "第六章 食物与健康", name: "治疗膳食", eng: "therapeutic diet", 
+        keywords: ["病理与生理状况", "调整膳食成分和性状", "促进康复"], 
+        def: "是根据不同的病理与生理状况，调整患者膳食的营养成分和性状，治疗或辅助治疗疾病、促进患者康复的膳食。",
+        diff: "如低盐膳食（高血压）、低蛋白膳食（肾功能不全）。" },
+      { id: "6-18", ch: "第六章 食物与健康", name: "肠内营养", eng: "enteral nutrition (EN)", 
+        keywords: ["EN", "胃肠道消化功能", "口服或管饲", "要素膳制剂"], 
+        def: "是具有胃肠道消化吸收功能的患者，因机体病理、生理改变或一些治疗的特殊要求，需利用口服或管饲等方式给予要素膳制剂，经胃肠道消化吸收，提供能量和营养素，以满足机体代谢需要的营养支持疗法。",
+        diff: "临床原则：‘只要胃肠道有功能，首选肠内营养’。" },
+      { id: "6-19", ch: "第六章 食物与健康", name: "肠外营养", eng: "parenteral nutrition (PN)", 
+        keywords: ["PN", "静脉途径", "纠正预防营养不良"], 
+        def: "是通过肠道以外的通路即静脉途径输注能量和各种营养素，以达到纠正或预防营养不良、维持营养平衡目的的营养补充方式。",
+        diff: "即PN。全部营养要素直接进血管，用于胃肠衰竭或不能经消化道进食的病人。" },
+      { id: "6-20", ch: "第六章 食物与健康", name: "食物中毒", eng: "food poisoning", 
+        keywords: ["有毒有害物质", "误食", "非传染性急性亚急性"], 
+        def: "指摄入含有生物性、化学性有毒有害物质的食品或把有毒有害物质当作食品摄入后所出现的非传染性(不同于传染病)的急性、亚急性疾病。",
+        diff: "特征：潜伏期极短、集体暴发、非传染性、有共同食物暴露史。" },
+      { id: "6-21", ch: "第六章 食物与健康", name: "细菌性食物中毒", eng: "bacterial food poisoning", 
+        keywords: ["细菌和/或毒素污染", "急性亚急性疾病"], 
+        def: "是指摄入被细菌和/或其毒素污染的食物而引起的急性或亚急性疾病。",
+        diff: "占食物中毒比例最高（如沙门氏菌、金葡萄球菌肠毒素）。" },
+
+      // 第七章 健康行为干预
+      { id: "7-1", ch: "第七章 健康行为干预", name: "健康教育", eng: "health education", 
+        keywords: ["循证教学原理", "获取知识树立观念掌握技能", "有益健康决定和生活行为"], 
+        def: "是有计划地应用循证的教学原理与技术，为学习者提供获取科学的健康知识、树立健康观念、掌握健康技能的机会，帮助他们作出有益健康的决定和有效且成功地执行有益健康的生活行为方式的过程。",
+        diff: "手段是知识传播和行为干预，目的是促进‘知-信-行’转化。" },
+      { id: "7-2", ch: "第七章 健康行为干预", name: "增权", eng: "empowerment", 
+        keywords: ["增强掌控力", "明智选择"], 
+        def: "是指人们增强对决定他们生命事件掌控力的过程，即有能力对决定自身健康的问题作出明智的选择。",
+        diff: "健康促进的关键理念：把健康的决定权交给群众自己，赋予其力量。" },
+      { id: "7-3", ch: "第七章 健康行为干预", name: "健康素养", eng: "health literacy", 
+        keywords: ["获取、理解、评价和应用", "健康信息", "做出健康决定"], 
+        def: "是在进行与医疗服务、疾病预防和健康促进有关的日常活动时，获取、理解、评价和应用健康信息来做出健康相关决定以维持或提高生活质量的知识、动机和能力。",
+        diff: "衡量国民健康素质的核心指标。包含三个维度：基本知识、健康生活方式和技能。" },
+      { id: "7-4", ch: "第七章 健康行为干预", name: "健康促进", eng: "health promotion", 
+        keywords: ["维护和提高自身健康", "综合社会政治过程", "加强个人素质", "改变环境条件"], 
+        def: "是促使人们维护和提高他们自身健康的过程。健康促进是一个综合的社会政治过程，它不仅包含了加强个人素质和能力的行动，还包括改变物质、社会环境以及经济条件，从而削弱它们对大众及个人健康的不良影响。",
+        diff: "对比：健康教育是知识，健康促进不仅是教育，还必须依靠组织、行政、财政等综合社会支持。" },
+      { id: "7-5", ch: "第七章 健康行为干预", name: "健康共治", eng: "health co-governance", 
+        keywords: ["整个政府和全社会的路径", "多部门/多主体协同"], 
+        def: "是指各级政府及相关部门以“整个政府和全社会的路径”引导社会组织、企业和公众为了健康和福祉共同采取的行动。",
+        diff: "解决复杂健康危险因素的治理路径。" },
+      { id: "7-6", ch: "第七章 健康行为干预", name: "自我效能", eng: "self-efficacy", 
+        keywords: ["班杜拉", "实施行为的信念"], 
+        def: "是一种相信自己能在特定环境中恰当而有效地实施某种行为的信念。",
+        diff: "行为转变理论（如健康信念模型）中的核心中介，决定了一个人愿不愿意开始并坚持改掉坏毛病。" },
+      { id: "7-7", ch: "第七章 健康行为干预", name: "健康咨询", eng: "health counseling", 
+        keywords: ["临床场所/基层机构", "帮助改变不良行为", "最常用"], 
+        def: "是临床场所尤其是基层卫生保健机构帮助个体及家庭改变不良行为最常用的一种健康教育方式。",
+        diff: "一般使用五步法（5As原则）。" },
+
+      // 第八章 全生命周期保健
+      { id: "8-1", ch: "第八章 全生命周期保健", name: "新生儿疾病筛查", eng: "newborn screening", 
+        keywords: ["先天性、遗传性", "专项检查", "早期诊断治疗"], 
+        def: "是指在新生儿期对严重危害新生儿健康的先天性、遗传性疾病施行专项检查，提供早期诊断和治疗的母婴保健技术，是提高出生人口素质、减少出生缺陷的预防措施之一。",
+        diff: "经典的二级预防落地，如足底血筛查苯丙酮尿症、先天性甲状腺功能减退症。" },
+      { id: "8-2", ch: "第八章 全生命周期保健", name: "身高别体重", eng: "weight for height", 
+        keywords: ["一定身高相应体重", "反映身体密度充实度"], 
+        def: "是指一定身高相应的体重增长范围，用来表示相对于目前身高的体重信息，可间接反映身体的密度与充实度。",
+        diff: "用于评估儿童近期营养状况。低于正常值提示消瘦，高于正常值提示肥胖。" },
+      { id: "8-3", ch: "第八章 全生命周期保健", name: "婚前医学检查", eng: "premarital medical examination", 
+        keywords: ["准备结婚男女", "影响结婚和生育疾病"], 
+        def: "是指对准备结婚的男女双方可能患影响结婚和生育的疾病进行的医学检查。",
+        diff: "检查严重传染病、指定精神病、和严重的遗传性疾病。" },
+      { id: "8-4", ch: "第八章 全生命周期保健", name: "生育调节", eng: "regulation of fertility", 
+        keywords: ["调节促进生育功能", "避孕或计划受孕"], 
+        def: "是通过人工的方法或根据人体体内的激素变化所引起的一系列生理变化征象来调节促进人的生育功能，达到避孕或计划受孕的目的。",
+        diff: "双向调节，既包含避孕也包含助孕。" },
+      { id: "8-5", ch: "第八章 全生命周期保健", name: "劳动力人口", eng: "labor force population", 
+        keywords: ["劳动适龄", "劳动能力"], 
+        def: "是指劳动适龄人口中具有劳动能力的那部分人口。",
+        diff: "职业卫生与保健重点覆盖的生产力人群。" },
+      { id: "8-6", ch: "第八章 全生命周期保健", name: "婚前保健", eng: "premarital health care", 
+        keywords: ["登记前", "医学检查、卫生指导和咨询"], 
+        def: "是为准备结婚的男女双方在结婚登记前所进行的婚前医学检查、婚前卫生指导和婚前卫生咨询。",
+        diff: "包含‘检、指、询’三个核心环节，是生育健康的起点。" },
+
+      // 第九章 慢性非传染性疾病预防及控制
+      { id: "9-1", ch: "第九章 慢性非传染性疾病预防及控制", name: "慢性非传染性疾病", eng: "NCDs", 
+        keywords: ["起病长", "缺乏明确病因证据", "迁延不愈"], 
+        def: "不是特指某种疾病，而是对一组起病时间长，缺乏明确病因证据，一旦发病即病情迁延不愈的非传染性疾病的概括性总称。",
+        diff: "简称为NCDs（如高血压、糖尿病、冠心病）。防制重点在控制多病因的危险行为。" },
+      { id: "9-2", ch: "第九章 慢性非传染性疾病预防及控制", name: "生命全程", eng: "life course", 
+        keywords: ["全生命周期", "受精卵到生命结束"], 
+        def: "也称全生命周期，是一个人从出生到死亡、从受精卵开始到生命结束的完整过程。",
+        diff: "慢性病防制的新研究范式（提倡从子宫期暴露开始综合评估病因）。" },
+      { id: "9-3", ch: "第九章 慢性非传染性疾病预防及控制", name: "关键期模型", eng: "critical period model", 
+        keywords: ["特定时期暴露", "持久、终身影响", "生物学规划"], 
+        def: "是指在特定时期的暴露对器官、组织和身体系统的结构和功能的持久的、终身的影响，这种模式也称为“生物学规划”或“潜伏期模型”。",
+        diff: "例如：孕期营养不良对成年后发生代谢综合征的持久生物烙印。" },
+      { id: "9-4", ch: "第九章 慢性非传染性疾病预防及控制", name: "后期效应修正的临界模型", eng: "critical model modified by late factors", 
+        keywords: ["后期生活因素", "改变关键期暴露影响"], 
+        def: "是指后期生活因素可能会改变关键时期暴露对后来疾病风险的影响，是关键期模型的延伸。",
+        diff: "生命全程中，早期种下了种子，后期的不健康习惯能‘放大’或‘修饰’这一恶性结果。" },
+      { id: "9-5", ch: "第九章 慢性非传染性疾病预防及控制", name: "风险累积模型", eng: "accumulation of risk model", 
+        keywords: ["多种效应累积", "暴露总量/次序"], 
+        def: "是指多种效应在生命全程中的累积，从基因遗传到子宫内发育、童年、少年、青年、中年和老年的健康和社会暴露，着重于暴露的总量和/或次序。",
+        diff: "‘滚雪球效应’。累积毒物和危险习惯越多，慢性病风险越高。" },
+      { id: "9-6", ch: "第九章 慢性非传染性疾病预防及控制", name: "路径模型/风险链模型", eng: "pathway/chains of risk model", 
+        keywords: ["一系列相互联系", "整合路径", "风险链"], 
+        def: "是指一系列相互联系的生物、心理和社会途径暴露的整合，而暴露时间可能以多种不同方式影响疾病风险。",
+        diff: "A导致B，B引发C，最终引爆疾病（如童年贫困 ➔ 辍学 ➔ 劣质工作 ➔ 严重吸烟 ➔ 肺癌）。" },
+      { id: "9-7", ch: "第九章 慢性非传染性疾病预防及控制", name: "慢性病健康管理", eng: "chronic disease health management", 
+        keywords: ["全面、连续、主动", "生物-心理-社会模式", "延缓进程/降低费用"], 
+        def: "是指以生物-心理-社会医学模式为指导，组织慢性病专业医生及护理人员，通过为健康人群、慢性病风险人群、慢性病患者提供全面、连续、主动的管理，以达到促进健康、延缓慢性病进程、减少并发症、降低伤残率、延长寿命、提高生活质量，同时降低医药费用为目的的一种科学健康管理模式。",
+        diff: "关键特征是：‘全面、连续、主动’。区别于单纯去医院挂一次号看一次病。" },
+      { id: "9-8", ch: "第九章 慢性非传染性疾病预防及控制", name: "慢性病自我管理", eng: "chronic disease self-management", 
+        keywords: ["健康教育课程", "依靠自己解决", "躯体和情绪问题"], 
+        def: "是指通过系列健康教育课程教给患者自我管理所需知识、技能以及和医生交流的技巧，帮助慢性病患者在得到医生更有效的支持下，能主要依靠自己解决慢性病给日常生活带来的各种躯体和情绪方面的问题。",
+        diff: "患者是主体。不再是‘医生说什么我完全被动听什么’。" },
+
+      // 第十章 传染病的预防及控制
+      { id: "10-1", ch: "第十章 传染病的预防及控制", name: "潜隐期", eng: "latent period", 
+        keywords: ["感染病原体", "至具备传染性所需时间"], 
+        def: "指从个体感染病原体到具备传染性所需的时间。潜隐期可能短于或等于潜伏期；若短于潜伏期，则患者在出现症状前已能传播病原体。",
+        diff: "重要对比：‘潜伏期’是指感染到‘出现临床症状’。如果潜隐期短于潜伏期，意味着‘没发病就能传人’（如新冠、流感）。" },
+      { id: "10-2", ch: "第十章 传染病的预防及控制", name: "垂直传播", eng: "vertical transmission", 
+        keywords: ["母体传给子代", "胎盘/上行性/分娩时"], 
+        def: "病原体从母体传给子代的过程，包括经胎盘传播(如乙肝病毒)、上行性传播(如单纯疱疹病毒)、分娩时传播(如淋球菌)。",
+        diff: "对比：水平传播（人与人之间空气、水源、接触）。" },
+      { id: "10-3", ch: "第十章 传染病的预防及控制", name: "疫源地", eng: "epidemic focus", 
+        keywords: ["传染源波及范围", "消灭三个条件"], 
+        def: "传染源及其排出的病原体所能波及的范围。疫源地消灭需满足：传染源移走/不再排病原体、环境病原体被清除、所有易感接触者度过最长潜伏期无新病例。",
+        diff: "必背消灭三条件！" },
+      { id: "10-4", ch: "第十章 传染病的预防及控制", name: "基本再生数", eng: "R0", 
+        keywords: ["R0", "无任何干预且全易感", "平均二代感染数量"], 
+        def: "指在没有任何干预措施且所有人都易感的情况下，平均每位感染者在其传染期内能够引起的二代感染者的数量。表示一个感染者在完全易感人群中、没有任何干预措施情况下平均能够传染的新感染者数量。",
+        diff: "当 R0 > 1 时，疫情会蔓延扩大；R0 < 1 时，疫情最终自限消退。" },
+      { id: "10-5", ch: "第十章 传染病的预防及控制", name: "有效再生数", eng: "Reff", 
+        keywords: ["Reff", "实施干预措施后", "实际平均引起的二代"], 
+        def: "在实施干预措施(如隔离、接种疫苗)后，平均每位感染者实际引起的二代感染者数量。反映现实条件下的传播能力。",
+        diff: "对比：R0 是理论最大传播数，Reff 是控制后的现实传播数。我们防控的目标是让 Reff 降到 1 以下。" },
+      { id: "10-6", ch: "第十章 传染病的预防及控制", name: "预防接种", eng: "immunization", 
+        keywords: ["疫苗或抗体", "特异性免疫力", "保护易感人群"], 
+        def: "将疫苗或抗体接种到机体，使机体获得对传染病的特异性免疫力，从而保护易感人群，预防传染病的发生。",
+        diff: "是一级预防中最经济有效的手段。" },
+      { id: "10-7", ch: "第十章 传染病的预防及控制", name: "病例定义", eng: "case definition", 
+        keywords: ["暴发调查判断归类", "流行病学标准", "临床诊断标准"], 
+        def: "是在暴发调查中用来判断个体是否应当被归类为病例的一套标准，与日常临床诊断标准可以不完全一致。暴发调查中的病例定义通常包括流行病学标准(时间、地点和人群范围)和临床诊断标准(病例的临床症状体征、临床一般检查和实验室特异性检测结果)。",
+        diff: "临床诊断注重‘治疗’，暴发调查病例定义注重‘锁定调查范围、找出暴发原因’，可以分疑似、可能、确诊。" },
+      { id: "10-8", ch: "第十章 传染病的预防及控制", name: "同一健康", eng: "one health", 
+        keywords: ["人类健康、动物健康、环境健康", "整合协作"], 
+        def: "整合人类健康、动物健康和环境健康的协作理念，旨在共同应对传染病等全球卫生问题。",
+        diff: "防控人畜共患病（如禽流感、鼠疫）的核心前沿指导方针。" },
+      { id: "10-9", ch: "第十章 传染病的预防及控制", name: "主动免疫", eng: "active immunity", 
+        keywords: ["疫苗接种", "产生特异性抗体"], 
+        def: "指将疫苗接种到机体，使之产生特异性免疫。",
+        diff: "对比：被动免疫（注射免疫球蛋白/抗毒素，机体不产生抗体，维持时间短但见效快）。" },
+      { id: "10-10", ch: "第十章 传染病的预防及控制", name: "暴发调查", eng: "outbreak investigation", 
+        keywords: ["局部短期同种传染病", "核实诊断/病例定义/三间分布/控制措施"], 
+        def: "对局部地区短期内集中出现同种传染病病例的调查。步骤包括核实诊断、制定病例定义、描述三间分布、形成假设、采取控制措施。",
+        diff: "经典流病实践五大步骤，重点在边调查边执行控制措施。" },
+
+      // 第十一章 筛检
+      { id: "11-1", ch: "第十一章 筛检", name: "筛检试验", eng: "screening test", 
+        keywords: ["问卷/体查/内镜/实验室", "快速找出可疑病人"], 
+        def: "筛检所用的各种手段和方法，它可以是问卷调查、体格检查、内镜与X线等物理学检查，也可以是细胞学或分子标志物等实验室检查。",
+        diff: "关键：‘快、安全、便宜’。注意筛检试验本身不是诊断试验，阳性后必须再做诊断试验确认。" },
+      { id: "11-2", ch: "第十一章 筛检", name: "整群筛检", eng: "mass screening", 
+        keywords: ["高发病率情况", "普遍筛检", "普查"], 
+        def: "是指在疾病患(发)病率很高的情况下，对一定范围内人群的全体对象进行普遍筛检，即普查。",
+        diff: "优点是能把全部病人都捞出来，缺点是成本高，不适用于低患病率疾病。" },
+      { id: "11-3", ch: "第十一章 筛检", name: "选择性筛检", eng: "selective screening", 
+        keywords: ["高危人群", "最大效益"], 
+        def: "是指在某范围内根据流行病学特征选择高危人群进行筛检，最大限度地发现那些无临床症状的病例，以取得最大的筛检效益。",
+        diff: "精准制导。比如对50岁以上重度烟民做低剂量螺旋CT筛查肺癌。" },
+      { id: "11-4", ch: "第十一章 筛检", name: "主动筛检", eng: "active screening", 
+        keywords: ["主动出击", "动员群众"], 
+        def: "采取“主动出击”，通过组织的宣传介绍，动员群众到筛检服务地点进行检查。",
+        diff: "由医疗管理部门主动发起的免费/筛查活动。" },
+      { id: "11-5", ch: "第十一章 筛检", name: "机会性筛检", eng: "opportunistic screening", 
+        keywords: ["被动性", "日常医疗结合", "就医高危人群"], 
+        def: "属于一种被动性筛检，是将日常性的医疗服务与目标疾病的患者筛检结合起来，在患者就医过程中，对具有高危因素的人群进行的筛检。",
+        diff: "例如：50岁患者因胃痛来医院，医生顺便建议其做大便隐血或肠镜筛查大肠癌。" },
+
+      // 第十二章 疾病转归与预后
+      { id: "12-1", ch: "第十二章 疾病转归与预后", name: "预后", eng: "prognosis", 
+        keywords: ["疾病发生之后", "发展和转归的事先估计"], 
+        def: "是指在疾病发生之后，对该病未来的发展过程和转归(治愈、复发、恶化、并发症发生、伤残、死亡等)的事先估计。",
+        diff: "用定量研究（生存率等）对未来算命。" },
+      { id: "12-2", ch: "第十二章 疾病转归与预后", name: "预后因素", eng: "prognostic factors", 
+        keywords: ["影响疾病结局", "病程发展结局概率改变"], 
+        def: "是指影响疾病结局的一切因素，强调患者具有某些因素，其病程发展中出现某种结局的概率就可能发生改变。",
+        diff: "不同于危险因素。危险因素决定‘得不得病’，预后因素决定‘得病后活不活/好不好’。" },
+      { id: "12-3", ch: "第十二章 疾病转归与预后", name: "生存率", eng: "survival rate", 
+        keywords: ["治疗/随访后", "尚存活比例", "5年生存率"], 
+        def: "是指在接受某种治疗的患者或者患某病的人群中，经过n年随访后，尚存活的病例数占的比例。",
+        diff: "肿瘤预后最经典的指标，常采用 5 年生存率。" },
+      { id: "12-4", ch: "第十二章 疾病转归与预后", name: "病死率", eng: "case fatality rate", 
+        keywords: ["一定时期", "因该病死亡/全部患者比例"], 
+        def: "是指在一定时期内，某病的全部患者中因该病死亡者所占的比例。",
+        diff: "反映该病的严重程度、诊断能力和治疗水平。常用于急性传染病。" },
+      { id: "12-5", ch: "第十二章 疾病转归与预后", name: "缓解率", eng: "remission rate", 
+        keywords: ["缓解人数 / 治疗总人数"], 
+        def: "是指某种疾病患者经过某种治疗后，病情得到缓解的人数占治疗总人数的比例。",
+        diff: "如白血病化疗后的完全缓解率。" },
+      { id: "12-6", ch: "第十二章 疾病转归与预后", name: "复发率", eng: "recurrence rate", 
+        keywords: ["缓解或痊愈后", "又复发者比例"], 
+        def: "是指某病患者中，在缓解或痊愈后的一段时期内又复发者所占的比例。",
+        diff: "评估疾病复发倾向，判断根治效果。" },
+      { id: "12-7", ch: "第十二章 疾病转归与预后", name: "转移率", eng: "metastasis rate", 
+        keywords: ["肿瘤转移比例"], 
+        def: "是指发生肿瘤转移的患者占观察肿瘤患者的比例，用于肿瘤的预后评价。",
+        diff: "反映肿瘤的侵袭性强弱。" },
+      { id: "12-8", ch: "第十二章 疾病转归与预后", name: "总生存期", eng: "overall survival (OS)", 
+        keywords: ["OS", "时点开始", "任何原因死亡时间"], 
+        def: "是指从病程某时点(诊断、治疗、随机化)开始至因任何原因引起死亡的时间。",
+        diff: "临床疗效评价的‘金标准’终点。" },
+      { id: "12-9", ch: "第十二章 疾病转归与预后", name: "无病生存期", eng: "disease-free survival (DFS)", 
+        keywords: ["DFS", "根治开始", "复发、转移或死亡时间"], 
+        def: "是指从根治性治疗开始至疾病复发、转移或由于任何原因引起死亡的时间。",
+        diff: "常用于评价根治术（如乳腺癌手术）后的无复发阶段。" },
+      { id: "12-10", ch: "第十二章 疾病转归与预后", name: "失效事件", eng: "failure event", 
+        keywords: ["终点事件/死亡事件", "反映随访效果特征"], 
+        def: "又称为终点事件、死亡事件，是指反映随访观察效果特征的事件。",
+        diff: "不限于物理死亡，可以是心梗、复发、甚至是出院。" },
+      { id: "12-10-2", ch: "第十二章 疾病转归与预后", name: "截尾数据", eng: "censored data", 
+        keywords: ["不完全数据/删失", "未能观察到明确结局", "随访失访/死于他因"], 
+        def: "又称不完全数据、删失数据，指在随访过程中，由于某种原因未能观察到患者的明确结局，所以无法明确患者确切的生存时间，即患者提供的生存时间信息是不完全的，故称为截尾数据。",
+        diff: "生存分析中极其重要的特色数据。包含失访、观察期结束、死于其他无关原因。" },
+      { id: "12-11", ch: "第十二章 疾病转归与预后", name: "生存时间", eng: "survival time", 
+        keywords: ["两个有联系事件间隔", "时间变量"], 
+        def: "任何两个有联系的事件之间的时间间隔，常用字母表示，在生存分析中称为时间变量。",
+        diff: "如从确诊（事件一）到死亡（事件二）的月数。" },
+
+      // 第十三章 医院感染的监测与控制
+      { id: "13-1", ch: "第十三章 医院感染的监测与控制", name: "医院感染", eng: "nosocomial infection", 
+        keywords: ["医院内获得", "住院期间/离院后发生"], 
+        def: "指在医院内获得的感染，包括在住院期间发生的感染和在医院内获得离院后发生的感染。",
+        diff: "不包括入院前已开始、或入院前已处于潜伏期的感染。但包含在院内工作员工被感染。" },
+      { id: "13-2", ch: "第十三章 医院感染的监测与控制", name: "医院感染监测", eng: "nosocomial infection surveillance", 
+        keywords: ["长期系统连续", "分析分布影响因素", "反馈科室"], 
+        def: "是指长期、系统、连续地收集、分析医院感染在特定人群中的发生、分布及其影响因素，对监测资料定期进行整理分析，并将监测结果报送和反馈给有关部门和科室，为医院感染的预防、控制和管理提供科学依据。",
+        diff: "感控科的核心工作。必须是连续性的。" },
+      { id: "13-3", ch: "第十三章 医院感染的监测与控制", name: "医院感染数据", eng: "surveillance data", 
+        keywords: ["住院期间感控数据", "发生率/耐药/消毒监测"], 
+        def: "是指患者在住院期间与医院感染有关的医疗数据。包括医院感染发生率、漏报率、感染部位分布、易感人群监测、高危因素监测、抗生素耐药情况、外环境及消毒物品监测等。",
+        diff: "是计算感控指标的分子与分母来源。" },
+      { id: "13-4", ch: "第十三章 医院感染的监测与控制", name: "风险评估", eng: "risk assessment in infection control", 
+        keywords: ["识别后估计", "概率和严重程度", "降低措施评估"], 
+        def: "是在识别潜在危害后，对其危害发生的概率和严重程度的估计并评估各种风险降低措施的过程。主要有定性评估、半定量评估、定量评估。",
+        diff: "帮助医院合理分配感控资源，先控制高风险部门（如重症ICU）。" },
+      { id: "13-5", ch: "第十三章 医院感染的监测与控制", name: "接触传播", eng: "contact transmission", 
+        keywords: ["直接接触", "间接接触被污染物体", "肠道/多重耐药"], 
+        def: "指病原体通过直接接触感染源，或者通过被污染的物体表面传播到健康人体内。如肠道传染病、经血传播疾病、多重耐药菌感染、皮肤感染等。",
+        diff: "感控预防重点，常强调医护‘手卫生’（洗手是切断间接接触的关键）。" },
+
+      // 第十四章 突发公共卫生事件
+      { id: "14-1", ch: "第十四章 突发公共卫生事件", name: "突发公共卫生事件", eng: "public health emergencies", 
+        keywords: ["突然发生", "重大传染病/不明原因疾病/重大中毒", "严重影响公众健康"], 
+        def: "指突然发生，造成或可能造成社会公众健康严重损害的重大传染病疫情、群体性不明原因疾病、重大食物和职业中毒以及其他严重影响公众健康的事件(依据《突发公共卫生事件应急条例》)。",
+        diff: "必须牢记四个核心组成：重大疫情、群体性不明原因、重大中毒、其他影响事件。" },
+      { id: "14-2", ch: "第十四章 突发公共卫生事件", name: "重大传染病疫情", eng: "major infectious disease epidemics", 
+        keywords: ["暴发/流行", "显著超过历年", "鼠炭霍暴发", "新传染病"], 
+        def: "指传染病的暴发(在一个局部地区短期内突然发生多例同一种传染病)和流行(一个地区某种传染病发病率显著超过该病历年的一般发病率水平)，包括鼠疫、肺炭疽和霍乱的暴发，动物间鼠疫、布鲁氏菌病和炭疽等流行，乙、丙类传染病暴发或多例死亡，罕见或已消灭的传染病，新传染病的暴发等。",
+        diff: "包含法定甲类传染病发生和不明新传染病的暴发蔓延。" },
+      { id: "14-3", ch: "第十四章 突发公共卫生事件", name: "群体性不明原因疾病", eng: "mass unexplained diseases", 
+        keywords: ["短时间/相对集中区域", "共同临床表现", "无法明确诊断"], 
+        def: "在短时间内，某个相对集中的区域内同时或相继出现具有共同临床表现的患者，且病例不断增加、范围扩大，暂时无法明确诊断的疾病(如学校、社区内突发聚集性病例)。",
+        diff: "特点是具有聚集性且原因一时说不清楚，需启动应急排查。" },
+      { id: "14-4", ch: "第十四章 突发公共卫生事件", name: "特别重大突发公共卫生事件", eng: "Level I emergency", 
+        keywords: ["I级", "国务院认定", "肺鼠疫扩散", "传入扩散"], 
+        def: "由国务院认定的最高级别事件，需满足严苛条件(如肺鼠疫在大城市扩散、新传染病传入并有扩散趋势、涉及多省份的群体性不明原因疾病等)。",
+        diff: "对应红色预警。由国务院直接牵头响应。" },
+      { id: "14-5", ch: "第十四章 突发公共卫生事件", name: "突发公共卫生事件风险评估", eng: "PHE risk assessment", 
+        keywords: ["科学研判系统过程", "可能性与后果", "识别、分析、评价"], 
+        def: "对事件发生的可能性及后果严重性进行科学研判的系统过程包括风险识别、风险分析和风险评价三个环节，需整合多源数据并考虑不确定性。",
+        diff: "贯穿应急准备、应急响应和后期恢复的全过程。" },
+      { id: "14-6", ch: "第十四章 突发公共卫生事件", name: "专家会商法", eng: "expert panel discussion", 
+        keywords: ["常用定性", "多领域专家集体讨论", "趋势/危害/策略"], 
+        def: "突发公共卫生事件风险评估的常用定性方法，通过多领域专家集体讨论，综合分析事件发展趋势、危害程度及防控策略。",
+        diff: "优点是能跨学科快速头脑风暴，确定响应基调。" },
+      { id: "14-7", ch: "第十四章 突发公共卫生事件", name: "检伤分类", eng: "triage", 
+        keywords: ["紧急分级", "红黄绿黑", "标记明显部位"], 
+        def: "医务人员按规范对伤病员进行紧急分级(红色标:危重优先;黄色标:重症次优先;绿色标:轻症;黑色标:死亡)，标记于明显部位以指导救治顺序。",
+        diff: "灾难医学的核心。红（危及生命需立抢）、黄（重症暂稳）、绿（轻症可等）、黑（宣告死亡不抢救以节约资源）。" },
+      { id: "14-8", ch: "第十四章 突发公共卫生事件", name: "“一案三制”", eng: "“One Plan, Three Systems”", 
+        keywords: ["预案(龙头)", "体制(组织)", "机制(运行)", "法制(保障)"], 
+        def: "卫生应急管理体系的核心框架，包括应急预案(龙头)、应急管理体制(组织框架)、应急机制(运行制度)和应急法制(法律保障)。",
+        diff: "我国应急管理体系的基石。记住：一个预案，三个制度。" },
+      { id: "14-9", ch: "第十四章 突发公共卫生事件", name: "四集中原则", eng: "Four Centralizations", 
+        keywords: ["集中资源、专家、伤病员、救治", "优先收治综合实力强"], 
+        def: "伤病员救治的核心策略，指集中资源、集中专家、集中伤病员、集中救治，优先收治于综合实力强的医疗机构。",
+        diff: "保证重症救治成功率、降低死亡率的核心战术。" },
+      { id: "14-10", ch: "第十四章 突发公共卫生事件", name: "风险沟通", eng: "risk communication", 
+        keywords: ["信息有效传递", "决策者、媒体和公众", "指导防护/消除恐慌"], 
+        def: "将风险评估结果向决策者、媒体和公众有效传递的过程，旨在指导防护措施、消除恐慌并协调应对行动。",
+        diff: "不仅是‘辟谣’，要基于科学、透明的发布，引导社会理性配合。" },
+
+      // 第十五章 预防保健策略
+      { id: "15-1", ch: "第十五章 预防保健策略", name: "卫生系统", eng: "health system", 
+        keywords: ["组织、机构和资源", "致力于卫生活动"], 
+        def: "指所有致力于进行卫生活动的组织、机构 and 资源。",
+        diff: "涵盖了全社会的防病治病软硬件资源网络。" },
+      { id: "15-2", ch: "第十五章 预防保健策略", name: "健康公平性", eng: "health equity", 
+        keywords: ["公平机会", "尽可能高健康水平", "创造相等机会", "降到最低"], 
+        def: "指要求所有社会成员均有公平的机会获得尽可能高的健康水平，或者定义为创造相等的获得健康的机会，并将不同社会人群健康的差别降到最低水平。",
+        diff: "卫生改革的核心价值追求（不能因贫、因地、因族而无法就医）。" },
+      { id: "15-3", ch: "第十五章 预防保健策略", name: "反应性", eng: "responsiveness", 
+        keywords: ["卫生系统满足期望", "人道与尊严"], 
+        def: "指卫生系统能够满足人们合理期望的程度。",
+        diff: "反映卫生服务的‘软环境’，如对患者隐私的保护、等待时间的合理度等。" },
+      { id: "15-4", ch: "第十五章 预防保健策略", name: "卫生组织", eng: "health organizations", 
+        keywords: ["基本目的促进恢复维护健康", "机构或团体"], 
+        def: "指以促进、恢复和维护人群健康为基本目的的机构或团体。",
+        diff: "分为行政、服务和第三方专业组织。" },
+      { id: "15-5", ch: "第十五章 预防保健策略", name: "卫生行政组织", eng: "health administrative organizations", 
+        keywords: ["制定执行法规政策", "引导和调控", "政府组织"], 
+        def: "指那些通过制定 and 执行卫生政策、法规来引导和调控卫生事业的发展，将组织和管理卫生相关事务作为主要职能的政府组织。",
+        diff: "如国家卫健委、疾控局。" },
+      { id: "15-6", ch: "第十五章 预防保健策略", name: "卫生服务组织", eng: "health service organizations", 
+        keywords: ["向居民提供服务", "预防/医疗/康复/健促"], 
+        def: "是以保障居民健康为主要目标，直接或间接向居民提供预防服务、医疗服务、康复服务、健康教育和健康促进等服务的组织。",
+        diff: "如医院、疾控中心(CDC)、社区卫生服务中心。" },
+      { id: "15-7", ch: "第十五章 预防保健策略", name: "医疗保险", eng: "medical insurance", 
+        keywords: ["筹集基金", "补偿经济损失"], 
+        def: "是将多种渠道筹集的经费(保险费)集中起来形成基金(医疗保险基金)，用于补偿个人(被保险人)因病或其他损伤所造成的经济损失的一种制度。",
+        diff: "具有社会互助共济的特点。" },
+      { id: "15-8", ch: "第十五章 预防保健策略", name: "补充医疗保险", eng: "supplementary medical insurance", 
+        keywords: ["基本医保基础上", "自愿参加", "解决起付线外"], 
+        def: "是由单位、企业或特定人群，根据自己的经济承担能力，在基本医疗保险制度基础上自愿参加的各种辅助性的医疗保险，其主要解决参保人员基本医疗保险支付范围以外的医疗保险费用，是对基本医疗保险制度的补充。",
+        diff: "多层保障机制的支柱。" },
+      { id: "15-9", ch: "第十五章 预防保健策略", name: "长期护理保险", eng: "long-term care insurance", 
+        keywords: ["无法自理", "长期康复和支持护理", "支付补偿"], 
+        def: "是指对被保险人因为年老、严重或慢性疾病、意外伤残等导致身体上的某些功能全部或部分丧失，生活无法自理，需要入住长期护理机构，譬如安养院等，接受长期的康复和支持护理或在水中接受他人护理时支付的各种费用给予补偿的一种健康保险。",
+        diff: "应对人口老龄化而生的“第六险”。" },
+      { id: "15-10", ch: "第十五章 预防保健策略", name: "按病种付费", eng: "DRG/DIP", 
+        keywords: ["DRG / DIP", "根据病症分入诊断组", "资源消耗标化定位", "打包收费"], 
+        def: "按疾病诊断相关分组(DRG)付费，是根据年龄、疾病诊断、合并症、并发症、治疗方式、病症严重程度及转归和资源消耗等因素，将患者分入若干诊断组进行管理的体系。近年我国推行自己原创的按病种分值付费(DIP)，是利用大数据优势所建立的完整管理体系，发掘“疾病诊断+治疗方式”的共性特征对病案数据进行客观分类，在一定区域范围的全样本病例数据中形成每一个疾病与治疗方式组合的标化定位，客观反映疾病严重程度、治疗复杂状态、资源消耗水平与临床行为规范。DRG 和DIP 均属于按病种付费。",
+        diff: "重磅考点！旨在遏制医院大处方、过度医疗，转变为精细化管理和总额打包模式。" },
+      { id: "15-11", ch: "第十五章 预防保健策略", name: "总额预付", eng: "global budget", 
+        keywords: ["政府医保与医院协商", "年度总预算额", "预付款"], 
+        def: "是由政府或医疗保险机构与医疗机构协商，根据医院的实际情况，确定医疗保险支付每个医疗机构医疗费用年度总预算额。",
+        diff: "控费手段，超支不补、结余留用。" },
+      { id: "15-12", ch: "第十五章 预防保健策略", name: "全球健康", eng: "global health", 
+        keywords: ["跨越国界地域", "提升全球水平", "跨学科合作"], 
+        def: "是以提高全球范围内的健康水平、实现全球健康公平为宗旨，重点关注超越国界和地域的健康问题、健康决定因素和解决方案，提倡不同学科间的通力合作。全球健康是一个实践性极强的领域，其根本目的在于切实解决全球范围内的卫生与健康问题。",
+        diff: "核心在‘超越主权国界，全球多边合作协调’。" },
+      { id: "15-13", ch: "第十五章 预防保健策略", name: "全球公共健康安全", eng: "global public health security", 
+        keywords: ["危及跨国事件", "减少危害采取行动"], 
+        def: "是指对危及不同区域以及跨国范围公众群体健康的紧急公共卫生事件，尽可能减少危害而采取的预防性和反应性行动。",
+        diff: "如世界卫生组织发布的PHEIC（国际关注的突发公共卫生事件）。" },
+      { id: "15-14", ch: "第十五章 预防保健策略", name: "健康中国", eng: "Healthy China", 
+        keywords: ["国家战略", "人民健康放在优先地位", "健康融入所有政策", "全生命周期"], 
+        def: "是旨在全面提高全民健康水平的国家战略。以提高人民健康水平为核心，以体制机制改革创新为动力，从广泛的健康影响因素入手，把人民健康放在优先发展的战略地位，把健康融入所有政策，全方位、全周期保障人民健康，大幅提高健康水平，显著促进健康公平，促进全民健康建设。",
+        diff: "核心要点：‘健康融入所有政策’ & ‘优先发展地位’ & ‘全周期全方位’。" }
+    ];
+
+    // Differentiation Pairs (For Mode 3)
+    const DIFF_PAIRS = [
+      { t1: "1-8", t2: "1-9", title: "高危策略 vs 全人群策略" },
+      { t1: "4-4", t2: "4-5", title: "一次污染物 vs 二次污染物" },
+      { t1: "5-7", t2: "5-8", title: "可吸入粉尘 vs 呼吸性粉尘" },
+      { t1: "6-2", t2: "6-3", title: "DRIs vs RNI" },
+      { t1: "10-1", t2: "10-5", title: "潜隐期与有效再生数 (传染病时相特征)" },
+      { t1: "12-8", t2: "12-9", title: "总生存期(OS) vs 无病生存期(DFS)" },
+      { t1: "15-10", t2: "15-11", title: "按病种付费 (DRG/DIP) vs 总额预付" }
+    ];
+
+    // --- APPLICATION STATE ---
+    let currentMode = "study-sheet"; // Default shifted to study-sheet to avoid entry anxiety
+    let selectedChapters = new Set();
+    let wrongBook = new Set(); // Stores string IDs
+    let isSheetBlurred = true; // State for reference mode blur effect
+
+    // Session Queue Management (Memory Loop Optimization)
+    let sessionQueue = [];
+    let currentIndex = 0;
+    let roundNum = 1;
+    let sessionStats = { easy: 0, vague: 0, forgot: 0, totalSession: 0 };
+    let isSprintMode = false;
+    let isFocusMode = false;
+    let isAnswerRevealed = false;
+    let autoNextTimeout = null;
+
+    // --- INITIALIZATION ---
+    window.onload = function() {
+      // Load wrong book from localstorage
+      const stored = localStorage.getItem("prev_med_wrong_book");
+      if (stored) {
+        try {
+          const parsed = JSON.parse(stored);
+          wrongBook = new Set(parsed);
+        } catch(e) {
+          wrongBook = new Set();
+        }
+      }
+      updateWrongCountBadge();
+
+      // Extract available chapters
+      const chapters = [...new Set(TERMS_DB.map(t => t.ch))];
+      // Auto-select all chapters initially
+      chapters.forEach(c => selectedChapters.add(c));
+
+      // Build chapter list UI
+      const container = document.getElementById("chapter-list");
+      container.innerHTML = "";
+      chapters.forEach(ch => {
+        const div = document.createElement("div");
+        div.className = "flex items-center justify-between py-1 px-1";
+        
+        // Count total and wrong
+        const totalInCh = TERMS_DB.filter(t => t.ch === ch).length;
+        
+        div.innerHTML = `
+          <label class="flex items-center gap-2 cursor-pointer select-none text-xs text-slate-700 font-medium">
+            <input type="checkbox" checked data-chapter="${ch}" class="chapter-cb rounded border-slate-300 text-brand-600 focus:ring-brand-500 w-4 h-4">
+            <span class="truncate max-w-[160px]">${ch}</span>
+          </label>
+          <span class="text-[10px] text-slate-400 font-bold bg-slate-100 px-1.5 py-0.5 rounded-md">${totalInCh} 题</span>
+        `;
+        container.appendChild(div);
+      });
+
+      // Event Listeners
+      setupEventListeners();
+
+      // Start first session
+      initSession();
+    }
+
+    // --- EVENT LISTENERS ---
+    function setupEventListeners() {
+      // Mode Changes
+      const modeButtons = document.querySelectorAll(".mode-btn");
+      modeButtons.forEach(btn => {
+        btn.addEventListener("click", (e) => {
+          const target = e.currentTarget;
+          const chosenMode = target.getAttribute("data-mode");
+          
+          modeButtons.forEach(b => {
+            b.classList.remove("bg-brand-50", "border-brand-500", "text-brand-700");
+            b.classList.add("border-slate-100", "text-slate-600", "hover:bg-slate-50");
+          });
+          target.classList.remove("border-slate-100", "text-slate-600", "hover:bg-slate-50");
+          target.classList.add("bg-brand-50", "border-brand-500", "text-brand-700");
+
+          currentMode = chosenMode;
+
+          // Toggle visibility of chapter list if reviewing wrongs or differentiating
+          const filterBox = document.getElementById("chapter-filter-box");
+          if (chosenMode === "differentiation") {
+            filterBox.classList.add("opacity-50", "pointer-events-none");
+          } else {
+            filterBox.classList.remove("opacity-50", "pointer-events-none");
+          }
+
+          initSession();
+        });
+      });
+
+      // Chapter Checkbox Changes
+      document.getElementById("chapter-list").addEventListener("change", (e) => {
+        if (e.target.classList.contains("chapter-cb")) {
+          const ch = e.target.getAttribute("data-chapter");
+          if (e.target.checked) {
+            selectedChapters.add(ch);
+          } else {
+            selectedChapters.delete(ch);
+          }
+          initSession();
+        }
+      });
+
+      // Toggle All Chapters
+      document.getElementById("toggle-all-chapters").addEventListener("click", () => {
+        const cbs = document.querySelectorAll(".chapter-cb");
+        const allChecked = Array.from(cbs).every(cb => cb.checked);
+        cbs.forEach(cb => {
+          cb.checked = !allChecked;
+          const ch = cb.getAttribute("data-chapter");
+          if (!allChecked) {
+            selectedChapters.add(ch);
+          } else {
+            selectedChapters.delete(ch);
+          }
+        });
+        initSession();
+      });
+
+      // Clear Wrong Book button
+      document.getElementById("clear-wrongs-btn").addEventListener("click", () => {
+        if (confirm("确定要清空错题本吗？此操作无法撤销。")) {
+          wrongBook.clear();
+          saveWrongBook();
+          updateWrongCountBadge();
+          if (currentMode === "wrong-review") {
+            initSession();
+          } else if (currentMode === "study-sheet") {
+            renderStudySheet();
+          }
+        }
+      });
+
+      // Focus Mode Button
+      document.getElementById("toggle-focus").addEventListener("click", toggleFocusMode);
+
+      // Reveal button
+      document.getElementById("reveal-btn").addEventListener("click", revealAnswer);
+
+      // Self Evaluation Clicks
+      document.querySelectorAll("#eval-container button").forEach(btn => {
+        btn.addEventListener("click", (e) => {
+          const choice = e.currentTarget.getAttribute("data-eval");
+          handleEvaluation(choice);
+        });
+      });
+
+      // Sheet Search Event
+      document.getElementById("sheet-search").addEventListener("input", () => {
+        renderStudySheet();
+      });
+
+      // Sheet Blur toggles
+      document.getElementById("toggle-sheet-blur").addEventListener("click", () => {
+        isSheetBlurred = true;
+        document.querySelectorAll(".sheet-def-text").forEach(el => el.classList.add("blur-text"));
+      });
+      document.getElementById("toggle-sheet-reveal").addEventListener("click", () => {
+        isSheetBlurred = false;
+        document.querySelectorAll(".sheet-def-text").forEach(el => el.classList.remove("blur-text"));
+      });
+
+      // Global Keydown Support (Spacebar & Number keys)
+      window.addEventListener("keydown", (e) => {
+        // Prevent default browser scroll on spacebar only in testing modes
+        if (currentMode !== "study-sheet" && e.code === "Space") {
+          e.preventDefault();
+          if (!isAnswerRevealed) {
+            revealAnswer();
+          } else {
+            handleEvaluation("easy");
+          }
+        }
+        
+        if (isAnswerRevealed && currentMode !== "study-sheet") {
+          if (e.key === "1") {
+            handleEvaluation("easy");
+          } else if (e.key === "2") {
+            handleEvaluation("vague");
+          } else if (e.key === "3") {
+            handleEvaluation("forgot");
+          }
+        }
+      });
+
+      // Modal buttons
+      document.getElementById("modal-restart-btn").addEventListener("click", () => {
+        document.getElementById("summary-modal").classList.add("hidden");
+        initSession();
+      });
+      document.getElementById("modal-wrong-only-btn").addEventListener("click", () => {
+        document.getElementById("summary-modal").classList.add("hidden");
+        // Trigger wrong book review
+        const wrongBtn = document.querySelector('[data-mode="wrong-review"]');
+        if (wrongBtn) wrongBtn.click();
+      });
+
+      // Sprint Toggle
+      document.getElementById("sprint-toggle").addEventListener("change", (e) => {
+        isSprintMode = e.target.checked;
+        document.getElementById("sprint-badge").classList.toggle("hidden", !isSprintMode);
+        initSession();
+      });
+    }
+
+    // --- SESSION CORE LOGIC ---
+    function initSession() {
+      if (autoNextTimeout) clearTimeout(autoNextTimeout);
+      currentIndex = 0;
+      roundNum = 1;
+      sessionStats = { easy: 0, vague: 0, forgot: 0, totalSession: 0 };
+
+      // Toggle views depending on Mode (Study sheet vs Test card)
+      const flashcardEl = document.getElementById("flashcard");
+      const statsPanelEl = document.getElementById("stats-panel");
+      const sheetContainerEl = document.getElementById("study-sheet-container");
+
+      if (currentMode === "study-sheet") {
+        flashcardEl.classList.add("hidden");
+        statsPanelEl.classList.add("hidden");
+        sheetContainerEl.classList.remove("hidden");
+        renderStudySheet();
+        return;
+      } else {
+        flashcardEl.classList.remove("hidden");
+        statsPanelEl.classList.remove("hidden");
+        sheetContainerEl.classList.add("hidden");
+      }
+
+      let baseList = [];
+
+      // Determine active database based on chosen mode
+      if (currentMode === "differentiation") {
+        baseList = buildDifferentiationList();
+      } else if (currentMode === "wrong-review") {
+        baseList = TERMS_DB.filter(t => wrongBook.has(t.id));
+      } else {
+        baseList = TERMS_DB.filter(t => selectedChapters.has(t.ch));
+      }
+
+      // Shuffler
+      sessionQueue = shuffle(JSON.parse(JSON.stringify(baseList)));
+
+      // If Sprint Mode, truncate queue to 10
+      if (isSprintMode && sessionQueue.length > 10) {
+        sessionQueue = sessionQueue.slice(0, 10);
+      }
+
+      updateProgressUI();
+      renderCurrentQuestion();
+    }
+
+    // Shuffler
+    function shuffle(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+      return array;
+    }
+
+    function buildDifferentiationList() {
+      const list = [];
+      DIFF_PAIRS.forEach((p, idx) => {
+        const item1 = TERMS_DB.find(t => t.id === p.t1);
+        const item2 = TERMS_DB.find(t => t.id === p.t2);
+        if (item1 && item2) {
+          list.push({
+            id: `diff-${idx}`,
+            ch: "🔍 专项辨析组",
+            name: p.title,
+            eng: `${item1.name} 🆚 ${item2.name}`,
+            isDiff: true,
+            t1: item1,
+            t2: item2,
+            keywords: [...item1.keywords, ...item2.keywords],
+            def: `【${item1.name}】：${item1.def}\n\n【${item2.name}】：${item2.def}`,
+            diff: `对比辨析点：两者常在选择题中互换误导。${item1.diff || ""} ${item2.diff || ""}`
+          });
+        }
+      });
+      return list;
+    }
+
+    // --- STUDY SHEET (REFERENCE MODE RENDER) ---
+    function renderStudySheet() {
+      const container = document.getElementById("study-sheet-list");
+      container.innerHTML = "";
+
+      const query = document.getElementById("sheet-search").value.trim().toLowerCase();
+
+      // Filter based on selected chapters and query
+      let filtered = TERMS_DB.filter(t => selectedChapters.has(t.ch));
+      
+      if (query) {
+        filtered = filtered.filter(t => 
+          t.name.toLowerCase().includes(query) || 
+          (t.eng && t.eng.toLowerCase().includes(query)) ||
+          t.def.toLowerCase().includes(query) ||
+          t.keywords.some(kw => kw.toLowerCase().includes(query))
+        );
+      }
+
+      if (filtered.length === 0) {
+        container.innerHTML = `
+          <div class="bg-white p-10 rounded-2xl text-center border border-slate-200">
+            <span class="text-4xl">🔍</span>
+            <p class="text-sm text-slate-500 mt-2">未找到匹配的词条。请检查筛选章节或更换搜索词。</p>
+          </div>
+        `;
+        return;
+      }
+
+      // Render cards
+      filtered.forEach(item => {
+        const isStarred = wrongBook.has(item.id);
+        const card = document.createElement("div");
+        card.className = "bg-white p-5 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-all relative group";
+        
+        // Highlight logic for matching query
+        let displayName = item.name;
+        if (query && item.name.toLowerCase().includes(query)) {
+          const reg = new RegExp(`(${query})`, "gi");
+          displayName = item.name.replace(reg, `<mark class="bg-amber-100 text-slate-950 rounded px-0.5">$1</mark>`);
+        }
+
+        card.innerHTML = `
+          <!-- Category & Star -->
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-[10px] font-bold text-slate-400 bg-slate-100 px-2.5 py-1 rounded-full uppercase tracking-wider">${item.ch}</span>
+            <button onclick="toggleSheetStar('${item.id}', this)" class="text-lg transition-transform hover:scale-110 focus:outline-none" title="添加/移出难点收藏">
+              ${isStarred ? '❤️' : '🤍'}
+            </button>
+          </div>
+
+          <!-- Term Details -->
+          <h4 class="text-lg font-black text-slate-900 flex items-center gap-2">
+            <span>${displayName}</span>
+            <span class="text-xs text-slate-400 font-normal italic">${item.eng || ''}</span>
+          </h4>
+
+          <!-- Keywords -->
+          <div class="flex flex-wrap gap-1.5 my-3">
+            ${item.keywords.map(kw => `<span class="text-[10px] font-medium bg-indigo-50/60 text-indigo-700 px-2 py-0.5 rounded-md border border-indigo-100/50">${kw}</span>`).join('')}
+          </div>
+
+          <!-- Definition Area -->
+          <div class="mt-3 text-sm leading-relaxed text-slate-700 bg-slate-50/80 p-3.5 rounded-xl border border-slate-100 relative">
+            <span class="block text-[10px] font-bold text-slate-400 mb-1 uppercase tracking-wider">【完整释义】(划过或点击右侧按钮显现)</span>
+            <p class="sheet-def-text ${isSheetBlurred ? 'blur-text' : ''}" onclick="this.classList.toggle('blur-text')">
+              ${item.def}
+            </p>
+          </div>
+
+          <!-- Diff Tips if exists -->
+          ${item.diff ? `
+            <div class="mt-2.5 p-3 bg-emerald-50/60 rounded-xl border border-emerald-100/50 text-xs text-emerald-800 leading-relaxed">
+              <span class="font-bold">⚖️ 易混对比：</span>${item.diff}
+            </div>
+          ` : ''}
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    // Reference mode helper function
+    window.toggleSheetStar = function(id, btn) {
+      if (wrongBook.has(id)) {
+        wrongBook.delete(id);
+        btn.innerText = "🤍";
+      } else {
+        wrongBook.add(id);
+        btn.innerText = "❤️";
+      }
+      saveWrongBook();
+      updateWrongCountBadge();
+    };
+
+    // --- RENDER CORE FLASHCARD ---
+    function renderCurrentQuestion() {
+      isAnswerRevealed = false;
+
+      // Check if session queue is empty
+      if (sessionQueue.length === 0) {
+        renderEmptyState();
+        return;
+      }
+
+      const item = sessionQueue[currentIndex];
+
+      // Clean card UI
+      document.getElementById("card-chapter").innerText = item.ch;
+      document.getElementById("clue-display-area").classList.add("hidden");
+      document.getElementById("diff-section").classList.add("hidden");
+      document.getElementById("answer-area").classList.add("hidden");
+
+      document.getElementById("reveal-container").classList.remove("hidden");
+      document.getElementById("eval-container").classList.add("hidden");
+
+      // Handle Display by Mode
+      if (currentMode === "clue-to-term") {
+        document.getElementById("clue-display-area").classList.remove("hidden");
+        document.getElementById("clue-text").innerText = item.def;
+        document.getElementById("term-display").innerText = "❓ 这是哪个名词？";
+        document.getElementById("term-english").innerText = "";
+      } else {
+        document.getElementById("term-display").innerText = item.name;
+        document.getElementById("term-english").innerText = item.eng || "";
+      }
+
+      // Pre-fill hidden answer fields
+      const kwContainer = document.getElementById("answer-keywords");
+      kwContainer.innerHTML = "";
+      item.keywords.forEach(kw => {
+        const badge = document.createElement("span");
+        badge.className = "text-xs font-semibold bg-indigo-50 border border-indigo-200 text-indigo-700 px-3 py-1.5 rounded-full";
+        badge.innerText = kw;
+        kwContainer.appendChild(badge);
+      });
+
+      document.getElementById("answer-full").innerText = item.def;
+
+      const diffSection = document.getElementById("diff-section");
+      if (item.diff) {
+        diffSection.classList.remove("hidden");
+        document.getElementById("answer-diff").innerText = item.diff;
+      } else {
+        diffSection.classList.add("hidden");
+      }
+    }
+
+    function renderEmptyState() {
+      document.getElementById("card-chapter").innerText = "空状态";
+      document.getElementById("term-display").innerText = "暂无相关名词";
+      document.getElementById("term-english").innerText = "";
+      document.getElementById("clue-display-area").classList.add("hidden");
+      document.getElementById("reveal-container").classList.add("hidden");
+      document.getElementById("eval-container").classList.add("hidden");
+      document.getElementById("answer-area").classList.add("hidden");
+      
+      let msg = "此分类下没有可用的名词解释。";
+      if (currentMode === "wrong-review") {
+        msg = "恭喜您！难点/错题本空空如也，全部通关！🎉 可以切换到「对照浏览模式」看看书。";
+      } else if (selectedChapters.size === 0) {
+        msg = "您在左侧取消了所有章节，请勾选至少一个章节开始学习。";
+      }
+      document.getElementById("term-english").innerText = msg;
+    }
+
+    // --- REVEAL ACTION ---
+    function revealAnswer() {
+      if (sessionQueue.length === 0) return;
+      isAnswerRevealed = true;
+
+      const item = sessionQueue[currentIndex];
+
+      // Transition effects
+      document.getElementById("answer-area").classList.remove("hidden");
+      
+      if (currentMode === "clue-to-term") {
+        document.getElementById("term-display").innerText = item.name;
+        document.getElementById("term-english").innerText = item.eng || "";
+      }
+
+      document.getElementById("reveal-container").classList.add("hidden");
+      document.getElementById("eval-container").classList.remove("hidden");
+    }
+
+    // --- INTERVAL REPETITION & EVALUATION ---
+    function handleEvaluation(score) {
+      if (autoNextTimeout) clearTimeout(autoNextTimeout);
+      if (sessionQueue.length === 0) return;
+
+      const currentItem = sessionQueue[currentIndex];
+
+      // Record Stats
+      sessionStats.totalSession++;
+      if (score === "easy") {
+        sessionStats.easy++;
+        if (currentMode === "wrong-review") {
+          wrongBook.delete(currentItem.id);
+          saveWrongBook();
+          updateWrongCountBadge();
+        }
+      } else if (score === "vague") {
+        sessionStats.vague++;
+        if (!currentItem.isDiff) {
+          wrongBook.add(currentItem.id);
+          saveWrongBook();
+          updateWrongCountBadge();
+        }
+        
+        const targetIndex = currentIndex + 6;
+        if (targetIndex < sessionQueue.length) {
+          sessionQueue.splice(targetIndex, 0, currentItem);
+        } else {
+          sessionQueue.push(currentItem);
+        }
+      } else if (score === "forgot") {
+        sessionStats.forgot++;
+        if (!currentItem.isDiff) {
+          wrongBook.add(currentItem.id);
+          saveWrongBook();
+          updateWrongCountBadge();
+        }
+
+        const targetIndex = currentIndex + 3;
+        if (targetIndex < sessionQueue.length) {
+          sessionQueue.splice(targetIndex, 0, currentItem);
+        } else {
+          sessionQueue.push(currentItem);
+        }
+      }
+
+      updateProgressUI();
+
+      const isAutoNext = document.getElementById("auto-next-toggle").checked;
+
+      if (isAutoNext) {
+        const activeBtn = document.getElementById(`eval-${score}`);
+        activeBtn.classList.add("bg-brand-100", "scale-95");
+        autoNextTimeout = setTimeout(() => {
+          activeBtn.classList.remove("bg-brand-100", "scale-95");
+          proceedNext();
+        }, 400);
+      } else {
+        proceedNext();
+      }
+    }
+
+    function proceedNext() {
+      if (isSprintMode && sessionStats.totalSession >= 10) {
+        showSprintSummary();
+        return;
+      }
+
+      currentIndex++;
+      
+      if (currentIndex >= sessionQueue.length) {
+        if (sessionQueue.length > 0) {
+          roundNum++;
+          currentIndex = 0;
+          updateProgressUI();
+          renderCurrentQuestion();
+        } else {
+          renderEmptyState();
+        }
+      } else {
+        renderCurrentQuestion();
+      }
+    }
+
+    // --- SPRINT SUMMARY REPORT ---
+    function showSprintSummary() {
+      const mastery = Math.round((sessionStats.easy / sessionStats.totalSession) * 100);
+      document.getElementById("modal-mastery").innerText = `${mastery}%`;
+      document.getElementById("modal-easy-count").innerText = `${sessionStats.easy} 题`;
+      document.getElementById("modal-wrong-count").innerText = `${sessionStats.vague + sessionStats.forgot} 题`;
+      
+      document.getElementById("summary-modal").classList.remove("hidden");
+    }
+
+    // --- UI UPDATES & HELPERS ---
+    function updateProgressUI() {
+      if (sessionQueue.length === 0) {
+        document.getElementById("progress-text").innerText = "0/0";
+        document.getElementById("progress-bar").style.width = "0%";
+        document.getElementById("mastery-rate").innerText = "0%";
+        document.getElementById("forgot-count").innerText = "0";
+        return;
+      }
+
+      const activeTotal = sessionQueue.length;
+      document.getElementById("progress-text").innerText = `${currentIndex + 1}/${activeTotal}`;
+      
+      const pct = Math.round(((currentIndex + 1) / activeTotal) * 100);
+      document.getElementById("progress-bar").style.width = `${pct}%`;
+
+      document.getElementById("round-text").innerText = `第 ${roundNum} 轮循环`;
+
+      const totalRated = sessionStats.easy + sessionStats.vague + sessionStats.forgot;
+      const rate = totalRated > 0 ? Math.round((sessionStats.easy / totalRated) * 100) : 0;
+      document.getElementById("mastery-rate").innerText = `${rate}%`;
+      document.getElementById("forgot-count").innerText = sessionStats.vague + sessionStats.forgot;
+    }
+
+    function updateWrongCountBadge() {
+      document.getElementById("wrong-count-badge").innerText = wrongBook.size;
+    }
+
+    function saveWrongBook() {
+      localStorage.setItem("prev_med_wrong_book", JSON.stringify(Array.from(wrongBook)));
+    }
+
+    // --- FOCUS MODE TOGGLE ---
+    function toggleFocusMode() {
+      isFocusMode = !isFocusMode;
+      const header = document.getElementById("app-header");
+      const sidebar = document.getElementById("app-sidebar");
+      const stats = document.getElementById("stats-panel");
+      const mainCol = document.getElementById("app-main");
+      
+      if (isFocusMode) {
+        header.classList.add("translate-y-[-100%]", "opacity-0", "h-0", "overflow-hidden");
+        sidebar.classList.add("hidden");
+        stats.classList.add("hidden");
+        mainCol.classList.remove("lg:col-span-3");
+        mainCol.classList.add("lg:col-span-4", "max-w-4xl", "mx-auto", "pt-12");
+        document.getElementById("focus-text").innerText = "退出专注";
+        document.getElementById("focus-icon").innerText = "⚡";
+      } else {
+        header.classList.remove("translate-y-[-100%]", "opacity-0", "h-0", "overflow-hidden");
+        sidebar.classList.remove("hidden");
+        stats.classList.remove("hidden");
+        mainCol.classList.add("lg:col-span-3");
+        mainCol.classList.remove("lg:col-span-4", "max-w-4xl", "mx-auto", "pt-12");
+        document.getElementById("focus-text").innerText = "专注模式";
+        document.getElementById("focus-icon").innerText = "👁️";
+      }
+    }
+  </script>
+</body>
+</html>
