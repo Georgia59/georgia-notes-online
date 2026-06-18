@@ -1,5 +1,5 @@
-import json
 import argparse
+import json
 import re
 import sys
 from pathlib import Path
@@ -52,6 +52,10 @@ PRIVACY_PATTERNS = [
 ]
 
 
+def is_collection(record):
+    return record.get("kind") == "collection" or record.get("type") == "Collection" or isinstance(record.get("items"), list)
+
+
 def iter_public_text_files():
     for path in REPO_ROOT.rglob("*"):
         if not path.is_file():
@@ -84,6 +88,30 @@ def check_text_file(path):
     return errors
 
 
+def check_public_path(path_value, source_value, label):
+    errors = []
+    if not path_value:
+        return errors
+
+    path_text = str(path_value)
+    if Path(path_text).is_absolute():
+        errors.append(f"{label} path 是绝对路径：{path_text}")
+    if not path_text.startswith("files/"):
+        errors.append(f"{label} path 不在 files/ 下：{path_text}")
+    if any(pattern.search(path_text) for pattern in LOCAL_PATH_PATTERNS):
+        errors.append(f"{label} path 含本地路径：{path_text}")
+    if any(pattern.search(str(source_value)) for pattern in LOCAL_PATH_PATTERNS):
+        errors.append(f"{label} source 含本地路径：{source_value}")
+
+    file_path = REPO_ROOT / path_text
+    if file_path.exists():
+        suffix = file_path.suffix.lower()
+        if suffix in SOURCE_FILE_EXTENSIONS and any(marker in str(source_value) for marker in RAW_SOURCE_MARKERS):
+            errors.append(f"{label} 可能是原始资料而非整理成品：{path_text}")
+
+    return errors
+
+
 def check_index():
     errors = []
     if not INDEX_PATH.exists():
@@ -102,23 +130,21 @@ def check_index():
             errors.append(f"第 {index} 条索引不是对象。")
             continue
 
-        path_value = str(record.get("path", ""))
         source_value = str(record.get("source", ""))
+        errors.extend(check_public_path(record.get("path", ""), source_value, f"第 {index} 条"))
 
-        if Path(path_value).is_absolute():
-            errors.append(f"第 {index} 条 path 是绝对路径：{path_value}")
-        if path_value and not path_value.startswith("files/"):
-            errors.append(f"第 {index} 条 path 不在 files/ 下：{path_value}")
-        if any(pattern.search(source_value) for pattern in LOCAL_PATH_PATTERNS):
-            errors.append(f"第 {index} 条 source 含本地路径：{source_value}")
-
-        file_path = REPO_ROOT / path_value if path_value else None
-        if file_path and file_path.exists():
-            suffix = file_path.suffix.lower()
-            if suffix in SOURCE_FILE_EXTENSIONS and any(marker in source_value for marker in RAW_SOURCE_MARKERS):
-                errors.append(
-                    f"第 {index} 条可能是原始资料而非整理成品：{path_value}。"
-                )
+        if is_collection(record):
+            items = record.get("items", [])
+            if isinstance(items, list):
+                for item_index, item in enumerate(items, start=1):
+                    if isinstance(item, dict):
+                        errors.extend(
+                            check_public_path(
+                                item.get("path", ""),
+                                source_value,
+                                f"第 {index} 条 items[{item_index}]",
+                            )
+                        )
 
     return errors
 

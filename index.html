@@ -107,6 +107,17 @@
         return file.note_id || [getCourseId(file), file.title, file.date].map((item) => String(item || "")).join("|");
       }
 
+      function isCollection(note) {
+        return note.kind === "collection" || note.type === "Collection" || Array.isArray(note.items);
+      }
+
+      function getDownloadables(note) {
+        if (isCollection(note)) {
+          return Array.isArray(note.items) ? note.items : [];
+        }
+        return Array.isArray(note.files) ? note.files : [note];
+      }
+
       function groupByNote(files) {
         const groups = new Map();
         files.forEach((file) => {
@@ -124,7 +135,9 @@
 
         return Array.from(groups.values()).map((note) => {
           note.files.sort((a, b) => String(a.type || "").localeCompare(String(b.type || ""), "zh-CN"));
-          note.types = [...new Set(note.files.map((file) => file.type).filter(Boolean))];
+          note.types = isCollection(note)
+            ? ["章节合集"]
+            : [...new Set(note.files.map((file) => file.type).filter(Boolean))];
           note.searchText = getSearchText(note);
           return note;
         });
@@ -154,7 +167,7 @@
       }
 
       function getSearchText(note) {
-        const files = Array.isArray(note.files) ? note.files : [note];
+        const downloadables = getDownloadables(note);
         const values = [
           note.title,
           note.course,
@@ -165,7 +178,7 @@
           note.source,
           note.description,
           ...(Array.isArray(note.tags) ? note.tags : []),
-          ...files.flatMap((item) => [item.type, item.path, item.source])
+          ...downloadables.flatMap((item) => [item.title, item.type, item.path, item.source])
         ];
         return values.map(normalizeText).join(" ");
       }
@@ -195,19 +208,56 @@
         `;
       }
 
-      function renderFileCard(note) {
-        const downloadableFiles = Array.isArray(note.files) ? note.files : [note];
-        const typeLabel = note.types && note.types.length ? note.types.join(" / ") : note.type || "未知";
-        const downloadHtml = downloadableFiles
+      function renderCollection(note) {
+        const items = getDownloadables(note);
+        if (!items.length) {
+          return `<p class="collection-empty">这个资料集暂时没有章节文件。</p>`;
+        }
+
+        return `
+          <details class="collection-detail">
+            <summary>
+              <span>查看章节</span>
+              <strong>${items.length} 个文件</strong>
+            </summary>
+            <div class="chapter-list">
+              ${items
+                .map((item, index) => {
+                  const chapterNumber = String(index + 1).padStart(2, "0");
+                  return `
+                    <a class="chapter-link" href="${escapeHtml(item.path || "#")}" download>
+                      <span>${chapterNumber}. ${escapeHtml(item.title || "未命名章节")}</span>
+                      <strong>${escapeHtml(item.type || "PDF")}</strong>
+                    </a>
+                  `;
+                })
+                .join("")}
+            </div>
+          </details>
+        `;
+      }
+
+      function renderDownloadButtons(note) {
+        const downloadableFiles = getDownloadables(note);
+        return downloadableFiles
           .map((item, index) => {
             const label = item.type || "下载";
             return `<a class="download-link${index === 0 ? " is-primary" : ""}" href="${escapeHtml(item.path || "#")}" download>${escapeHtml(label)}</a>`;
           })
           .join("");
+      }
+
+      function renderFileCard(note) {
+        const collection = isCollection(note);
+        const typeLabel = note.types && note.types.length ? note.types.join(" / ") : note.type || "未知";
+        const downloadHtml = collection ? renderCollection(note) : renderDownloadButtons(note);
 
         return `
-          <article class="file-card" data-search="${escapeHtml(note.searchText)}">
-            <h3 class="file-title">${escapeHtml(note.title || "未命名资料")}</h3>
+          <article class="file-card${collection ? " is-collection" : ""}" data-search="${escapeHtml(note.searchText)}">
+            <div class="card-heading">
+              <h3 class="file-title">${escapeHtml(note.title || "未命名资料")}</h3>
+              ${collection ? `<span class="collection-badge">资料集</span>` : ""}
+            </div>
             <p class="description" aria-label="简介">${escapeHtml(note.description || "暂无简介。")}</p>
             <dl class="meta">
               <div><dt>日期</dt><dd>${escapeHtml(note.date || "未填写")}</dd></div>
@@ -215,8 +265,8 @@
               <div><dt>类型</dt><dd>${escapeHtml(typeLabel)}</dd></div>
             </dl>
             <div class="download-block">
-              <div class="download-label">下载方式</div>
-              <div class="download-list">${downloadHtml}</div>
+              <div class="download-label">${collection ? "章节下载" : "下载方式"}</div>
+              ${downloadHtml}
             </div>
           </article>
         `;
@@ -233,7 +283,7 @@
         coursePanelEl.hidden = false;
         activeCourseCountEl.textContent = `${course.notes.length} 条笔记`;
         courseSearchEl.value = "";
-        courseSearchEl.placeholder = `在${course.label}中搜索`;
+        courseSearchEl.placeholder = `在 ${course.label} 中搜索`;
         fileGridEl.innerHTML = course.notes.map(renderFileCard).join("");
         courseEmptyEl.hidden = course.notes.length > 0;
       }

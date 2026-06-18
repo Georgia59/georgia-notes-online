@@ -50,6 +50,40 @@
 ]
 ```
 
+## 章节资料集
+
+如果一类资料由多个章节文件组成，但不想在首页显示成很多小卡片，可以使用 `collection` 记录。首页会显示一张资料集卡片，卡片内展开章节下载列表。
+
+```json
+{
+  "note_id": "surgery-general-textbook-notes",
+  "kind": "collection",
+  "course": "外科学",
+  "category": "surgery",
+  "title": "外科学总论课本整理",
+  "type": "Collection",
+  "date": "2026-06-18",
+  "path": "files/surgery/2026-06-18-surgery-general-textbook-notes/",
+  "source": "课本整理",
+  "tags": ["外科学", "总论", "课本整理", "期末复习"],
+  "description": "按章节整理外科学总论重点内容，适合期末复习和考前查漏。",
+  "items": [
+    {
+      "title": "绪论",
+      "type": "PDF",
+      "path": "files/surgery/2026-06-18-surgery-general-textbook-notes/01-introduction.pdf"
+    },
+    {
+      "title": "外科无菌原则",
+      "type": "PDF",
+      "path": "files/surgery/2026-06-18-surgery-general-textbook-notes/02-asepsis.pdf"
+    }
+  ]
+}
+```
+
+collection 的 `path` 指向资料集目录，`items[].path` 指向每个章节文件。公开页面不显示本地原始路径，也不显示原始资料文件名。
+
 ## 禁止写入
 
 - 本地绝对路径，例如 Windows 或 macOS/Linux 的用户目录路径

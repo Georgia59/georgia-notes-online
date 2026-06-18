@@ -15,5 +15,121 @@
       "考前速背"
     ],
     "description": "按学习指导章节汇总预防医学常见名词解释，适合期末复习、考前速背和概念辨析。"
+  },
+  {
+    "note_id": "surgery-general-textbook-notes",
+    "kind": "collection",
+    "course": "外科学",
+    "category": "surgery",
+    "title": "外科学课本整理",
+    "type": "Collection",
+    "date": "2026-06-18",
+    "path": "files/surgery/2026-06-18-surgery-general-textbook-notes/",
+    "source": "课本整理",
+    "tags": [
+      "外科学",
+      "总论",
+      "课本整理",
+      "章节速览",
+      "期末复习"
+    ],
+    "description": "按章节整理外科学总论重点内容，适合期末复习和考前查漏。",
+    "items": [
+      {
+        "title": "绪论",
+        "type": "PDF",
+        "path": "files/surgery/2026-06-18-surgery-general-textbook-notes/01-introduction.pdf"
+      },
+      {
+        "title": "外科无菌原则",
+        "type": "PDF",
+        "path": "files/surgery/2026-06-18-surgery-general-textbook-notes/02-asepsis.pdf"
+      },
+      {
+        "title": "水、电解质代谢紊乱和酸碱平衡失调",
+        "type": "PDF",
+        "path": "files/surgery/2026-06-18-surgery-general-textbook-notes/03-fluid-electrolyte-acid-base.pdf"
+      },
+      {
+        "title": "输血",
+        "type": "PDF",
+        "path": "files/surgery/2026-06-18-surgery-general-textbook-notes/04-transfusion.pdf"
+      },
+      {
+        "title": "休克",
+        "type": "PDF",
+        "path": "files/surgery/2026-06-18-surgery-general-textbook-notes/05-shock.pdf"
+      },
+      {
+        "title": "外科病人的代谢及营养治疗",
+        "type": "PDF",
+        "path": "files/surgery/2026-06-18-surgery-general-textbook-notes/06-surgical-metabolism-nutrition.pdf"
+      },
+      {
+        "title": "肥胖与代谢性疾病",
+        "type": "PDF",
+        "path": "files/surgery/2026-06-18-surgery-general-textbook-notes/07-obesity-metabolic-disease.pdf"
+      },
+      {
+        "title": "外科感染",
+        "type": "PDF",
+        "path": "files/surgery/2026-06-18-surgery-general-textbook-notes/08-surgical-infection.pdf"
+      },
+      {
+        "title": "创伤",
+        "type": "PDF",
+        "path": "files/surgery/2026-06-18-surgery-general-textbook-notes/09-trauma.pdf"
+      },
+      {
+        "title": "烧伤、冻伤与咬蜇伤",
+        "type": "PDF",
+        "path": "files/surgery/2026-06-18-surgery-general-textbook-notes/10-burns-frostbite-bites.pdf"
+      },
+      {
+        "title": "肿瘤",
+        "type": "PDF",
+        "path": "files/surgery/2026-06-18-surgery-general-textbook-notes/11-tumor.pdf"
+      },
+      {
+        "title": "器官、组织和细胞移植",
+        "type": "PDF",
+        "path": "files/surgery/2026-06-18-surgery-general-textbook-notes/12-transplantation.pdf"
+      },
+      {
+        "title": "显微外科技术",
+        "type": "PDF",
+        "path": "files/surgery/2026-06-18-surgery-general-textbook-notes/13-microsurgery.pdf"
+      },
+      {
+        "title": "外科微创技术",
+        "type": "PDF",
+        "path": "files/surgery/2026-06-18-surgery-general-textbook-notes/14-minimally-invasive-surgery.pdf"
+      },
+      {
+        "title": "麻醉",
+        "type": "PDF",
+        "path": "files/surgery/2026-06-18-surgery-general-textbook-notes/15-anesthesia.pdf"
+      },
+      {
+        "title": "疼痛治疗",
+        "type": "PDF",
+        "path": "files/surgery/2026-06-18-surgery-general-textbook-notes/16-pain-management.pdf"
+      },
+      {
+        "title": "重症监测治疗及复苏",
+        "type": "PDF",
+        "path": "files/surgery/2026-06-18-surgery-general-textbook-notes/17-critical-care-resuscitation.pdf"
+      },
+      {
+        "title": "围手术期处理",
+        "type": "PDF",
+        "path": "files/surgery/2026-06-18-surgery-general-textbook-notes/18-perioperative-management.pdf"
+      },
+      {
+        "title": "综合自测题",
+        "type": "PDF",
+        "path": "files/surgery/2026-06-18-surgery-general-textbook-notes/19-self-test.pdf"
+      }
+    ]
   }
 ]

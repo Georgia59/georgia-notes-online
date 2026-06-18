@@ -53,8 +53,32 @@
       },
       "description": {
         "type": "string"
+      },
+      "kind": {
+        "type": "string",
+        "enum": ["collection"],
+        "description": "Optional record kind. Use collection for a grouped set of chapter files."
+      },
+      "items": {
+        "type": "array",
+        "description": "Chapter or child files for collection records.",
+        "items": {
+          "type": "object",
+          "required": ["title", "type", "path"],
+          "properties": {
+            "title": {
+              "type": "string"
+            },
+            "type": {
+              "type": "string"
+            },
+            "path": {
+              "type": "string",
+              "pattern": "^files/.+"
+            }
+          }
+        }
       }
     }
   }
 }
-

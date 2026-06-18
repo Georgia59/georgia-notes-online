@@ -48,12 +48,32 @@ def parse_tags(value):
     return [item.strip() for item in normalized.split(",") if item.strip()]
 
 
+def is_collection(record):
+    return record.get("kind") == "collection" or record.get("type") == "Collection" or isinstance(record.get("items"), list)
+
+
 def normalize_record(record):
     normalized = dict(record)
     normalized["tags"] = parse_tags(normalized.get("tags"))
     if not normalized.get("date"):
         normalized["date"] = date.today().isoformat()
+    if is_collection(normalized):
+        normalized["kind"] = "collection"
+        normalized["type"] = normalized.get("type") or "Collection"
     return normalized
+
+
+def validate_public_path(path_value, field_name):
+    errors = []
+    if not path_value:
+        errors.append(f"缺少路径字段：{field_name}")
+        return errors
+    path_text = str(path_value)
+    if Path(path_text).is_absolute():
+        errors.append(f"{field_name} 应使用仓库内相对路径。")
+    if not path_text.startswith("files/"):
+        errors.append(f"{field_name} 必须指向 files/ 下的成品位置。")
+    return errors
 
 
 def validate_record(record):
@@ -61,10 +81,33 @@ def validate_record(record):
     for field in REQUIRED_FIELDS:
         if field not in record or record[field] in ("", None):
             errors.append(f"缺少必填字段：{field}")
+
     if "tags" in record and not isinstance(record["tags"], list):
         errors.append("字段 tags 必须是数组，或在命令行中使用逗号分隔。")
-    if "path" in record and Path(str(record["path"])).is_absolute():
-        errors.append("字段 path 应使用仓库内相对路径，例如 files/imaging/example.pdf。")
+
+    if "path" in record:
+        errors.extend(validate_public_path(record["path"], "path"))
+
+    if is_collection(record):
+        items = record.get("items")
+        if not isinstance(items, list) or not items:
+            errors.append("collection 记录必须包含非空 items 数组。")
+        else:
+            seen_item_paths = set()
+            for index, item in enumerate(items, start=1):
+                if not isinstance(item, dict):
+                    errors.append(f"items[{index}] 必须是对象。")
+                    continue
+                for field in ["title", "type", "path"]:
+                    if not item.get(field):
+                        errors.append(f"items[{index}] 缺少字段：{field}")
+                item_path = item.get("path")
+                if item_path:
+                    errors.extend(validate_public_path(item_path, f"items[{index}].path"))
+                    if item_path in seen_item_paths:
+                        errors.append(f"collection 内重复章节路径：{item_path}")
+                    seen_item_paths.add(item_path)
+
     return errors
 
 
@@ -74,7 +117,8 @@ def build_record_from_args(args):
         if not metadata_path.is_absolute():
             metadata_path = Path.cwd() / metadata_path
         with metadata_path.open("r", encoding="utf-8") as file:
-            return json.load(file)
+            data = json.load(file)
+        return data.get("metadata", data) if isinstance(data, dict) else data
 
     return {
         "note_id": args.note_id,
@@ -94,10 +138,19 @@ def sort_key(record):
     return (record.get("date") or "", record.get("title") or "")
 
 
+def indexed_paths(record):
+    paths = []
+    if record.get("path"):
+        paths.append(record["path"])
+    if is_collection(record):
+        paths.extend(item.get("path") for item in record.get("items", []) if item.get("path"))
+    return paths
+
+
 def main():
     parser = argparse.ArgumentParser(description="将生成文件记录追加到 data/files.json。")
     parser.add_argument("--metadata", help="包含完整文件信息的 JSON 元数据路径。")
-    parser.add_argument("--note-id", help="同一笔记多格式共用的稳定英文短名，例如 acute-osteomyelitis-review。")
+    parser.add_argument("--note-id", help="同一笔记多格式共用的稳定英文短名。")
     parser.add_argument("--course", help="课程名称，例如 医学影像学。")
     parser.add_argument("--category", help="课程目录，例如 imaging。")
     parser.add_argument("--title", help="文件标题。")
@@ -119,9 +172,12 @@ def main():
             return 1
 
         files = load_json(INDEX_PATH)
-        existing_paths = {item.get("path") for item in files}
-        if record["path"] in existing_paths:
-            print(f"添加失败：路径已存在，未重复添加：{record['path']}")
+        existing_paths = {path for item in files for path in indexed_paths(item)}
+        duplicates = [path for path in indexed_paths(record) if path in existing_paths]
+        if duplicates:
+            print("添加失败：路径已存在，未重复添加。")
+            for path in duplicates:
+                print(f"- {path}")
             return 1
 
         files.append(record)

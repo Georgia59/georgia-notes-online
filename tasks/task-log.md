@@ -18,3 +18,4 @@
 - 发布资料：预防医学名词解释汇总，类型：PDF，路径：`files/preventive-medicine/2026-06-18-preventive-medicine-terms-summary.pdf`，日期：2026-06-18。
 - 将首页右上角改为动态资料统计，移除卡片标签展示，并将预防医学名词解释来源改为“预防医学学习指导”。
 - 调整发布草案流程：普通生成不自动进入 `review/`；只有用户明确要求上传、发布或生成发布草案时，才复制到 `review/` 并生成 `*.publish-draft.json`。
+- 发布资料：外科学课本整理，类型：Collection，文件数：19，路径：`files/surgery/2026-06-18-surgery-general-textbook-notes/`，日期：2026-06-18。
