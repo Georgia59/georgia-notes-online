@@ -4,6 +4,7 @@
 
 - 新增佛脚刷题入口模块：`data/banks.json`、`pages/banks.html`、`images/banks/`、`scripts/validate_banks.py`，支持搜索、复制佛脚码、二维码展示和分章节题库合集。
 - 发布佛脚刷题入口：预防医学章节刷题码，类型：Collection，章节数：13，路径：`pages/banks.html`，日期：2026-06-18。
+- 优化佛脚刷题入口：来源改为“预防医学学习指导题目整理”，删除题库介绍展示，章节列表改为章节名、题库码和小复制按钮。
 
 ## 2026-06-17
 

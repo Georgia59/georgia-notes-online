@@ -12,12 +12,14 @@
   "status": "已整理",
   "lastUpdated": "2026-06-18",
   "source": "课堂题库 + 错题整理",
-  "note": "适合考前冲刺刷选择题。",
+  "note": "",
   "qr": "images/banks/lab-diagnostics.png"
 }
 ```
 
 `qr` 可为空字符串或省略；如果填写，图片必须放在 `images/banks/` 下。
+
+`note` 可为空或省略。刷题码入口优先把来源写清楚，只有确实需要额外说明时才填写备注。
 
 ## 分章节题库
 
@@ -31,7 +33,7 @@
   "status": "已整理",
   "lastUpdated": "2026-06-18",
   "source": "章节题库整理",
-  "note": "按章节导入佛脚刷题，适合跟随复习进度使用。",
+  "note": "",
   "items": [
     {
       "title": "绪论",
@@ -39,7 +41,7 @@
       "status": "已整理",
       "lastUpdated": "2026-06-18",
       "source": "章节题库整理",
-      "note": "适合先刷基础概念。"
+      "note": ""
     },
     {
       "title": "外科无菌原则",

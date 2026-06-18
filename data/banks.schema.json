@@ -10,8 +10,7 @@
       "title",
       "status",
       "lastUpdated",
-      "source",
-      "note"
+      "source"
     ],
     "oneOf": [
       {

@@ -34,7 +34,7 @@
           id="bankSearch"
           class="course-search"
           type="search"
-          placeholder="搜索课程、题库名称、状态、来源、备注或佛脚码"
+          placeholder="搜索课程、题库名称、来源或佛脚码"
           aria-label="搜索佛脚刷题题库"
         />
       </section>
@@ -104,10 +104,14 @@
       }
 
       function renderCodeBlock(code) {
+        const safeCode = escapeHtml(code || "");
         return `
           <div class="bank-code-block">
             <span class="bank-code">${escapeHtml(code || "未填写")}</span>
-            <button class="copy-code-button" type="button" data-code="${escapeHtml(code || "")}">复制</button>
+            <button class="copy-code-button" type="button" data-code="${safeCode}" aria-label="复制佛脚码 ${safeCode}" title="复制佛脚码">
+              <span class="copy-icon" aria-hidden="true"></span>
+              <span class="copy-feedback" aria-live="polite"></span>
+            </button>
           </div>
         `;
       }
@@ -136,15 +140,7 @@
                   const chapterNumber = String(index + 1).padStart(2, "0");
                   return `
                     <section class="bank-chapter">
-                      <div class="bank-chapter-heading">
-                        <h3>${chapterNumber}. ${escapeHtml(item.title || "未命名章节")}</h3>
-                      </div>
-                      <dl class="bank-meta is-compact">
-                        <div><dt>状态</dt><dd>${escapeHtml(item.status || bank.status || "未填写")}</dd></div>
-                        <div><dt>更新</dt><dd>${escapeHtml(item.lastUpdated || bank.lastUpdated || "未填写")}</dd></div>
-                        <div><dt>来源</dt><dd>${escapeHtml(item.source || bank.source || "未填写")}</dd></div>
-                      </dl>
-                      <p class="description">${escapeHtml(item.note || bank.note || "暂无备注。")}</p>
+                      <h3>${chapterNumber}. ${escapeHtml(item.title || "未命名章节")}</h3>
                       ${renderCodeBlock(item.code)}
                       ${renderQr(item.qr, item.title)}
                     </section>
@@ -172,7 +168,7 @@
               <div><dt>更新</dt><dd>${escapeHtml(bank.lastUpdated || "未填写")}</dd></div>
               <div><dt>来源</dt><dd>${escapeHtml(bank.source || "未填写")}</dd></div>
             </dl>
-            <p class="description">${escapeHtml(bank.note || "暂无备注。")}</p>
+            ${bank.note ? `<p class="description">${escapeHtml(bank.note)}</p>` : ""}
             ${collection ? renderBankCollection(bank) : renderCodeBlock(bank.code)}
             ${collection ? "" : renderQr(bank.qr, bank.title)}
           </article>
@@ -218,15 +214,25 @@
       async function copyCode(button) {
         const code = button.dataset.code;
         if (!code) return;
-        const originalText = button.textContent;
+        const feedback = button.querySelector(".copy-feedback");
+        const originalLabel = button.getAttribute("aria-label");
+        const originalTitle = button.getAttribute("title");
         try {
           await navigator.clipboard.writeText(code);
-          button.textContent = "已复制";
+          button.classList.add("is-copied");
+          button.setAttribute("aria-label", "已复制佛脚码");
+          button.setAttribute("title", "已复制");
+          if (feedback) feedback.textContent = "已复制";
         } catch (error) {
-          button.textContent = "复制失败";
+          button.setAttribute("aria-label", "复制失败");
+          button.setAttribute("title", "复制失败");
+          if (feedback) feedback.textContent = "复制失败";
         }
         window.setTimeout(() => {
-          button.textContent = originalText;
+          button.classList.remove("is-copied");
+          button.setAttribute("aria-label", originalLabel);
+          button.setAttribute("title", originalTitle);
+          if (feedback) feedback.textContent = "";
         }, 1600);
       }
 

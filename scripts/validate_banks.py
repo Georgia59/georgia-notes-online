@@ -13,7 +13,6 @@ REQUIRED_FIELDS = [
     "status",
     "lastUpdated",
     "source",
-    "note",
 ]
 
 LOCAL_PATH_PATTERNS = [
