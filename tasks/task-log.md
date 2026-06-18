@@ -15,3 +15,4 @@
 - 增加 `.gitignore`、`.nojekyll`、字段规范文档和发布前检查脚本。
 - 增加 `scripts/publish_review_file.py`，用于将已确认文件从 `review/` 发布到 `files/` 并更新索引。
 - 将下载站首页改为 Claude-like 暖白配色、加大课程导航、单课程内容面板和居中免责声明。
+- 发布资料：预防医学名词解释汇总，类型：PDF，路径：`files/preventive-medicine/2026-06-18-preventive-medicine-terms-summary.pdf`，日期：2026-06-18。

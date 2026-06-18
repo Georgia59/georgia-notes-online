@@ -1,2 +1,19 @@
-[]
-
+[
+  {
+    "note_id": "preventive-medicine-terms-summary",
+    "course": "预防医学",
+    "category": "preventive-medicine",
+    "title": "预防医学名词解释汇总",
+    "type": "PDF",
+    "date": "2026-06-18",
+    "path": "files/preventive-medicine/2026-06-18-preventive-medicine-terms-summary.pdf",
+    "source": "本地 PDF 整理",
+    "tags": [
+      "预防医学",
+      "名词解释",
+      "期末复习",
+      "考前速背"
+    ],
+    "description": "按学习指导章节汇总预防医学常见名词解释，适合期末复习、考前速背和概念辨析。"
+  }
+]
