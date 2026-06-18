@@ -187,7 +187,6 @@
           note.date,
           note.source,
           note.description,
-          ...(Array.isArray(note.tags) ? note.tags : []),
           ...downloadables.flatMap((item) => [item.title, item.type, item.path, item.source])
         ];
         return values.map(normalizeText).join(" ");

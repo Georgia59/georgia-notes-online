@@ -64,7 +64,7 @@ def load_record_from_args(args):
 
     missing = [
         name
-        for name in ["review_path", "course", "category", "title", "type", "source", "tags", "description"]
+        for name in ["review_path", "course", "category", "title", "type", "source", "description"]
         if not getattr(args, name)
     ]
     if missing:
@@ -78,7 +78,6 @@ def load_record_from_args(args):
         "type": args.type,
         "date": args.date,
         "source": args.source,
-        "tags": args.tags,
         "description": args.description,
     }
     return record_data, args.review_path, args.dest_name
@@ -148,7 +147,6 @@ def main():
     parser.add_argument("--type", help="文件类型，例如 PDF、Word、PPT、HTML。")
     parser.add_argument("--date", default=date.today().isoformat(), help="发布日期，格式 YYYY-MM-DD。")
     parser.add_argument("--source", help="公开可显示的来源类型。")
-    parser.add_argument("--tags", help="英文逗号或中文逗号分隔的标签。")
     parser.add_argument("--description", help="一句话简介。")
     args = parser.parse_args()
 

@@ -11,8 +11,8 @@
   --accent: #b45f3c;
   --accent-strong: #8f4528;
   --accent-soft: #f8e7dc;
-  --tag-bg: #f1e8de;
-  --tag-text: #704832;
+  --footer-bg: #f1e8de;
+  --footer-text: #704832;
   --warning-bg: #fff3da;
   --warning-text: #7a4d00;
 }
@@ -488,7 +488,7 @@ a {
 
 .site-footer {
   padding: 20px 0 54px;
-  color: var(--tag-text);
+  color: var(--footer-text);
   font-size: 0.98rem;
   text-align: center;
 }
@@ -497,7 +497,7 @@ a {
   margin: 0;
   border-radius: 18px;
   padding: 18px 24px;
-  background: var(--tag-bg);
+  background: var(--footer-bg);
 }
 
 @media (max-width: 900px) {

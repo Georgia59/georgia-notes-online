@@ -13,9 +13,10 @@ REQUIRED_FIELDS = [
     "date",
     "path",
     "source",
-    "tags",
     "description",
 ]
+
+ALLOWED_FIELDS = set(REQUIRED_FIELDS) | {"note_id", "kind", "items"}
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -39,22 +40,12 @@ def save_json(path, data):
         file.write("\n")
 
 
-def parse_tags(value):
-    if value is None:
-        return []
-    if isinstance(value, list):
-        return value
-    normalized = value.replace("，", ",")
-    return [item.strip() for item in normalized.split(",") if item.strip()]
-
-
 def is_collection(record):
     return record.get("kind") == "collection" or record.get("type") == "Collection" or isinstance(record.get("items"), list)
 
 
 def normalize_record(record):
-    normalized = dict(record)
-    normalized["tags"] = parse_tags(normalized.get("tags"))
+    normalized = {key: value for key, value in dict(record).items() if key in ALLOWED_FIELDS}
     if not normalized.get("date"):
         normalized["date"] = date.today().isoformat()
     if is_collection(normalized):
@@ -89,9 +80,6 @@ def validate_record(record):
     for field in REQUIRED_FIELDS:
         if field not in record or record[field] in ("", None):
             errors.append(f"缺少必填字段：{field}")
-
-    if "tags" in record and not isinstance(record["tags"], list):
-        errors.append("字段 tags 必须是数组，或在命令行中使用逗号分隔。")
 
     if "path" in record:
         errors.extend(validate_public_path(record["path"], "path"))
@@ -148,7 +136,6 @@ def build_record_from_args(args):
         "date": args.date,
         "path": args.path,
         "source": args.source,
-        "tags": args.tags,
         "description": args.description,
     }
 
@@ -178,7 +165,6 @@ def main():
     parser.add_argument("--date", help="生成日期，格式 YYYY-MM-DD。")
     parser.add_argument("--path", help="仓库内相对文件路径。")
     parser.add_argument("--source", help="来源说明，例如 本地 PPT。")
-    parser.add_argument("--tags", help="英文逗号或中文逗号分隔的标签。")
     parser.add_argument("--description", help="简短说明。")
     args = parser.parse_args()
 

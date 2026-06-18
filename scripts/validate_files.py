@@ -11,7 +11,6 @@ REQUIRED_FIELDS = [
     "date",
     "path",
     "source",
-    "tags",
     "description",
 ]
 
@@ -74,10 +73,6 @@ def main():
         for field in REQUIRED_FIELDS:
             if field not in record or record[field] in ("", None):
                 errors.append(f"{label} 缺少必填字段：{field}")
-
-        tags = record.get("tags")
-        if "tags" in record and not isinstance(tags, list):
-            errors.append(f"{label} 的 tags 必须是数组。")
 
         note_id = record.get("note_id")
         if note_id is not None and not isinstance(note_id, str):

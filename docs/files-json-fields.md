@@ -14,7 +14,6 @@
 | `date` | 必填 | 生成或发布日期，格式为 `YYYY-MM-DD`。 |
 | `path` | 必填 | 仓库内相对路径，必须指向 `files/` 下的成品文件。 |
 | `source` | 必填 | 公开可显示的来源类型，例如 `本地 PPT 整理`、`教材整理`、`错题整理`。不要写原始文件名或本地路径。 |
-| `tags` | 必填 | 标签数组，例如 `["骨感染", "MRI", "考试复习"]`。 |
 | `description` | 必填 | 一句话简介，适合手机端快速浏览。 |
 
 ## 多格式笔记
@@ -32,7 +31,6 @@
     "date": "2026-06-18",
     "path": "files/imaging/2026-06-18-acute-osteomyelitis-review.pdf",
     "source": "本地 PPT 整理",
-    "tags": ["骨感染", "MRI", "考试复习"],
     "description": "围绕急性骨髓炎的影像表现、鉴别诊断和考试易错点整理。"
   },
   {
@@ -44,7 +42,6 @@
     "date": "2026-06-18",
     "path": "files/imaging/2026-06-18-acute-osteomyelitis-review.docx",
     "source": "本地 PPT 整理",
-    "tags": ["骨感染", "MRI", "考试复习"],
     "description": "围绕急性骨髓炎的影像表现、鉴别诊断和考试易错点整理。"
   }
 ]
@@ -65,7 +62,6 @@
   "date": "2026-06-18",
   "path": "files/surgery/2026-06-18-surgery-general-textbook-notes/",
   "source": "课本整理",
-  "tags": ["外科学", "总论", "课本整理", "期末复习"],
   "description": "按章节整理外科学总论重点内容，适合期末复习和考前查漏。",
   "items": [
     {

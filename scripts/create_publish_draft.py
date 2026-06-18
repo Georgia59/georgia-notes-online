@@ -143,7 +143,6 @@ def build_file_metadata(args, dest_name):
             "date": args.date,
             "path": f"files/{args.category}/{dest_name}",
             "source": args.source,
-            "tags": args.tags,
             "description": args.description,
         }
     )
@@ -161,7 +160,6 @@ def build_collection_metadata(args, dest_name, items):
             "date": args.date,
             "path": f"files/{args.category}/{dest_name}/",
             "source": args.source,
-            "tags": args.tags,
             "description": args.description,
             "items": items,
         }
@@ -215,7 +213,6 @@ def main():
     parser.add_argument("--type", help="文件类型，例如 PDF 或 Collection。")
     parser.add_argument("--date", default=date.today().isoformat(), help="发布日期，格式 YYYY-MM-DD。")
     parser.add_argument("--source", required=True, help="公开显示的来源名称。")
-    parser.add_argument("--tags", required=True, help="英文逗号或中文逗号分隔的标签。")
     parser.add_argument("--description", required=True, help="一句话简介。")
     parser.add_argument("--website-url", help="GitHub Pages 首页地址；默认从 origin 自动推断。")
     parser.add_argument("--force", action="store_true", help="允许覆盖 review/ 中已有的同名文件、目录和草稿。")
