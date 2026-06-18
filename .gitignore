@@ -1,0 +1,36 @@
+# Local-only source materials. Do not publish raw PPT/PDF/Word inputs.
+local-sources/*
+!local-sources/README.md
+
+# Generated drafts awaiting user review. Publish only after explicit approval.
+review/*
+!review/README.md
+!review/*/
+!review/*/.gitkeep
+
+# Codex working areas and temporary outputs.
+work/
+outputs/
+
+# Python cache and local environments.
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
+env/
+
+# OS and editor files.
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+
+# Office temporary files.
+~$*
+*.tmp
+*.bak
+

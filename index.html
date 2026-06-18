@@ -1,0 +1,308 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>GEORGIA NOTES-ONLINE</title>
+    <link rel="stylesheet" href="assets/style.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="header-inner">
+        <div>
+          <h1 class="site-title">GEORGIA NOTES-ONLINE</h1>
+          <p class="site-kicker">医学课程复习资料下载站</p>
+          <p class="site-subtitle">只发布整理后的系统性笔记；按课程查找，按格式下载。</p>
+        </div>
+        <aside class="publish-note" aria-label="发布规则">
+          <strong>公开资料库</strong>
+          <span>原始资料保留在本地</span>
+        </aside>
+      </div>
+    </header>
+
+    <main class="main-content">
+      <nav id="courseNav" class="course-nav" aria-label="课程索引" hidden></nav>
+
+      <section id="status" class="status" role="status">正在加载 data/files.json。</section>
+
+      <section id="coursePanel" class="course-panel" aria-label="当前课程资料" hidden>
+        <div class="panel-summary">
+          <span id="activeCourseCount">0 条笔记</span>
+        </div>
+        <input
+          id="courseSearch"
+          class="course-search"
+          type="search"
+          placeholder="在当前课程中搜索"
+          aria-label="在当前课程中搜索资料"
+        />
+        <div id="fileGrid" class="file-grid"></div>
+        <p id="courseEmpty" class="course-empty" hidden>当前课程里没有匹配的资料。</p>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <p>免责声明：资料仅用于课程学习与考试复习，不作为临床诊疗依据；待核实内容需以教材、指南或授课材料为准。</p>
+    </footer>
+
+    <script>
+      const courseNames = {
+        imaging: "医学影像学",
+        diagnostics: "诊断学",
+        "preventive-medicine": "预防医学",
+        pharmacoeconomics: "药物经济学",
+        surgery: "外科学",
+        others: "其他"
+      };
+
+      const courseOrder = [
+        "imaging",
+        "diagnostics",
+        "preventive-medicine",
+        "pharmacoeconomics",
+        "surgery",
+        "others"
+      ];
+
+      const state = {
+        files: [],
+        notes: [],
+        courses: [],
+        activeCourseId: ""
+      };
+
+      const courseNavEl = document.getElementById("courseNav");
+      const statusEl = document.getElementById("status");
+      const coursePanelEl = document.getElementById("coursePanel");
+      const activeCourseCountEl = document.getElementById("activeCourseCount");
+      const courseSearchEl = document.getElementById("courseSearch");
+      const fileGridEl = document.getElementById("fileGrid");
+      const courseEmptyEl = document.getElementById("courseEmpty");
+
+      function escapeHtml(value) {
+        return String(value ?? "")
+          .replaceAll("&", "&amp;")
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;")
+          .replaceAll('"', "&quot;")
+          .replaceAll("'", "&#039;");
+      }
+
+      function normalizeText(value) {
+        return String(value ?? "").toLowerCase();
+      }
+
+      function getCourseId(file) {
+        return file.category || getCourseLabel(file);
+      }
+
+      function getCourseLabel(file) {
+        return file.course || courseNames[file.category] || file.category || "未分类";
+      }
+
+      function getNoteKey(file) {
+        return file.note_id || [getCourseId(file), file.title, file.date].map((item) => String(item || "")).join("|");
+      }
+
+      function groupByNote(files) {
+        const groups = new Map();
+        files.forEach((file) => {
+          const key = getNoteKey(file);
+          if (!groups.has(key)) {
+            groups.set(key, {
+              ...file,
+              courseId: getCourseId(file),
+              courseLabel: getCourseLabel(file),
+              files: []
+            });
+          }
+          groups.get(key).files.push(file);
+        });
+
+        return Array.from(groups.values()).map((note) => {
+          note.files.sort((a, b) => String(a.type || "").localeCompare(String(b.type || ""), "zh-CN"));
+          note.types = [...new Set(note.files.map((file) => file.type).filter(Boolean))];
+          note.searchText = getSearchText(note);
+          return note;
+        });
+      }
+
+      function buildCourses(notes) {
+        const groups = new Map();
+        notes.forEach((note) => {
+          if (!groups.has(note.courseId)) {
+            groups.set(note.courseId, {
+              id: note.courseId,
+              label: note.courseLabel,
+              notes: []
+            });
+          }
+          groups.get(note.courseId).notes.push(note);
+        });
+
+        return Array.from(groups.values()).sort((a, b) => {
+          const ai = courseOrder.indexOf(a.id);
+          const bi = courseOrder.indexOf(b.id);
+          if (ai !== -1 || bi !== -1) {
+            return (ai === -1 ? 999 : ai) - (bi === -1 ? 999 : bi);
+          }
+          return a.label.localeCompare(b.label, "zh-CN");
+        });
+      }
+
+      function getSearchText(note) {
+        const files = Array.isArray(note.files) ? note.files : [note];
+        const values = [
+          note.title,
+          note.course,
+          note.category,
+          note.courseLabel,
+          note.type,
+          note.date,
+          note.source,
+          note.description,
+          ...(Array.isArray(note.tags) ? note.tags : []),
+          ...files.flatMap((item) => [item.type, item.path, item.source])
+        ];
+        return values.map(normalizeText).join(" ");
+      }
+
+      function renderCourseNav() {
+        courseNavEl.hidden = false;
+        courseNavEl.innerHTML = `
+          <span class="course-nav-label">课程索引</span>
+          <div class="course-tabs">
+            ${state.courses
+              .map((course) => {
+                const isActive = course.id === state.activeCourseId;
+                return `
+                  <button
+                    class="course-tab${isActive ? " is-active" : ""}"
+                    type="button"
+                    data-course-id="${escapeHtml(course.id)}"
+                    aria-pressed="${isActive}"
+                  >
+                    <span>${escapeHtml(course.label)}</span>
+                    <strong>${course.notes.length}</strong>
+                  </button>
+                `;
+              })
+              .join("")}
+          </div>
+        `;
+      }
+
+      function renderFileCard(note) {
+        const tags = Array.isArray(note.tags) ? note.tags : [];
+        const tagHtml = tags.map((tag) => `<span class="tag">${escapeHtml(tag)}</span>`).join("");
+        const downloadableFiles = Array.isArray(note.files) ? note.files : [note];
+        const typeLabel = note.types && note.types.length ? note.types.join(" / ") : note.type || "未知";
+        const downloadHtml = downloadableFiles
+          .map((item, index) => {
+            const label = item.type || "下载";
+            return `<a class="download-link${index === 0 ? " is-primary" : ""}" href="${escapeHtml(item.path || "#")}" download>${escapeHtml(label)}</a>`;
+          })
+          .join("");
+
+        return `
+          <article class="file-card" data-search="${escapeHtml(note.searchText)}">
+            <h3 class="file-title">${escapeHtml(note.title || "未命名资料")}</h3>
+            <p class="description" aria-label="简介">${escapeHtml(note.description || "暂无简介。")}</p>
+            <dl class="meta">
+              <div><dt>日期</dt><dd>${escapeHtml(note.date || "未填写")}</dd></div>
+              <div><dt>来源</dt><dd>${escapeHtml(note.source || "未填写")}</dd></div>
+              <div><dt>类型</dt><dd>${escapeHtml(typeLabel)}</dd></div>
+            </dl>
+            <div class="tags" aria-label="标签">${tagHtml || '<span class="tag">未标注</span>'}</div>
+            <div class="download-block">
+              <div class="download-label">下载方式</div>
+              <div class="download-list">${downloadHtml}</div>
+            </div>
+          </article>
+        `;
+      }
+
+      function getActiveCourse() {
+        return state.courses.find((course) => course.id === state.activeCourseId) || state.courses[0];
+      }
+
+      function renderActiveCourse() {
+        const course = getActiveCourse();
+        if (!course) return;
+
+        coursePanelEl.hidden = false;
+        activeCourseCountEl.textContent = `${course.notes.length} 条笔记`;
+        courseSearchEl.value = "";
+        courseSearchEl.placeholder = `在${course.label}中搜索`;
+        fileGridEl.innerHTML = course.notes.map(renderFileCard).join("");
+        courseEmptyEl.hidden = course.notes.length > 0;
+      }
+
+      function render() {
+        state.notes = groupByNote(state.files);
+        state.courses = buildCourses(state.notes);
+
+        if (!state.files.length || !state.courses.length) {
+          courseNavEl.hidden = true;
+          coursePanelEl.hidden = true;
+          statusEl.hidden = false;
+          statusEl.className = "status";
+          statusEl.textContent = "还没有发布资料。新增文件后，这里会自动显示课程索引和下载入口。";
+          return;
+        }
+
+        statusEl.hidden = true;
+        if (!state.activeCourseId || !state.courses.some((course) => course.id === state.activeCourseId)) {
+          state.activeCourseId = state.courses[0].id;
+        }
+
+        renderCourseNav();
+        renderActiveCourse();
+      }
+
+      function filterActiveCourse(query) {
+        const cards = Array.from(fileGridEl.querySelectorAll(".file-card"));
+        let visibleCount = 0;
+        cards.forEach((card) => {
+          const isVisible = !query || card.dataset.search.includes(query);
+          card.hidden = !isVisible;
+          if (isVisible) visibleCount += 1;
+        });
+        courseEmptyEl.hidden = visibleCount > 0;
+        activeCourseCountEl.textContent = `${visibleCount} 条笔记`;
+      }
+
+      async function loadFiles() {
+        try {
+          const response = await fetch("data/files.json", { cache: "no-store" });
+          if (!response.ok) throw new Error(`HTTP ${response.status}`);
+          const files = await response.json();
+          if (!Array.isArray(files)) throw new Error("data/files.json 必须是数组");
+          state.files = files;
+          render();
+        } catch (error) {
+          courseNavEl.hidden = true;
+          coursePanelEl.hidden = true;
+          statusEl.hidden = false;
+          statusEl.className = "status warning";
+          statusEl.textContent = `无法读取 data/files.json：${error.message}。在 GitHub Pages 或本地网页服务中打开即可动态加载。`;
+        }
+      }
+
+      courseNavEl.addEventListener("click", (event) => {
+        const button = event.target.closest(".course-tab");
+        if (!button) return;
+        state.activeCourseId = button.dataset.courseId;
+        renderCourseNav();
+        renderActiveCourse();
+      });
+
+      courseSearchEl.addEventListener("input", (event) => {
+        filterActiveCourse(normalizeText(event.target.value.trim()));
+      });
+
+      loadFiles();
+    </script>
+  </body>
+</html>
