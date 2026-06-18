@@ -8,6 +8,7 @@ from pathlib import Path
 from add_file_to_index import (
     indexed_paths,
     is_collection,
+    item_files,
     load_json,
     normalize_record,
     save_json,
@@ -119,14 +120,15 @@ def publish_collection(record, review_path):
     dest_dir.mkdir(parents=True)
     moved_any = False
     for item in record.get("items", []):
-        dest_item_path = (REPO_ROOT / item["path"]).resolve()
-        ensure_under(dest_item_path, dest_dir, "章节目标路径")
-        source_item_path = review_path / dest_item_path.name
-        if not source_item_path.is_file():
-            raise ValueError(f"review 目录缺少章节文件：{source_item_path.name}")
-        dest_item_path.parent.mkdir(parents=True, exist_ok=True)
-        shutil.move(str(source_item_path), str(dest_item_path))
-        moved_any = True
+        for file in item_files(item):
+            dest_item_path = (REPO_ROOT / file["path"]).resolve()
+            ensure_under(dest_item_path, dest_dir, "章节目标路径")
+            source_item_path = review_path / dest_item_path.name
+            if not source_item_path.is_file():
+                raise ValueError(f"review 目录缺少章节文件：{source_item_path.name}")
+            dest_item_path.parent.mkdir(parents=True, exist_ok=True)
+            shutil.move(str(source_item_path), str(dest_item_path))
+            moved_any = True
 
     if not moved_any:
         raise ValueError("collection 没有可发布的章节文件。")

@@ -64,7 +64,15 @@
         "description": "Chapter or child files for collection records.",
         "items": {
           "type": "object",
-          "required": ["title", "type", "path"],
+          "required": ["title"],
+          "oneOf": [
+            {
+              "required": ["type", "path"]
+            },
+            {
+              "required": ["files"]
+            }
+          ],
           "properties": {
             "title": {
               "type": "string"
@@ -75,6 +83,22 @@
             "path": {
               "type": "string",
               "pattern": "^files/.+"
+            },
+            "files": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": ["type", "path"],
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "path": {
+                    "type": "string",
+                    "pattern": "^files/.+"
+                  }
+                }
+              }
             }
           }
         }

@@ -377,34 +377,76 @@ a {
   overflow-y: auto;
 }
 
-.chapter-link {
+.chapter-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 18px;
-  min-height: 48px;
+  min-height: 58px;
   border-bottom: 1px solid rgba(230, 219, 206, 0.7);
-  padding: 10px 18px;
+  padding: 10px 14px 10px 18px;
   color: var(--text);
-  text-decoration: none;
 }
 
-.chapter-link:last-child {
+.chapter-row:last-child {
   border-bottom: 0;
 }
 
-.chapter-link:hover,
-.chapter-link:focus-visible {
-  background: var(--accent-soft);
-  outline: none;
-}
-
-.chapter-link span {
+.chapter-row span {
   min-width: 0;
   overflow-wrap: anywhere;
 }
 
-.chapter-link strong {
+.chapter-actions {
+  display: flex;
+  flex: 0 0 auto;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.chapter-format-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 62px;
+  min-height: 40px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 7px 14px;
+  background: var(--surface);
+  color: var(--accent-strong);
+  font-size: 0.88rem;
+  font-weight: 850;
+  line-height: 1;
+  text-decoration: none;
+  transition: background 160ms ease, border-color 160ms ease, color 160ms ease;
+}
+
+.chapter-format-button:hover,
+.chapter-format-button:focus-visible {
+  border-color: transparent;
+  background: var(--accent);
+  color: #fffaf4;
+  outline: none;
+}
+
+.chapter-format-button:focus-visible {
+  outline: 3px solid rgba(180, 95, 60, 0.22);
+}
+
+.chapter-format-button.is-pdf {
+  border-color: transparent;
+  background: var(--accent);
+  color: #fffaf4;
+}
+
+.chapter-format-button.is-pdf:hover,
+.chapter-format-button.is-pdf:focus-visible {
+  background: var(--accent-strong);
+}
+
+.chapter-format-button strong {
   flex: 0 0 auto;
   color: var(--accent-strong);
   font-size: 0.88rem;
@@ -535,5 +577,21 @@ a {
 
   .download-link {
     flex: 1 1 120px;
+  }
+
+  .chapter-row {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .chapter-actions {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .chapter-format-button {
+    min-width: 76px;
+    min-height: 44px;
   }
 }

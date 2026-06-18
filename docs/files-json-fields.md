@@ -84,6 +84,24 @@
 
 collection 的 `path` 指向资料集目录，`items[].path` 指向每个章节文件。公开页面不显示本地原始路径，也不显示原始资料文件名。
 
+如果同一个章节同时有 PDF、Word、HTML 等多个格式，章节可以写成 `files` 数组。网页会把章节名放在左侧，把每个格式显示成独立按钮，用户必须点击具体格式按钮才能下载。
+
+```json
+{
+  "title": "外科病人的代谢及营养治疗",
+  "files": [
+    {
+      "type": "PDF",
+      "path": "files/surgery/2026-06-18-surgery-general-textbook-notes/06-surgical-metabolism-nutrition.pdf"
+    },
+    {
+      "type": "Word",
+      "path": "files/surgery/2026-06-18-surgery-general-textbook-notes/06-surgical-metabolism-nutrition.docx"
+    }
+  ]
+}
+```
+
 ## 禁止写入
 
 - 本地绝对路径，例如 Windows 或 macOS/Linux 的用户目录路径

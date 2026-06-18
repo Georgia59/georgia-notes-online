@@ -24,6 +24,14 @@ def is_collection(record):
     return record.get("kind") == "collection" or record.get("type") == "Collection" or isinstance(record.get("items"), list)
 
 
+def item_files(item):
+    if isinstance(item.get("files"), list) and item["files"]:
+        return item["files"]
+    if item.get("path"):
+        return [{"title": item.get("title"), "type": item.get("type"), "path": item.get("path")}]
+    return []
+
+
 def validate_relative_public_path(path_value, label, errors):
     if not path_value:
         errors.append(f"{label} 缺少 path。")
@@ -94,17 +102,28 @@ def main():
                 if not isinstance(item, dict):
                     errors.append(f"{item_label} 必须是对象。")
                     continue
-                for field in ["title", "type", "path"]:
-                    if not item.get(field):
-                        errors.append(f"{item_label} 缺少字段：{field}")
-                item_path = validate_relative_public_path(item.get("path"), item_label, errors)
-                item_path_value = item.get("path")
-                if item_path_value:
-                    if item_path_value in seen_paths:
-                        errors.append(f"重复路径：{item_path_value}")
-                    seen_paths.add(item_path_value)
-                if item_path and not item_path.is_file():
-                    errors.append(f"章节文件不存在：{item_path_value}")
+                if not item.get("title"):
+                    errors.append(f"{item_label} 缺少字段：title")
+                files = item_files(item)
+                if not files:
+                    errors.append(f"{item_label} 必须包含 path，或包含非空 files 数组。")
+                    continue
+                for file_index, file in enumerate(files, start=1):
+                    file_label = f"{item_label} files[{file_index}]" if "files" in item else item_label
+                    if not isinstance(file, dict):
+                        errors.append(f"{file_label} 必须是对象。")
+                        continue
+                    for field in ["type", "path"]:
+                        if not file.get(field):
+                            errors.append(f"{file_label} 缺少字段：{field}")
+                    item_path = validate_relative_public_path(file.get("path"), file_label, errors)
+                    item_path_value = file.get("path")
+                    if item_path_value:
+                        if item_path_value in seen_paths:
+                            errors.append(f"重复路径：{item_path_value}")
+                        seen_paths.add(item_path_value)
+                    if item_path and not item_path.is_file():
+                        errors.append(f"章节文件不存在：{item_path_value}")
 
     if errors:
         print("验证失败：")

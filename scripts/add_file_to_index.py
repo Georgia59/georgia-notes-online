@@ -76,6 +76,14 @@ def validate_public_path(path_value, field_name):
     return errors
 
 
+def item_files(item):
+    if isinstance(item.get("files"), list) and item["files"]:
+        return item["files"]
+    if item.get("path"):
+        return [{"title": item.get("title"), "type": item.get("type"), "path": item.get("path")}]
+    return []
+
+
 def validate_record(record):
     errors = []
     for field in REQUIRED_FIELDS:
@@ -98,15 +106,26 @@ def validate_record(record):
                 if not isinstance(item, dict):
                     errors.append(f"items[{index}] 必须是对象。")
                     continue
-                for field in ["title", "type", "path"]:
-                    if not item.get(field):
-                        errors.append(f"items[{index}] 缺少字段：{field}")
-                item_path = item.get("path")
-                if item_path:
-                    errors.extend(validate_public_path(item_path, f"items[{index}].path"))
-                    if item_path in seen_item_paths:
-                        errors.append(f"collection 内重复章节路径：{item_path}")
-                    seen_item_paths.add(item_path)
+                if not item.get("title"):
+                    errors.append(f"items[{index}] 缺少字段：title")
+                files = item_files(item)
+                if not files:
+                    errors.append(f"items[{index}] 必须包含 path，或包含非空 files 数组。")
+                    continue
+                for file_index, file in enumerate(files, start=1):
+                    file_label = f"items[{index}].files[{file_index}]" if "files" in item else f"items[{index}]"
+                    if not isinstance(file, dict):
+                        errors.append(f"{file_label} 必须是对象。")
+                        continue
+                    for field in ["type", "path"]:
+                        if not file.get(field):
+                            errors.append(f"{file_label} 缺少字段：{field}")
+                    item_path = file.get("path")
+                    if item_path:
+                        errors.extend(validate_public_path(item_path, f"{file_label}.path"))
+                        if item_path in seen_item_paths:
+                            errors.append(f"collection 内重复章节路径：{item_path}")
+                        seen_item_paths.add(item_path)
 
     return errors
 
@@ -143,7 +162,8 @@ def indexed_paths(record):
     if record.get("path"):
         paths.append(record["path"])
     if is_collection(record):
-        paths.extend(item.get("path") for item in record.get("items", []) if item.get("path"))
+        for item in record.get("items", []):
+            paths.extend(file.get("path") for file in item_files(item) if file.get("path"))
     return paths
 
 

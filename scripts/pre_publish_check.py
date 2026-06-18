@@ -56,6 +56,14 @@ def is_collection(record):
     return record.get("kind") == "collection" or record.get("type") == "Collection" or isinstance(record.get("items"), list)
 
 
+def item_files(item):
+    if isinstance(item.get("files"), list) and item["files"]:
+        return item["files"]
+    if item.get("path"):
+        return [{"title": item.get("title"), "type": item.get("type"), "path": item.get("path")}]
+    return []
+
+
 def iter_public_text_files():
     for path in REPO_ROOT.rglob("*"):
         if not path.is_file():
@@ -138,13 +146,14 @@ def check_index():
             if isinstance(items, list):
                 for item_index, item in enumerate(items, start=1):
                     if isinstance(item, dict):
-                        errors.extend(
-                            check_public_path(
-                                item.get("path", ""),
-                                source_value,
-                                f"第 {index} 条 items[{item_index}]",
+                        for file_index, file in enumerate(item_files(item), start=1):
+                            errors.extend(
+                                check_public_path(
+                                    file.get("path", ""),
+                                    source_value,
+                                    f"第 {index} 条 items[{item_index}].files[{file_index}]",
+                                )
                             )
-                        )
 
     return errors
 

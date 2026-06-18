@@ -118,6 +118,16 @@
         return Array.isArray(note.files) ? note.files : [note];
       }
 
+      function getItemFiles(item) {
+        if (Array.isArray(item.files) && item.files.length) {
+          return item.files;
+        }
+        if (item.path) {
+          return [{ title: item.title, type: item.type || "PDF", path: item.path }];
+        }
+        return [];
+      }
+
       function groupByNote(files) {
         const groups = new Map();
         files.forEach((file) => {
@@ -224,11 +234,22 @@
               ${items
                 .map((item, index) => {
                   const chapterNumber = String(index + 1).padStart(2, "0");
+                  const itemFiles = getItemFiles(item);
                   return `
-                    <a class="chapter-link" href="${escapeHtml(item.path || "#")}" download>
+                    <div class="chapter-row">
                       <span>${chapterNumber}. ${escapeHtml(item.title || "未命名章节")}</span>
-                      <strong>${escapeHtml(item.type || "PDF")}</strong>
-                    </a>
+                      <div class="chapter-actions">
+                        ${itemFiles
+                          .map(
+                            (file) => `
+                              <a class="chapter-format-button${String(file.type || "").toLowerCase() === "pdf" ? " is-pdf" : ""}" href="${escapeHtml(file.path || "#")}" download>
+                                ${escapeHtml(file.type || "下载")}
+                              </a>
+                            `
+                          )
+                          .join("")}
+                      </div>
+                    </div>
                   `;
                 })
                 .join("")}
