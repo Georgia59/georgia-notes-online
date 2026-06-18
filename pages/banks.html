@@ -1,0 +1,270 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>佛脚刷题 | GEORGIA NOTES-ONLINE</title>
+    <link rel="stylesheet" href="../assets/style.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="header-inner">
+        <div>
+          <a class="back-link" href="../index.html">返回课程资料</a>
+          <h1 class="site-title">佛脚刷题</h1>
+          <p class="site-kicker">题库入口</p>
+          <p class="site-subtitle">这里只保存佛脚码、二维码和使用说明，不公开展示题目内容。</p>
+        </div>
+        <aside class="library-stats" aria-label="题库统计">
+          <strong id="bankCount">0 个题库</strong>
+          <span id="bankStatus">等待添加佛脚码</span>
+        </aside>
+      </div>
+    </header>
+
+    <main class="main-content">
+      <nav class="site-switcher" aria-label="站点功能">
+        <a class="switcher-link" href="../index.html">课程资料</a>
+        <a class="switcher-link is-active" href="banks.html">佛脚刷题</a>
+      </nav>
+
+      <section class="banks-toolbar" aria-label="题库搜索">
+        <label class="search-label" for="bankSearch">搜索佛脚码</label>
+        <input
+          id="bankSearch"
+          class="course-search"
+          type="search"
+          placeholder="搜索课程、题库名称、状态、来源、备注或佛脚码"
+          aria-label="搜索佛脚刷题题库"
+        />
+      </section>
+
+      <section id="bankStatusMessage" class="status" role="status">正在加载 data/banks.json。</section>
+      <section id="bankGrid" class="bank-grid" aria-label="佛脚刷题题库列表" hidden></section>
+      <p id="bankEmpty" class="course-empty" hidden>没有匹配的佛脚刷题入口。</p>
+    </main>
+
+    <footer class="site-footer">
+      <p>免责声明：题库入口仅用于课程学习与考试复习；请勿上传或公开题目原文、教师内部资料、同学个人信息或学校敏感资料。</p>
+    </footer>
+
+    <script>
+      const state = {
+        banks: []
+      };
+
+      const bankCountEl = document.getElementById("bankCount");
+      const bankStatusEl = document.getElementById("bankStatus");
+      const bankSearchEl = document.getElementById("bankSearch");
+      const bankStatusMessageEl = document.getElementById("bankStatusMessage");
+      const bankGridEl = document.getElementById("bankGrid");
+      const bankEmptyEl = document.getElementById("bankEmpty");
+
+      function escapeHtml(value) {
+        return String(value ?? "")
+          .replaceAll("&", "&amp;")
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;")
+          .replaceAll('"', "&quot;")
+          .replaceAll("'", "&#039;");
+      }
+
+      function normalizeText(value) {
+        return String(value ?? "").toLowerCase();
+      }
+
+      function getSearchText(bank) {
+        return [
+          bank.course,
+          bank.title,
+          bank.code,
+          bank.questionCount,
+          bank.status,
+          bank.lastUpdated,
+          bank.source,
+          bank.note,
+          ...getBankItems(bank).flatMap((item) => [
+            item.title,
+            item.code,
+            item.questionCount,
+            item.status,
+            item.lastUpdated,
+            item.source,
+            item.note
+          ])
+        ]
+          .map(normalizeText)
+          .join(" ");
+      }
+
+      function isBankCollection(bank) {
+        return bank.kind === "collection" || Array.isArray(bank.items);
+      }
+
+      function getBankItems(bank) {
+        return Array.isArray(bank.items) ? bank.items : [];
+      }
+
+      function getQuestionCountText(value) {
+        return Number.isInteger(value) ? `${value} 题` : "未填写";
+      }
+
+      function renderCodeBlock(code) {
+        return `
+          <div class="bank-code-block">
+            <span class="bank-code">${escapeHtml(code || "未填写")}</span>
+            <button class="copy-code-button" type="button" data-code="${escapeHtml(code || "")}">复制佛脚码</button>
+          </div>
+        `;
+      }
+
+      function renderQr(qr, title) {
+        return qr
+          ? `<img class="bank-qr" src="../${escapeHtml(qr)}" alt="${escapeHtml(title || "佛脚刷题")}二维码" loading="lazy" />`
+          : "";
+      }
+
+      function renderBankCollection(bank) {
+        const items = getBankItems(bank);
+        if (!items.length) {
+          return `<p class="collection-empty">这个题库合集暂时没有章节入口。</p>`;
+        }
+
+        return `
+          <details class="collection-detail bank-collection-detail">
+            <summary>
+              <span>查看章节佛脚码</span>
+              <strong>${items.length} 个章节</strong>
+            </summary>
+            <div class="bank-chapter-list">
+              ${items
+                .map((item, index) => {
+                  const chapterNumber = String(index + 1).padStart(2, "0");
+                  return `
+                    <section class="bank-chapter">
+                      <div class="bank-chapter-heading">
+                        <h3>${chapterNumber}. ${escapeHtml(item.title || "未命名章节")}</h3>
+                        <span>${escapeHtml(getQuestionCountText(item.questionCount))}</span>
+                      </div>
+                      <dl class="bank-meta is-compact">
+                        <div><dt>状态</dt><dd>${escapeHtml(item.status || bank.status || "未填写")}</dd></div>
+                        <div><dt>更新</dt><dd>${escapeHtml(item.lastUpdated || bank.lastUpdated || "未填写")}</dd></div>
+                        <div><dt>来源</dt><dd>${escapeHtml(item.source || bank.source || "未填写")}</dd></div>
+                      </dl>
+                      <p class="description">${escapeHtml(item.note || bank.note || "暂无备注。")}</p>
+                      ${renderCodeBlock(item.code)}
+                      ${renderQr(item.qr, item.title)}
+                    </section>
+                  `;
+                })
+                .join("")}
+            </div>
+          </details>
+        `;
+      }
+
+      function renderBankCard(bank) {
+        const collection = isBankCollection(bank);
+        const countText = collection ? `${getBankItems(bank).length} 个章节` : getQuestionCountText(bank.questionCount);
+
+        return `
+          <article class="bank-card${collection ? " is-collection" : ""}" data-search="${escapeHtml(bank.searchText)}">
+            <div class="card-heading">
+              <h2 class="file-title">${escapeHtml(bank.title || "未命名题库")}</h2>
+              <span class="collection-badge">${escapeHtml(collection ? "题库合集" : bank.status || "未标注")}</span>
+            </div>
+            <dl class="bank-meta">
+              <div><dt>课程</dt><dd>${escapeHtml(bank.course || "未填写")}</dd></div>
+              <div><dt>题量</dt><dd>${escapeHtml(countText)}</dd></div>
+              <div><dt>更新</dt><dd>${escapeHtml(bank.lastUpdated || "未填写")}</dd></div>
+              <div><dt>来源</dt><dd>${escapeHtml(bank.source || "未填写")}</dd></div>
+            </dl>
+            <p class="description">${escapeHtml(bank.note || "暂无备注。")}</p>
+            ${collection ? renderBankCollection(bank) : renderCodeBlock(bank.code)}
+            ${collection ? "" : renderQr(bank.qr, bank.title)}
+          </article>
+        `;
+      }
+
+      function renderBanks() {
+        const banks = state.banks.map((bank) => ({
+          ...bank,
+          searchText: getSearchText(bank)
+        }));
+
+        bankCountEl.textContent = `${banks.length} 个题库`;
+        bankStatusEl.textContent = banks.length ? "可搜索、复制佛脚码" : "等待添加佛脚码";
+
+        if (!banks.length) {
+          bankStatusMessageEl.hidden = false;
+          bankStatusMessageEl.className = "status";
+          bankStatusMessageEl.textContent = "还没有添加佛脚刷题入口。新增 data/banks.json 记录后，这里会自动显示。";
+          bankGridEl.hidden = true;
+          bankEmptyEl.hidden = true;
+          return;
+        }
+
+        bankStatusMessageEl.hidden = true;
+        bankGridEl.hidden = false;
+        bankGridEl.innerHTML = banks.map(renderBankCard).join("");
+        filterBanks(normalizeText(bankSearchEl.value.trim()));
+      }
+
+      function filterBanks(query) {
+        const cards = Array.from(bankGridEl.querySelectorAll(".bank-card"));
+        let visibleCount = 0;
+        cards.forEach((card) => {
+          const isVisible = !query || card.dataset.search.includes(query);
+          card.hidden = !isVisible;
+          if (isVisible) visibleCount += 1;
+        });
+        bankEmptyEl.hidden = visibleCount > 0 || !cards.length;
+        bankCountEl.textContent = query ? `${visibleCount} 个匹配` : `${cards.length} 个题库`;
+      }
+
+      async function copyCode(button) {
+        const code = button.dataset.code;
+        if (!code) return;
+        const originalText = button.textContent;
+        try {
+          await navigator.clipboard.writeText(code);
+          button.textContent = "已复制";
+        } catch (error) {
+          button.textContent = "复制失败";
+        }
+        window.setTimeout(() => {
+          button.textContent = originalText;
+        }, 1600);
+      }
+
+      async function loadBanks() {
+        try {
+          const response = await fetch("../data/banks.json", { cache: "no-store" });
+          if (!response.ok) throw new Error(`HTTP ${response.status}`);
+          const banks = await response.json();
+          if (!Array.isArray(banks)) throw new Error("data/banks.json 必须是数组");
+          state.banks = banks;
+          renderBanks();
+        } catch (error) {
+          bankGridEl.hidden = true;
+          bankEmptyEl.hidden = true;
+          bankStatusMessageEl.hidden = false;
+          bankStatusMessageEl.className = "status warning";
+          bankStatusMessageEl.textContent = `无法读取 data/banks.json：${error.message}。在 GitHub Pages 或本地网页服务中打开即可动态加载。`;
+        }
+      }
+
+      bankSearchEl.addEventListener("input", (event) => {
+        filterBanks(normalizeText(event.target.value.trim()));
+      });
+
+      bankGridEl.addEventListener("click", (event) => {
+        const button = event.target.closest(".copy-code-button");
+        if (!button) return;
+        copyCode(button);
+      });
+
+      loadBanks();
+    </script>
+  </body>
+</html>

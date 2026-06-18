@@ -1,0 +1,21 @@
+{
+  "kind": "collection",
+  "course": "课程名称",
+  "title": "分章节题库标题",
+  "status": "已整理",
+  "lastUpdated": "2026-06-18",
+  "source": "公开可显示的来源说明",
+  "note": "一句话使用建议。",
+  "items": [
+    {
+      "title": "章节标题",
+      "code": "佛脚码",
+      "questionCount": 0,
+      "status": "已整理",
+      "lastUpdated": "2026-06-18",
+      "source": "公开可显示的来源说明",
+      "note": "章节使用建议。",
+      "qr": ""
+    }
+  ]
+}

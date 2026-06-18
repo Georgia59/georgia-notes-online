@@ -1,0 +1,98 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Georgia Notes Online question bank entry index",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "course",
+      "title",
+      "status",
+      "lastUpdated",
+      "source",
+      "note"
+    ],
+    "oneOf": [
+      {
+        "required": ["code", "questionCount"]
+      },
+      {
+        "required": ["items"]
+      }
+    ],
+    "properties": {
+      "kind": {
+        "type": "string",
+        "enum": ["collection"]
+      },
+      "course": {
+        "type": "string"
+      },
+      "title": {
+        "type": "string"
+      },
+      "code": {
+        "type": "string"
+      },
+      "questionCount": {
+        "type": "integer",
+        "minimum": 0
+      },
+      "status": {
+        "type": "string"
+      },
+      "lastUpdated": {
+        "type": "string",
+        "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+      },
+      "source": {
+        "type": "string"
+      },
+      "note": {
+        "type": "string"
+      },
+      "qr": {
+        "type": "string",
+        "pattern": "^(|images/banks/.+)$"
+      },
+      "items": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["title", "code", "questionCount"],
+          "properties": {
+            "title": {
+              "type": "string"
+            },
+            "code": {
+              "type": "string"
+            },
+            "questionCount": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "status": {
+              "type": "string"
+            },
+            "lastUpdated": {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+            },
+            "source": {
+              "type": "string"
+            },
+            "note": {
+              "type": "string"
+            },
+            "qr": {
+              "type": "string",
+              "pattern": "^(|images/banks/.+)$"
+            }
+          }
+        }
+      }
+    }
+  }
+}

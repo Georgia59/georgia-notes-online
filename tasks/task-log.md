@@ -1,5 +1,9 @@
 # 任务记录
 
+## 2026-06-18
+
+- 新增佛脚刷题入口模块：`data/banks.json`、`pages/banks.html`、`images/banks/`、`scripts/validate_banks.py`，支持搜索、复制佛脚码、二维码展示和分章节题库合集。
+
 ## 2026-06-17
 
 - 初始化医学学习资料输出中心骨架。
