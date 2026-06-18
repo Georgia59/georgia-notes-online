@@ -17,6 +17,52 @@
     "description": "按学习指导章节汇总预防医学常见名词解释，适合期末复习、考前速背和概念辨析。"
   },
   {
+    "note_id": "epidemiology-final-review-notes",
+    "kind": "collection",
+    "course": "流行病学",
+    "category": "epidemiology",
+    "title": "流行病学期末复习笔记（五部分）",
+    "type": "Collection",
+    "date": "2026-06-18",
+    "path": "files/epidemiology/2026-06-18-epidemiology-final-review-notes/",
+    "source": "流行病学老师上课课件整理",
+    "tags": [
+      "流行病学",
+      "期末复习",
+      "PPT整理",
+      "计算题",
+      "预防医学"
+    ],
+    "description": "按五个部分整理流行病学课件重点、计算题和覆盖清单，涵盖了PPT全部内容，适合期末复习查漏。",
+    "items": [
+      {
+        "title": "第一部分：基础概念与描述性流行病学",
+        "type": "PDF",
+        "path": "files/epidemiology/2026-06-18-epidemiology-final-review-notes/01-basics-descriptive-epidemiology.pdf"
+      },
+      {
+        "title": "第二部分：病因推断与分析流行病学",
+        "type": "PDF",
+        "path": "files/epidemiology/2026-06-18-epidemiology-final-review-notes/02-causation-analytic-epidemiology.pdf"
+      },
+      {
+        "title": "第三部分：实验流行病学与筛检",
+        "type": "PDF",
+        "path": "files/epidemiology/2026-06-18-epidemiology-final-review-notes/03-experimental-epidemiology-screening.pdf"
+      },
+      {
+        "title": "第四部分：传染病流行病学与循证医学",
+        "type": "PDF",
+        "path": "files/epidemiology/2026-06-18-epidemiology-final-review-notes/04-infectious-disease-evidence-based-medicine.pdf"
+      },
+      {
+        "title": "第五部分：实习课计算题专项",
+        "type": "PDF",
+        "path": "files/epidemiology/2026-06-18-epidemiology-final-review-notes/05-practice-calculations.pdf"
+      }
+    ]
+  },
+  {
     "note_id": "surgery-general-textbook-notes",
     "kind": "collection",
     "course": "外科学",
