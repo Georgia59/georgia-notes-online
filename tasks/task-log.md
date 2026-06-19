@@ -27,4 +27,8 @@
 - 调整发布草案流程：普通生成不自动进入 `review/`；只有用户明确要求上传、发布或生成发布草案时，才复制到 `review/` 并生成 `*.publish-draft.json`。
 - 发布资料：外科学课本整理，类型：Collection，文件数：19，路径：`files/surgery/2026-06-18-surgery-general-textbook-notes/`，日期：2026-06-18。
 - 发布资料：流行病学期末复习笔记（五部分），类型：Collection，文件数：5，路径：`files/epidemiology/2026-06-18-epidemiology-final-review-notes/`，日期：2026-06-18。
-- 发布资料：预防医学名词解释汇总，类型：HTML，文件数：1，路径：`files/preventive-medicine/2026-06-18-preventive-medicine-terms-summary.html`，日期：2026-06-18。
+- 发布资料：预防医学名词解释汇总，类型：HTML 在线预览，文件数：1，路径：`notes/preventive-medicine/index.html`，日期：2026-06-18。
+
+## 2026-06-19
+
+- 增加 HTML 在线预览功能：`data/files.json` 支持 `previewUrl` 和 `downloadUrl`，首页显示“在线预览”按钮，并将预防医学名词解释 HTML 迁移到 `notes/preventive-medicine/index.html`。

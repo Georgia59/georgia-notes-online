@@ -128,7 +128,15 @@
           return item.files;
         }
         if (item.path) {
-          return [{ title: item.title, type: item.type || "PDF", path: item.path }];
+          return [
+            {
+              title: item.title,
+              type: item.type || "PDF",
+              path: item.path,
+              downloadUrl: item.downloadUrl,
+              previewUrl: item.previewUrl
+            }
+          ];
         }
         return [];
       }
@@ -150,6 +158,7 @@
 
         return Array.from(groups.values()).map((note) => {
           note.files.sort((a, b) => String(a.type || "").localeCompare(String(b.type || ""), "zh-CN"));
+          note.previewUrl = note.previewUrl || note.files.find((file) => file.previewUrl)?.previewUrl || "";
           note.types = isCollection(note)
             ? ["章节合集"]
             : [...new Set(note.files.map((file) => file.type).filter(Boolean))];
@@ -192,7 +201,9 @@
           note.date,
           note.source,
           note.description,
-          ...downloadables.flatMap((item) => [item.title, item.type, item.path, item.source])
+          note.previewUrl,
+          note.downloadUrl,
+          ...downloadables.flatMap((item) => [item.title, item.type, item.path, item.downloadUrl, item.previewUrl, item.source])
         ];
         return values.map(normalizeText).join(" ");
       }
@@ -246,7 +257,7 @@
                         ${itemFiles
                           .map(
                             (file) => `
-                              <a class="chapter-format-button${String(file.type || "").toLowerCase() === "pdf" ? " is-pdf" : ""}" href="${escapeHtml(file.path || "#")}" download>
+                              <a class="chapter-format-button${String(file.type || "").toLowerCase() === "pdf" ? " is-pdf" : ""}" href="${escapeHtml(file.downloadUrl || file.path || "#")}" download>
                                 ${escapeHtml(file.type || "下载")}
                               </a>
                             `
@@ -267,9 +278,14 @@
         return downloadableFiles
           .map((item, index) => {
             const label = item.type || "下载";
-            return `<a class="download-link${index === 0 ? " is-primary" : ""}" href="${escapeHtml(item.path || "#")}" download>${escapeHtml(label)}</a>`;
+            return `<a class="download-link${note.previewUrl ? "" : index === 0 ? " is-primary" : ""}" href="${escapeHtml(item.downloadUrl || item.path || "#")}" download>${escapeHtml(label)}</a>`;
           })
           .join("");
+      }
+
+      function renderPreviewButton(note) {
+        if (!note.previewUrl) return "";
+        return `<a class="download-link preview-link is-primary" href="${escapeHtml(note.previewUrl)}" target="_blank" rel="noopener">在线预览</a>`;
       }
 
       function renderFileCard(note) {
@@ -291,7 +307,14 @@
             </dl>
             <div class="download-block">
               <div class="download-label">${collection ? "章节下载" : "下载方式"}</div>
-              ${downloadHtml}
+              ${
+                collection
+                  ? downloadHtml
+                  : `<div class="download-list">
+                      ${renderPreviewButton(note)}
+                      ${downloadHtml}
+                    </div>`
+              }
             </div>
           </article>
         `;

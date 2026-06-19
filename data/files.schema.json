@@ -41,6 +41,16 @@
         "type": "string",
         "pattern": "^files/.+"
       },
+      "downloadUrl": {
+        "type": "string",
+        "pattern": "^(files|notes)/.+",
+        "description": "Optional public relative URL used by download buttons. Falls back to path."
+      },
+      "previewUrl": {
+        "type": "string",
+        "pattern": "^notes/.+\\.html$",
+        "description": "Optional public relative URL for opening an HTML preview in a new tab."
+      },
       "source": {
         "type": "string"
       },
@@ -77,6 +87,14 @@
               "type": "string",
               "pattern": "^files/.+"
             },
+            "downloadUrl": {
+              "type": "string",
+              "pattern": "^(files|notes)/.+"
+            },
+            "previewUrl": {
+              "type": "string",
+              "pattern": "^notes/.+\\.html$"
+            },
             "files": {
               "type": "array",
               "items": {
@@ -89,6 +107,14 @@
                   "path": {
                     "type": "string",
                     "pattern": "^files/.+"
+                  },
+                  "downloadUrl": {
+                    "type": "string",
+                    "pattern": "^(files|notes)/.+"
+                  },
+                  "previewUrl": {
+                    "type": "string",
+                    "pattern": "^notes/.+\\.html$"
                   }
                 }
               }

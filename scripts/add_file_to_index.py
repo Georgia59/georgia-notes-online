@@ -16,7 +16,7 @@ REQUIRED_FIELDS = [
     "description",
 ]
 
-ALLOWED_FIELDS = set(REQUIRED_FIELDS) | {"note_id", "kind", "items"}
+ALLOWED_FIELDS = set(REQUIRED_FIELDS) | {"note_id", "kind", "items", "previewUrl", "downloadUrl"}
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -67,11 +67,31 @@ def validate_public_path(path_value, field_name):
     return errors
 
 
+def validate_optional_public_url(path_value, field_name):
+    errors = []
+    if not path_value:
+        return errors
+    path_text = str(path_value)
+    if Path(path_text).is_absolute():
+        errors.append(f"{field_name} 应使用仓库内相对路径。")
+    if not (path_text.startswith("files/") or path_text.startswith("notes/")):
+        errors.append(f"{field_name} 必须指向 files/ 或 notes/ 下的公开位置。")
+    return errors
+
+
 def item_files(item):
     if isinstance(item.get("files"), list) and item["files"]:
         return item["files"]
     if item.get("path"):
-        return [{"title": item.get("title"), "type": item.get("type"), "path": item.get("path")}]
+        return [
+            {
+                "title": item.get("title"),
+                "type": item.get("type"),
+                "path": item.get("path"),
+                "downloadUrl": item.get("downloadUrl"),
+                "previewUrl": item.get("previewUrl"),
+            }
+        ]
     return []
 
 
@@ -83,6 +103,10 @@ def validate_record(record):
 
     if "path" in record:
         errors.extend(validate_public_path(record["path"], "path"))
+    if "downloadUrl" in record:
+        errors.extend(validate_optional_public_url(record["downloadUrl"], "downloadUrl"))
+    if "previewUrl" in record:
+        errors.extend(validate_optional_public_url(record["previewUrl"], "previewUrl"))
 
     if is_collection(record):
         items = record.get("items")
@@ -114,6 +138,10 @@ def validate_record(record):
                         if item_path in seen_item_paths:
                             errors.append(f"collection 内重复章节路径：{item_path}")
                         seen_item_paths.add(item_path)
+                    if file.get("downloadUrl"):
+                        errors.extend(validate_optional_public_url(file["downloadUrl"], f"{file_label}.downloadUrl"))
+                    if file.get("previewUrl"):
+                        errors.extend(validate_optional_public_url(file["previewUrl"], f"{file_label}.previewUrl"))
 
     return errors
 
@@ -135,6 +163,8 @@ def build_record_from_args(args):
         "type": args.type,
         "date": args.date,
         "path": args.path,
+        "downloadUrl": args.download_url,
+        "previewUrl": args.preview_url,
         "source": args.source,
         "description": args.description,
     }
@@ -164,6 +194,8 @@ def main():
     parser.add_argument("--type", help="文件类型，例如 PDF、Word、PPT、HTML。")
     parser.add_argument("--date", help="生成日期，格式 YYYY-MM-DD。")
     parser.add_argument("--path", help="仓库内相对文件路径。")
+    parser.add_argument("--download-url", help="下载按钮使用的仓库内相对路径。")
+    parser.add_argument("--preview-url", help="在线预览按钮使用的仓库内相对 HTML 路径。")
     parser.add_argument("--source", help="来源说明，例如 本地 PPT。")
     parser.add_argument("--description", help="简短说明。")
     args = parser.parse_args()

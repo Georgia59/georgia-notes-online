@@ -27,7 +27,15 @@ def item_files(item):
     if isinstance(item.get("files"), list) and item["files"]:
         return item["files"]
     if item.get("path"):
-        return [{"title": item.get("title"), "type": item.get("type"), "path": item.get("path")}]
+        return [
+            {
+                "title": item.get("title"),
+                "type": item.get("type"),
+                "path": item.get("path"),
+                "downloadUrl": item.get("downloadUrl"),
+                "previewUrl": item.get("previewUrl"),
+            }
+        ]
     return []
 
 
@@ -42,6 +50,19 @@ def validate_relative_public_path(path_value, label, errors):
         return None
     if not str(path_value).startswith("files/"):
         errors.append(f"{label} path 必须位于 files/ 下：{path_value}")
+    return REPO_ROOT / relative_path
+
+
+def validate_optional_public_url(path_value, label, field_name, errors):
+    if not path_value:
+        return None
+
+    relative_path = Path(str(path_value))
+    if relative_path.is_absolute():
+        errors.append(f"{label} {field_name} 应为仓库内相对路径：{path_value}")
+        return None
+    if not (str(path_value).startswith("files/") or str(path_value).startswith("notes/")):
+        errors.append(f"{label} {field_name} 必须位于 files/ 或 notes/ 下：{path_value}")
     return REPO_ROOT / relative_path
 
 
@@ -87,6 +108,11 @@ def main():
         if file_path and not file_path.exists():
             errors.append(f"文件或目录不存在：{path_value}")
 
+        for field_name in ["downloadUrl", "previewUrl"]:
+            url_path = validate_optional_public_url(record.get(field_name), label, field_name, errors)
+            if url_path and not url_path.exists():
+                errors.append(f"{field_name} 指向的文件或目录不存在：{record.get(field_name)}")
+
         if is_collection(record):
             items = record.get("items")
             if not isinstance(items, list) or not items:
@@ -119,6 +145,10 @@ def main():
                         seen_paths.add(item_path_value)
                     if item_path and not item_path.is_file():
                         errors.append(f"章节文件不存在：{item_path_value}")
+                    for field_name in ["downloadUrl", "previewUrl"]:
+                        url_path = validate_optional_public_url(file.get(field_name), file_label, field_name, errors)
+                        if url_path and not url_path.exists():
+                            errors.append(f"{file_label} {field_name} 指向的文件或目录不存在：{file.get(field_name)}")
 
     if errors:
         print("验证失败：")

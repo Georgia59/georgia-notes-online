@@ -50,6 +50,8 @@
 17. 发布前必须运行 `scripts/pre_publish_check.py` 和 `scripts/validate_files.py`。
 18. `data/files.json` 字段规范以 `docs/files-json-fields.md` 为准。
 19. 用户确认发布 `review/` 中的文件时，优先使用 `scripts/publish_review_file.py --metadata` 根据发布草案完成移动、索引更新和任务日志记录。
+20. HTML 在线预览文件统一放入 `notes/课程目录/`，首页只通过 `previewUrl` 链接到预览页，不直接嵌入完整 HTML 内容。
+21. 下载按钮优先使用 `downloadUrl`；未填写时使用 `path`。
 
 ## 来源与医学准确性
 

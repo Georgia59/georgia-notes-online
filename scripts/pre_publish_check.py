@@ -60,7 +60,15 @@ def item_files(item):
     if isinstance(item.get("files"), list) and item["files"]:
         return item["files"]
     if item.get("path"):
-        return [{"title": item.get("title"), "type": item.get("type"), "path": item.get("path")}]
+        return [
+            {
+                "title": item.get("title"),
+                "type": item.get("type"),
+                "path": item.get("path"),
+                "downloadUrl": item.get("downloadUrl"),
+                "previewUrl": item.get("previewUrl"),
+            }
+        ]
     return []
 
 
@@ -120,6 +128,21 @@ def check_public_path(path_value, source_value, label):
     return errors
 
 
+def check_public_url(path_value, label):
+    errors = []
+    if not path_value:
+        return errors
+
+    path_text = str(path_value)
+    if Path(path_text).is_absolute():
+        errors.append(f"{label} 是绝对路径：{path_text}")
+    if not (path_text.startswith("files/") or path_text.startswith("notes/")):
+        errors.append(f"{label} 不在 files/ 或 notes/ 下：{path_text}")
+    if any(pattern.search(path_text) for pattern in LOCAL_PATH_PATTERNS):
+        errors.append(f"{label} 含本地路径：{path_text}")
+    return errors
+
+
 def check_index():
     errors = []
     if not INDEX_PATH.exists():
@@ -140,6 +163,8 @@ def check_index():
 
         source_value = str(record.get("source", ""))
         errors.extend(check_public_path(record.get("path", ""), source_value, f"第 {index} 条"))
+        errors.extend(check_public_url(record.get("downloadUrl", ""), f"第 {index} 条 downloadUrl"))
+        errors.extend(check_public_url(record.get("previewUrl", ""), f"第 {index} 条 previewUrl"))
 
         if is_collection(record):
             items = record.get("items", [])
@@ -152,6 +177,18 @@ def check_index():
                                     file.get("path", ""),
                                     source_value,
                                     f"第 {index} 条 items[{item_index}].files[{file_index}]",
+                                )
+                            )
+                            errors.extend(
+                                check_public_url(
+                                    file.get("downloadUrl", ""),
+                                    f"第 {index} 条 items[{item_index}].files[{file_index}].downloadUrl",
+                                )
+                            )
+                            errors.extend(
+                                check_public_url(
+                                    file.get("previewUrl", ""),
+                                    f"第 {index} 条 items[{item_index}].files[{file_index}].previewUrl",
                                 )
                             )
 

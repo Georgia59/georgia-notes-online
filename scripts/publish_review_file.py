@@ -79,6 +79,8 @@ def load_record_from_args(args):
         "date": args.date,
         "source": args.source,
         "description": args.description,
+        "downloadUrl": args.download_url,
+        "previewUrl": args.preview_url,
     }
     return record_data, args.review_path, args.dest_name
 
@@ -146,6 +148,8 @@ def main():
     parser.add_argument("--title", help="文件标题。")
     parser.add_argument("--type", help="文件类型，例如 PDF、Word、PPT、HTML。")
     parser.add_argument("--date", default=date.today().isoformat(), help="发布日期，格式 YYYY-MM-DD。")
+    parser.add_argument("--download-url", help="下载按钮使用的仓库内相对路径。")
+    parser.add_argument("--preview-url", help="在线预览按钮使用的仓库内相对 HTML 路径。")
     parser.add_argument("--source", help="公开可显示的来源类型。")
     parser.add_argument("--description", help="一句话简介。")
     args = parser.parse_args()

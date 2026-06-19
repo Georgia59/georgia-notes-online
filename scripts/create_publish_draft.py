@@ -142,6 +142,8 @@ def build_file_metadata(args, dest_name):
             "type": args.type,
             "date": args.date,
             "path": f"files/{args.category}/{dest_name}",
+            "downloadUrl": args.download_url,
+            "previewUrl": args.preview_url,
             "source": args.source,
             "description": args.description,
         }
@@ -212,6 +214,8 @@ def main():
     parser.add_argument("--title", required=True, help="公开显示的资料标题。")
     parser.add_argument("--type", help="文件类型，例如 PDF 或 Collection。")
     parser.add_argument("--date", default=date.today().isoformat(), help="发布日期，格式 YYYY-MM-DD。")
+    parser.add_argument("--download-url", help="下载按钮使用的仓库内相对路径；未填写时首页使用 path。")
+    parser.add_argument("--preview-url", help="在线预览按钮使用的仓库内相对 HTML 路径。")
     parser.add_argument("--source", required=True, help="公开显示的来源名称。")
     parser.add_argument("--description", required=True, help="一句话简介。")
     parser.add_argument("--website-url", help="GitHub Pages 首页地址；默认从 origin 自动推断。")
