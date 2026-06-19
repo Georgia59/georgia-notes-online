@@ -32,3 +32,4 @@
 ## 2026-06-19
 
 - 增加 HTML 在线预览功能：`data/files.json` 支持 `previewUrl` 和 `downloadUrl`，首页显示“在线预览”按钮，并将预防医学名词解释 HTML 迁移到 `notes/preventive-medicine/index.html`。
+- 接入两个外部学习站点入口：影像学笔记站和医学英语背单词；入口放在首页顶部导航，直接跳转到对应 GitHub Pages，不写入 `data/files.json`。
