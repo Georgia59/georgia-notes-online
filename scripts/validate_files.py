@@ -9,7 +9,6 @@ REQUIRED_FIELDS = [
     "title",
     "type",
     "date",
-    "path",
     "source",
     "description",
 ]
@@ -39,9 +38,14 @@ def item_files(item):
     return []
 
 
-def validate_relative_public_path(path_value, label, errors):
+def is_external_url(value):
+    return str(value).startswith(("https://", "http://"))
+
+
+def validate_relative_public_path(path_value, label, errors, required=True):
     if not path_value:
-        errors.append(f"{label} 缺少 path。")
+        if required:
+            errors.append(f"{label} 缺少 path。")
         return None
 
     relative_path = Path(str(path_value))
@@ -55,6 +59,9 @@ def validate_relative_public_path(path_value, label, errors):
 
 def validate_optional_public_url(path_value, label, field_name, errors):
     if not path_value:
+        return None
+
+    if is_external_url(path_value):
         return None
 
     relative_path = Path(str(path_value))
@@ -99,8 +106,16 @@ def main():
         if note_id is not None and not isinstance(note_id, str):
             errors.append(f"{label} 的 note_id 必须是字符串。")
 
-        file_path = validate_relative_public_path(record.get("path"), label, errors)
         path_value = record.get("path")
+        if is_collection(record):
+            file_path = validate_relative_public_path(path_value, label, errors)
+        elif path_value:
+            file_path = validate_relative_public_path(path_value, label, errors)
+        else:
+            file_path = None
+            if not record.get("previewUrl"):
+                errors.append(f"{label} 必须包含 path 或 previewUrl。")
+
         if path_value:
             if path_value in seen_paths:
                 errors.append(f"重复路径：{path_value}")

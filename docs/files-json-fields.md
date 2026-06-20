@@ -1,6 +1,6 @@
 # data/files.json 字段规范
 
-`data/files.json` 是下载站的文件索引。它是一个 JSON 数组，每一条记录代表一个可下载成品文件。
+`data/files.json` 是下载站的资料索引。它是一个 JSON 数组，每一条记录代表一个可下载成品文件、一个 HTML 在线预览入口，或一个外部学习站点入口。
 
 ## 字段说明
 
@@ -12,9 +12,9 @@
 | `title` | 必填 | 卡片名称，也是用户看到的资料标题。 |
 | `type` | 必填 | 文件类型或下载按钮名称，例如 `PDF`、`Word`、`PPT`、`HTML`。 |
 | `date` | 必填 | 生成或发布日期，格式为 `YYYY-MM-DD`。 |
-| `path` | 必填 | 仓库内相对路径，必须指向 `files/` 下的成品文件。 |
+| `path` | 有下载文件时必填 | 仓库内相对路径，必须指向 `files/` 下的成品文件。外部站点或纯在线预览入口可以省略。 |
 | `downloadUrl` | 可选 | 下载按钮使用的公开相对路径。未填写时默认使用 `path`。 |
-| `previewUrl` | 可选 | 在线预览按钮使用的公开相对路径，通常指向 `notes/课程目录/index.html`。 |
+| `previewUrl` | 可选 | 在线预览按钮使用的公开路径。站内 HTML 通常指向 `notes/课程目录/index.html`；外部学习站点可以填写 `https://...`。 |
 | `source` | 必填 | 公开可显示的来源类型，例如 `本地 PPT 整理`、`教材整理`、`错题整理`。不要写原始文件名或本地路径。 |
 | `description` | 必填 | 一句话简介，适合手机端快速浏览。 |
 
@@ -40,7 +40,29 @@ HTML 预览文件放在 `notes/课程目录/` 下，首页只读取 `data/files.
 }
 ```
 
-`previewUrl` 不替代 `path`。`path` 仍用于索引成品下载文件；`previewUrl` 只用于在线阅读入口。
+有下载文件时，`previewUrl` 不替代 `path`。`path` 仍用于索引成品下载文件；`previewUrl` 只用于在线阅读入口。
+
+## 外部学习站点
+
+如果某个资料本身是另一个 GitHub Pages 站点，可以在 `data/files.json` 中写成只有 `previewUrl` 的 HTML 条目。首页会把它放入对应课程索引，并只显示“在线预览”按钮。
+
+示例：
+
+```json
+{
+  "note_id": "ultra-notes-of-medical-imaging",
+  "course": "医学影像学",
+  "category": "imaging",
+  "title": "Ultra Notes 医学影像学",
+  "type": "HTML",
+  "date": "2026-06-20",
+  "previewUrl": "https://georgia59.github.io/ultra-notes-of-medical-imaging/",
+  "source": "GitHub Pages 学习站",
+  "description": "系统整理医学影像学底层逻辑笔记，适合按章节阅读、搜索和复习。"
+}
+```
+
+这类条目不需要 `path` 或 `downloadUrl`，因为它们不是仓库内下载文件。不要把完整外部站点内容嵌入首页。
 
 ## 多格式笔记
 

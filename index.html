@@ -25,8 +25,6 @@
       <nav class="site-switcher" aria-label="站点功能">
         <a class="switcher-link is-active" href="index.html">课程资料</a>
         <a class="switcher-link" href="pages/banks.html">佛脚刷题</a>
-        <a class="switcher-link" href="https://georgia59.github.io/ultra-notes-of-medical-imaging/" target="_blank" rel="noopener">影像学笔记站</a>
-        <a class="switcher-link" href="https://georgia59.github.io/english-vocabulary-practice/" target="_blank" rel="noopener">医学英语背单词</a>
       </nav>
 
       <nav id="courseNav" class="course-nav" aria-label="课程索引" hidden></nav>
@@ -58,6 +56,7 @@
         imaging: "医学影像学",
         diagnostics: "诊断学",
         "preventive-medicine": "预防医学",
+        "medical-english": "医学英语",
         pharmacoeconomics: "药物经济学",
         surgery: "外科学",
         others: "其他"
@@ -67,6 +66,7 @@
         "imaging",
         "diagnostics",
         "preventive-medicine",
+        "medical-english",
         "pharmacoeconomics",
         "surgery",
         "others"
@@ -278,6 +278,7 @@
       function renderDownloadButtons(note) {
         const downloadableFiles = getDownloadables(note);
         return downloadableFiles
+          .filter((item) => item.downloadUrl || item.path)
           .map((item, index) => {
             const label = item.type || "下载";
             return `<a class="download-link${note.previewUrl ? "" : index === 0 ? " is-primary" : ""}" href="${escapeHtml(item.downloadUrl || item.path || "#")}" download>${escapeHtml(label)}</a>`;

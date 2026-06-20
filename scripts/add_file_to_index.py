@@ -11,7 +11,6 @@ REQUIRED_FIELDS = [
     "title",
     "type",
     "date",
-    "path",
     "source",
     "description",
 ]
@@ -45,7 +44,7 @@ def is_collection(record):
 
 
 def normalize_record(record):
-    normalized = {key: value for key, value in dict(record).items() if key in ALLOWED_FIELDS}
+    normalized = {key: value for key, value in dict(record).items() if key in ALLOWED_FIELDS and value not in ("", None)}
     if not normalized.get("date"):
         normalized["date"] = date.today().isoformat()
     if is_collection(normalized):
@@ -67,11 +66,17 @@ def validate_public_path(path_value, field_name):
     return errors
 
 
+def is_external_url(value):
+    return str(value).startswith(("https://", "http://"))
+
+
 def validate_optional_public_url(path_value, field_name):
     errors = []
     if not path_value:
         return errors
     path_text = str(path_value)
+    if is_external_url(path_text):
+        return errors
     if Path(path_text).is_absolute():
         errors.append(f"{field_name} 应使用仓库内相对路径。")
     if not (path_text.startswith("files/") or path_text.startswith("notes/")):
@@ -103,6 +108,8 @@ def validate_record(record):
 
     if "path" in record:
         errors.extend(validate_public_path(record["path"], "path"))
+    elif not record.get("previewUrl"):
+        errors.append("必须填写 path 或 previewUrl。")
     if "downloadUrl" in record:
         errors.extend(validate_optional_public_url(record["downloadUrl"], "downloadUrl"))
     if "previewUrl" in record:
@@ -221,7 +228,7 @@ def main():
         files.append(record)
         files.sort(key=sort_key, reverse=True)
         save_json(INDEX_PATH, files)
-        print(f"添加成功：{record['path']}")
+        print(f"添加成功：{record.get('path') or record.get('previewUrl') or record.get('title')}")
         return 0
     except json.JSONDecodeError as exc:
         print(f"添加失败：JSON 格式错误：{exc}")

@@ -72,6 +72,10 @@ def item_files(item):
     return []
 
 
+def is_external_url(value):
+    return str(value).startswith(("https://", "http://"))
+
+
 def iter_public_text_files():
     for path in REPO_ROOT.rglob("*"):
         if not path.is_file():
@@ -134,6 +138,9 @@ def check_public_url(path_value, label):
         return errors
 
     path_text = str(path_value)
+    if is_external_url(path_text):
+        return errors
+
     if Path(path_text).is_absolute():
         errors.append(f"{label} 是绝对路径：{path_text}")
     if not (path_text.startswith("files/") or path_text.startswith("notes/")):
