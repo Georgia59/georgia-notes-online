@@ -15,7 +15,7 @@ REQUIRED_FIELDS = [
     "description",
 ]
 
-ALLOWED_FIELDS = set(REQUIRED_FIELDS) | {"note_id", "kind", "items", "previewUrl", "downloadUrl"}
+ALLOWED_FIELDS = set(REQUIRED_FIELDS) | {"note_id", "kind", "items", "path", "previewUrl", "downloadUrl"}
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]

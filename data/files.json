@@ -1,14 +1,42 @@
 [
   {
-    "note_id": "ultra-notes-of-medical-imaging",
-    "course": "医学影像学",
-    "category": "imaging",
-    "title": "Ultra Notes 医学影像学",
-    "type": "HTML",
-    "date": "2026-06-20",
-    "previewUrl": "https://georgia59.github.io/ultra-notes-of-medical-imaging/",
-    "source": "GitHub Pages 学习站",
-    "description": "系统整理医学影像学底层逻辑笔记，适合按章节阅读、搜索和复习。"
+    "note_id": "diagnostics-novaforge-lab-notes",
+    "kind": "collection",
+    "course": "诊断学",
+    "category": "diagnostics",
+    "title": "诊断学实验诊断 NovaForge 笔记集",
+    "type": "Collection",
+    "date": "2026-06-29",
+    "path": "files/diagnostics/2026-06-29-diagnostics-novaforge-lab-notes/",
+    "source": "诊断学教材整理",
+    "description": "汇总实验诊断相关 NovaForge 笔记，覆盖血液学、生物化学、肝肾功能、免疫学和血栓与止血检测。",
+    "items": [
+      {
+        "title": "血液学检查",
+        "type": "PDF",
+        "path": "files/diagnostics/2026-06-29-diagnostics-novaforge-lab-notes/01-hematology-tests.pdf"
+      },
+      {
+        "title": "生物化学检测",
+        "type": "PDF",
+        "path": "files/diagnostics/2026-06-29-diagnostics-novaforge-lab-notes/02-biochemistry-tests-readable.pdf"
+      },
+      {
+        "title": "肝肾功能实验室检测",
+        "type": "PDF",
+        "path": "files/diagnostics/2026-06-29-diagnostics-novaforge-lab-notes/04-renal-liver-function-tests-loom-visual.pdf"
+      },
+      {
+        "title": "临床常用免疫学检测",
+        "type": "PDF",
+        "path": "files/diagnostics/2026-06-29-diagnostics-novaforge-lab-notes/05-immunology-tests.pdf"
+      },
+      {
+        "title": "血栓与止血检测",
+        "type": "PDF",
+        "path": "files/diagnostics/2026-06-29-diagnostics-novaforge-lab-notes/06-thrombosis-hemostasis-tests.pdf"
+      }
+    ]
   },
   {
     "note_id": "english-vocabulary-practice",
@@ -20,6 +48,17 @@
     "previewUrl": "https://georgia59.github.io/english-vocabulary-practice/",
     "source": "GitHub Pages 学习站",
     "description": "NJMU 医学英语 02 词汇练习站，适合背单词和自测。"
+  },
+  {
+    "note_id": "ultra-notes-of-medical-imaging",
+    "course": "医学影像学",
+    "category": "imaging",
+    "title": "Ultra Notes 医学影像学",
+    "type": "HTML",
+    "date": "2026-06-20",
+    "previewUrl": "https://georgia59.github.io/ultra-notes-of-medical-imaging/",
+    "source": "GitHub Pages 学习站",
+    "description": "系统整理医学影像学底层逻辑笔记，适合按章节阅读、搜索和复习。"
   },
   {
     "note_id": "preventive-medicine-terms-summary",
