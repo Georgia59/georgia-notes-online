@@ -1,5 +1,16 @@
 [
   {
+    "note_id": "lab-diagnostics-lab-form-cases-four-sentence-template",
+    "course": "实验诊断学",
+    "category": "diagnostics",
+    "title": "化验单分析课堂病例：主观题四句模板笔记",
+    "type": "PDF",
+    "date": "2026-06-30",
+    "path": "files/diagnostics/2026-06-30-lab-diagnostics-lab-form-cases-four-sentence-template.pdf",
+    "source": "课堂资料整理",
+    "description": "按课堂化验单病例整理主观题诊断句、依据句、鉴别句和补充检查句，适合实验诊断学考前复习。"
+  },
+  {
     "note_id": "diagnostics-novaforge-lab-notes",
     "kind": "collection",
     "course": "诊断学",
