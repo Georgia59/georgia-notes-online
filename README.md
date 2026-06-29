@@ -21,7 +21,6 @@
 - `files/imaging/`：医学影像学
 - `files/diagnostics/`：诊断学
 - `files/preventive-medicine/`：预防医学
-- `files/pharmacoeconomics/`：药物经济学
 - `files/surgery/`：外科学
 - `files/others/`：其他课程或临时资料
 
