@@ -39,6 +39,28 @@
     ]
   },
   {
+    "note_id": "lab-diagnostics-subjective-cases-template",
+    "course": "实验诊断学",
+    "category": "diagnostics",
+    "title": "实验诊断主观病例分析 16 分模板库",
+    "type": "PDF",
+    "date": "2026-06-29",
+    "path": "files/diagnostics/2026-06-29-lab-diagnostics-subjective-cases-template.pdf",
+    "source": "课程资料整理",
+    "description": "面向实验诊断学期末主观病例分析题的答题模板库，用于课程学习与考前复习。"
+  },
+  {
+    "note_id": "lab-diagnostics-a1-a2-crash-pack",
+    "course": "实验诊断学",
+    "category": "diagnostics",
+    "title": "实验诊断 A1+A2 选择题冲刺包",
+    "type": "PDF",
+    "date": "2026-06-29",
+    "path": "files/diagnostics/2026-06-29-lab-diagnostics-a1-a2-crash-pack.pdf",
+    "source": "课程资料整理",
+    "description": "面向实验诊断学期末 A1 与 A2 选择题的检验组合和病例题干识别冲刺资料。"
+  },
+  {
     "note_id": "english-vocabulary-practice",
     "course": "医学英语",
     "category": "medical-english",

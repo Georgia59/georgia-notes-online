@@ -47,3 +47,5 @@
 - 将影像学笔记站和医学英语背单词从顶部导航移入课程索引，作为 `data/files.json` 中的 HTML 在线预览条目展示。
 - 扩展文件索引规则：允许外部 GitHub Pages 学习站点使用外部 `previewUrl`，并在没有下载文件时省略 `path` 和 `downloadUrl`。
 - 发布资料：诊断学实验诊断 NovaForge 笔记集，类型：Collection，文件数：5，路径：`files/diagnostics/2026-06-29-diagnostics-novaforge-lab-notes/`，日期：2026-06-29。
+- 发布资料：实验诊断主观病例分析 16 分模板库，类型：PDF，文件数：1，路径：`files/diagnostics/2026-06-29-lab-diagnostics-subjective-cases-template.pdf`，日期：2026-06-29。
+- 发布资料：实验诊断 A1+A2 选择题冲刺包，类型：PDF，文件数：1，路径：`files/diagnostics/2026-06-29-lab-diagnostics-a1-a2-crash-pack.pdf`，日期：2026-06-29。
