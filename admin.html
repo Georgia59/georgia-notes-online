@@ -1,0 +1,589 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>GEORGIA NOTES-ONLINE 半自动后台</title>
+    <link rel="stylesheet" href="assets/style.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="header-inner">
+        <div>
+          <h1 class="site-title">GEORGIA NOTES ADMIN</h1>
+          <p class="site-kicker">半自动资料索引编辑器</p>
+          <p class="site-subtitle">只编辑 data/files.json；不会直接保存到 GitHub，也不会删除仓库文件。</p>
+        </div>
+        <aside class="library-stats" aria-label="编辑统计">
+          <strong id="adminCount">0 条记录</strong>
+          <span id="dirtyState">未加载索引</span>
+        </aside>
+      </div>
+    </header>
+
+    <main class="main-content">
+      <nav class="site-switcher" aria-label="站点功能">
+        <a class="switcher-link" href="index.html">课程资料</a>
+        <a class="switcher-link" href="pages/banks.html">佛脚刷题</a>
+        <a class="switcher-link is-active" href="admin.html">半自动后台</a>
+      </nav>
+
+      <section class="admin-notice" aria-label="使用说明">
+        <strong>这个页面没有真正的管理员权限。</strong>
+        <span>它只在浏览器里生成新的 JSON。导出的文件需要交给 Codex 检查、替换、运行脚本并提交推送。</span>
+      </section>
+
+      <section class="admin-toolbar" aria-label="后台操作">
+        <button class="admin-button is-primary" type="button" id="loadButton">读取当前索引</button>
+        <button class="admin-button" type="button" id="addButton">新增记录</button>
+        <button class="admin-button" type="button" id="validateButton">校验</button>
+        <button class="admin-button" type="button" id="copyButton">复制 JSON</button>
+        <button class="admin-button" type="button" id="downloadButton">下载 JSON</button>
+        <button class="admin-button" type="button" id="resetButton">恢复原始</button>
+      </section>
+
+      <section class="admin-import" aria-label="导入 JSON">
+        <label class="admin-label" for="importJson">也可以粘贴 edited-files.json 后导入</label>
+        <textarea id="importJson" class="admin-textarea is-compact" rows="5" placeholder="粘贴 JSON 数组"></textarea>
+        <button class="admin-button" type="button" id="importButton">导入粘贴内容</button>
+      </section>
+
+      <section id="adminStatus" class="status" role="status">点击“读取当前索引”开始编辑。</section>
+
+      <section class="admin-layout" aria-label="索引编辑区" hidden>
+        <aside class="admin-list-panel">
+          <label class="admin-label" for="adminSearch">搜索记录</label>
+          <input id="adminSearch" class="course-search admin-search" type="search" placeholder="标题、课程、来源、简介" />
+
+          <label class="admin-label" for="courseFilter">课程筛选</label>
+          <select id="courseFilter" class="admin-select">
+            <option value="">全部课程</option>
+          </select>
+
+          <div id="recordList" class="admin-record-list"></div>
+        </aside>
+
+        <section class="admin-editor-panel" aria-label="当前记录编辑">
+          <div id="emptyEditor" class="admin-empty">选择左侧记录后开始编辑。</div>
+          <form id="recordForm" class="admin-form" hidden>
+            <div class="admin-editor-heading">
+              <div>
+                <span id="selectedIndexLabel" class="admin-kicker">未选择</span>
+                <h2 id="selectedTitle" class="admin-title">记录编辑</h2>
+              </div>
+              <div class="admin-inline-actions">
+                <button class="admin-button" type="button" id="moveUpButton">上移</button>
+                <button class="admin-button" type="button" id="moveDownButton">下移</button>
+                <button class="admin-button" type="button" id="duplicateButton">复制记录</button>
+                <button class="admin-button is-danger" type="button" id="deleteButton">删除记录</button>
+              </div>
+            </div>
+
+            <div class="admin-grid">
+              <label>
+                <span>note_id</span>
+                <input name="note_id" type="text" />
+              </label>
+              <label>
+                <span>课程</span>
+                <input name="course" type="text" required />
+              </label>
+              <label>
+                <span>分类 category</span>
+                <input name="category" type="text" required />
+              </label>
+              <label>
+                <span>标题</span>
+                <input name="title" type="text" required />
+              </label>
+              <label>
+                <span>类型</span>
+                <input name="type" type="text" required />
+              </label>
+              <label>
+                <span>日期</span>
+                <input name="date" type="date" required />
+              </label>
+              <label class="admin-wide">
+                <span>path</span>
+                <input name="path" type="text" />
+              </label>
+              <label class="admin-wide">
+                <span>downloadUrl</span>
+                <input name="downloadUrl" type="text" />
+              </label>
+              <label class="admin-wide">
+                <span>previewUrl</span>
+                <input name="previewUrl" type="text" />
+              </label>
+              <label class="admin-wide">
+                <span>来源</span>
+                <input name="source" type="text" required />
+              </label>
+              <label class="admin-wide">
+                <span>简介</span>
+                <textarea name="description" rows="3" required></textarea>
+              </label>
+              <label class="admin-wide">
+                <span>items JSON（资料集章节，可留空）</span>
+                <textarea id="itemsJson" rows="9" spellcheck="false"></textarea>
+              </label>
+            </div>
+            <p id="itemsStatus" class="admin-helper">items 必须是 JSON 数组。普通资料可留空。</p>
+          </form>
+        </section>
+      </section>
+
+      <section class="admin-output" aria-label="导出结果">
+        <label class="admin-label" for="outputJson">导出的 data/files.json</label>
+        <textarea id="outputJson" class="admin-textarea" rows="12" readonly></textarea>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <p>半自动后台只生成索引草稿；正式发布仍需人工检查隐私、路径、版权风险和页面展示效果。</p>
+    </footer>
+
+    <script>
+      const state = {
+        original: [],
+        records: [],
+        selectedIndex: -1,
+        dirty: false,
+        query: "",
+        course: ""
+      };
+
+      const adminCountEl = document.getElementById("adminCount");
+      const dirtyStateEl = document.getElementById("dirtyState");
+      const statusEl = document.getElementById("adminStatus");
+      const layoutEl = document.querySelector(".admin-layout");
+      const recordListEl = document.getElementById("recordList");
+      const recordFormEl = document.getElementById("recordForm");
+      const emptyEditorEl = document.getElementById("emptyEditor");
+      const outputJsonEl = document.getElementById("outputJson");
+      const importJsonEl = document.getElementById("importJson");
+      const courseFilterEl = document.getElementById("courseFilter");
+      const adminSearchEl = document.getElementById("adminSearch");
+      const selectedTitleEl = document.getElementById("selectedTitle");
+      const selectedIndexLabelEl = document.getElementById("selectedIndexLabel");
+      const itemsJsonEl = document.getElementById("itemsJson");
+      const itemsStatusEl = document.getElementById("itemsStatus");
+
+      function clone(value) {
+        return JSON.parse(JSON.stringify(value));
+      }
+
+      function escapeHtml(value) {
+        return String(value ?? "")
+          .replaceAll("&", "&amp;")
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;")
+          .replaceAll('"', "&quot;")
+          .replaceAll("'", "&#039;");
+      }
+
+      function normalizeText(value) {
+        return String(value ?? "").toLowerCase();
+      }
+
+      function isCollection(record) {
+        return record.kind === "collection" || record.type === "Collection" || Array.isArray(record.items);
+      }
+
+      function isExternalUrl(value) {
+        return String(value || "").startsWith("https://") || String(value || "").startsWith("http://");
+      }
+
+      function isAbsoluteLocalPath(value) {
+        const text = String(value || "");
+        return /^[A-Za-z]:[\\/]/.test(text) || text.startsWith("\\\\") || text.startsWith("/Users/") || text.startsWith("/home/");
+      }
+
+      function markDirty() {
+        state.dirty = true;
+        renderMeta();
+        renderOutput();
+      }
+
+      function setStatus(message, mode = "") {
+        statusEl.hidden = false;
+        statusEl.className = mode ? `status ${mode}` : "status";
+        statusEl.textContent = message;
+      }
+
+      function renderMeta() {
+        adminCountEl.textContent = `${state.records.length} 条记录`;
+        dirtyStateEl.textContent = state.dirty ? "有未导出的修改" : state.records.length ? "已加载索引" : "未加载索引";
+      }
+
+      function cleanRecord(record) {
+        const copy = clone(record);
+        ["note_id", "path", "downloadUrl", "previewUrl"].forEach((field) => {
+          if (copy[field] === "" || copy[field] === null || copy[field] === undefined) delete copy[field];
+        });
+        if (Array.isArray(copy.items)) {
+          copy.items = copy.items.map((item) => {
+            const cleanItem = clone(item);
+            ["path", "downloadUrl", "previewUrl"].forEach((field) => {
+              if (cleanItem[field] === "" || cleanItem[field] === null || cleanItem[field] === undefined) delete cleanItem[field];
+            });
+            if (Array.isArray(cleanItem.files)) {
+              cleanItem.files = cleanItem.files.map((file) => {
+                const cleanFile = clone(file);
+                ["downloadUrl", "previewUrl"].forEach((field) => {
+                  if (cleanFile[field] === "" || cleanFile[field] === null || cleanFile[field] === undefined) delete cleanFile[field];
+                });
+                return cleanFile;
+              });
+            }
+            return cleanItem;
+          });
+        } else {
+          delete copy.items;
+          if (copy.kind === "collection") delete copy.kind;
+        }
+        return copy;
+      }
+
+      function exportRecords() {
+        return state.records.map(cleanRecord);
+      }
+
+      function renderOutput() {
+        outputJsonEl.value = state.records.length ? JSON.stringify(exportRecords(), null, 2) : "";
+      }
+
+      function getFilteredEntries() {
+        const query = normalizeText(state.query);
+        return state.records
+          .map((record, index) => ({ record, index }))
+          .filter(({ record }) => {
+            const courseMatch = !state.course || record.category === state.course || record.course === state.course;
+            const text = [record.title, record.course, record.category, record.source, record.description, record.path, record.previewUrl, record.downloadUrl]
+              .map(normalizeText)
+              .join(" ");
+            return courseMatch && (!query || text.includes(query));
+          });
+      }
+
+      function renderCourseFilter() {
+        const current = state.course;
+        const options = [...new Map(state.records.map((record) => [record.category || record.course || "未分类", record.course || record.category || "未分类"])).entries()];
+        courseFilterEl.innerHTML = `<option value="">全部课程</option>${options
+          .map(([value, label]) => `<option value="${escapeHtml(value)}">${escapeHtml(label)}</option>`)
+          .join("")}`;
+        courseFilterEl.value = current;
+      }
+
+      function renderList() {
+        const entries = getFilteredEntries();
+        if (!entries.length) {
+          recordListEl.innerHTML = `<p class="admin-empty is-small">没有匹配记录。</p>`;
+          return;
+        }
+
+        recordListEl.innerHTML = entries
+          .map(({ record, index }) => {
+            const selected = index === state.selectedIndex;
+            const typeLabel = isCollection(record) ? "资料集" : record.type || "未填类型";
+            return `
+              <button class="admin-record${selected ? " is-selected" : ""}" type="button" data-index="${index}">
+                <strong>${escapeHtml(record.title || "未命名资料")}</strong>
+                <span>${escapeHtml(record.course || "未填课程")} · ${escapeHtml(typeLabel)}</span>
+              </button>
+            `;
+          })
+          .join("");
+      }
+
+      function renderEditor() {
+        const record = state.records[state.selectedIndex];
+        const hasRecord = Boolean(record);
+        recordFormEl.hidden = !hasRecord;
+        emptyEditorEl.hidden = hasRecord;
+        if (!record) return;
+
+        selectedIndexLabelEl.textContent = `第 ${state.selectedIndex + 1} 条`;
+        selectedTitleEl.textContent = record.title || "未命名资料";
+        Array.from(recordFormEl.elements).forEach((element) => {
+          if (!element.name) return;
+          element.value = record[element.name] ?? "";
+        });
+        itemsJsonEl.value = Array.isArray(record.items) ? JSON.stringify(record.items, null, 2) : "";
+        itemsStatusEl.textContent = Array.isArray(record.items) ? "items JSON 已读取。" : "普通资料可留空。";
+        itemsStatusEl.className = "admin-helper";
+      }
+
+      function renderAll() {
+        renderMeta();
+        renderCourseFilter();
+        renderList();
+        renderEditor();
+        renderOutput();
+        layoutEl.hidden = !state.records.length;
+      }
+
+      async function loadFiles() {
+        try {
+          const response = await fetch("data/files.json", { cache: "no-store" });
+          if (!response.ok) throw new Error(`HTTP ${response.status}`);
+          const records = await response.json();
+          if (!Array.isArray(records)) throw new Error("data/files.json 必须是数组");
+          state.original = clone(records);
+          state.records = clone(records);
+          state.selectedIndex = records.length ? 0 : -1;
+          state.dirty = false;
+          setStatus("已读取当前 data/files.json。你可以开始编辑，完成后复制或下载 JSON。");
+          renderAll();
+        } catch (error) {
+          setStatus(`读取失败：${error.message}。如果直接打开本地 HTML，请改用本地网页服务或 GitHub Pages。`, "warning");
+        }
+      }
+
+      function selectRecord(index) {
+        state.selectedIndex = Number(index);
+        renderList();
+        renderEditor();
+      }
+
+      function updateSelectedField(name, value) {
+        const record = state.records[state.selectedIndex];
+        if (!record) return;
+        if (value === "" && ["note_id", "path", "downloadUrl", "previewUrl"].includes(name)) {
+          delete record[name];
+        } else {
+          record[name] = value;
+        }
+        if (name === "type" && value !== "Collection" && !Array.isArray(record.items)) {
+          delete record.kind;
+        }
+        markDirty();
+        renderList();
+        renderEditorHeaderOnly();
+      }
+
+      function renderEditorHeaderOnly() {
+        const record = state.records[state.selectedIndex];
+        if (!record) return;
+        selectedTitleEl.textContent = record.title || "未命名资料";
+      }
+
+      function updateItemsJson() {
+        const record = state.records[state.selectedIndex];
+        if (!record) return;
+        const text = itemsJsonEl.value.trim();
+        if (!text) {
+          delete record.items;
+          if (record.kind === "collection") delete record.kind;
+          itemsStatusEl.textContent = "items 已清空。";
+          itemsStatusEl.className = "admin-helper";
+          markDirty();
+          renderList();
+          return;
+        }
+        try {
+          const items = JSON.parse(text);
+          if (!Array.isArray(items)) throw new Error("items 必须是数组");
+          record.items = items;
+          record.kind = "collection";
+          record.type = record.type || "Collection";
+          itemsStatusEl.textContent = "items JSON 有效，已应用。";
+          itemsStatusEl.className = "admin-helper";
+          markDirty();
+          renderList();
+        } catch (error) {
+          itemsStatusEl.textContent = `items JSON 无效：${error.message}`;
+          itemsStatusEl.className = "admin-helper is-error";
+        }
+      }
+
+      function addRecord() {
+        const today = new Date().toISOString().slice(0, 10);
+        state.records.unshift({
+          note_id: "",
+          course: "",
+          category: "",
+          title: "新资料",
+          type: "PDF",
+          date: today,
+          path: "",
+          source: "",
+          description: ""
+        });
+        state.selectedIndex = 0;
+        state.dirty = true;
+        setStatus("已新增一条记录。请补全字段后导出 JSON。");
+        renderAll();
+      }
+
+      function duplicateRecord() {
+        const record = state.records[state.selectedIndex];
+        if (!record) return;
+        const copy = clone(record);
+        copy.title = `${copy.title || "未命名资料"} 副本`;
+        if (copy.note_id) copy.note_id = `${copy.note_id}-copy`;
+        state.records.splice(state.selectedIndex + 1, 0, copy);
+        state.selectedIndex += 1;
+        markDirty();
+        renderAll();
+      }
+
+      function deleteRecord() {
+        const record = state.records[state.selectedIndex];
+        if (!record) return;
+        const ok = window.confirm(`只从导出的 files.json 中删除这条记录，不会删除仓库文件：\n${record.title || "未命名资料"}`);
+        if (!ok) return;
+        state.records.splice(state.selectedIndex, 1);
+        state.selectedIndex = Math.min(state.selectedIndex, state.records.length - 1);
+        markDirty();
+        renderAll();
+      }
+
+      function moveSelected(offset) {
+        const index = state.selectedIndex;
+        const target = index + offset;
+        if (index < 0 || target < 0 || target >= state.records.length) return;
+        const [record] = state.records.splice(index, 1);
+        state.records.splice(target, 0, record);
+        state.selectedIndex = target;
+        markDirty();
+        renderAll();
+      }
+
+      function validateRecord(record, index, seenPaths, errors) {
+        const label = `第 ${index + 1} 条`;
+        ["course", "category", "title", "type", "date", "source", "description"].forEach((field) => {
+          if (!record[field]) errors.push(`${label} 缺少 ${field}`);
+        });
+        if (isCollection(record) && !record.path) errors.push(`${label} 是资料集，缺少 path`);
+        if (!isCollection(record) && !record.path && !record.previewUrl) errors.push(`${label} 必须有 path 或 previewUrl`);
+        ["path", "downloadUrl", "previewUrl"].forEach((field) => {
+          if (!record[field]) return;
+          if (isAbsoluteLocalPath(record[field])) errors.push(`${label} ${field} 疑似本地路径`);
+          if (field !== "previewUrl" && isExternalUrl(record[field])) errors.push(`${label} ${field} 不应是外部 URL`);
+          if (field === "previewUrl" && !isExternalUrl(record[field]) && !String(record[field]).startsWith("files/") && !String(record[field]).startsWith("notes/")) {
+            errors.push(`${label} previewUrl 应为 https://、files/ 或 notes/`);
+          }
+        });
+        if (record.path) {
+          if (seenPaths.has(record.path)) errors.push(`${label} path 重复：${record.path}`);
+          seenPaths.add(record.path);
+        }
+        if (isCollection(record)) {
+          if (!Array.isArray(record.items) || !record.items.length) {
+            errors.push(`${label} 是资料集，但 items 为空`);
+          } else {
+            record.items.forEach((item, itemIndex) => {
+              if (!item.title) errors.push(`${label} items[${itemIndex + 1}] 缺少 title`);
+              const files = Array.isArray(item.files) ? item.files : item.path ? [item] : [];
+              if (!files.length) errors.push(`${label} items[${itemIndex + 1}] 缺少 path 或 files`);
+              files.forEach((file) => {
+                if (!file.path) errors.push(`${label} items[${itemIndex + 1}] 缺少 path`);
+                if (!file.type) errors.push(`${label} items[${itemIndex + 1}] 缺少 type`);
+              });
+            });
+          }
+        }
+      }
+
+      function validateAll() {
+        const errors = [];
+        const seenPaths = new Set();
+        const records = exportRecords();
+        if (!records.length) errors.push("索引为空");
+        records.forEach((record, index) => validateRecord(record, index, seenPaths, errors));
+        if (errors.length) {
+          setStatus(`校验发现 ${errors.length} 个问题：${errors.slice(0, 6).join("；")}${errors.length > 6 ? "；..." : ""}`, "warning");
+          return false;
+        }
+        setStatus("本页基础校验通过。正式发布前仍需 Codex 运行仓库脚本。");
+        return true;
+      }
+
+      async function copyJson() {
+        renderOutput();
+        try {
+          await navigator.clipboard.writeText(outputJsonEl.value);
+          setStatus("已复制 JSON。把它发给 Codex，或保存为 edited-files.json。");
+        } catch {
+          outputJsonEl.select();
+          setStatus("浏览器未允许自动复制，请手动复制下方 JSON。", "warning");
+        }
+      }
+
+      function downloadJson() {
+        renderOutput();
+        const blob = new Blob([`${outputJsonEl.value}\n`], { type: "application/json;charset=utf-8" });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = "edited-files.json";
+        link.click();
+        URL.revokeObjectURL(url);
+        setStatus("已下载 edited-files.json。正式替换前交给 Codex 检查。");
+      }
+
+      function resetRecords() {
+        if (!state.original.length) return;
+        if (state.dirty && !window.confirm("确认放弃当前页面内的修改？")) return;
+        state.records = clone(state.original);
+        state.selectedIndex = state.records.length ? 0 : -1;
+        state.dirty = false;
+        setStatus("已恢复到读取时的原始索引。");
+        renderAll();
+      }
+
+      function importJson() {
+        try {
+          const records = JSON.parse(importJsonEl.value);
+          if (!Array.isArray(records)) throw new Error("导入内容必须是 JSON 数组");
+          state.records = records;
+          state.selectedIndex = records.length ? 0 : -1;
+          state.dirty = true;
+          setStatus("已导入粘贴内容。请先校验，再复制或下载。");
+          renderAll();
+        } catch (error) {
+          setStatus(`导入失败：${error.message}`, "warning");
+        }
+      }
+
+      document.getElementById("loadButton").addEventListener("click", loadFiles);
+      document.getElementById("addButton").addEventListener("click", addRecord);
+      document.getElementById("validateButton").addEventListener("click", validateAll);
+      document.getElementById("copyButton").addEventListener("click", copyJson);
+      document.getElementById("downloadButton").addEventListener("click", downloadJson);
+      document.getElementById("resetButton").addEventListener("click", resetRecords);
+      document.getElementById("importButton").addEventListener("click", importJson);
+      document.getElementById("deleteButton").addEventListener("click", deleteRecord);
+      document.getElementById("duplicateButton").addEventListener("click", duplicateRecord);
+      document.getElementById("moveUpButton").addEventListener("click", () => moveSelected(-1));
+      document.getElementById("moveDownButton").addEventListener("click", () => moveSelected(1));
+
+      recordListEl.addEventListener("click", (event) => {
+        const button = event.target.closest(".admin-record");
+        if (button) selectRecord(button.dataset.index);
+      });
+
+      adminSearchEl.addEventListener("input", (event) => {
+        state.query = event.target.value;
+        renderList();
+      });
+
+      courseFilterEl.addEventListener("change", (event) => {
+        state.course = event.target.value;
+        renderList();
+      });
+
+      recordFormEl.addEventListener("input", (event) => {
+        const field = event.target;
+        if (field === itemsJsonEl) return;
+        if (!field.name) return;
+        updateSelectedField(field.name, field.value.trim());
+      });
+
+      itemsJsonEl.addEventListener("blur", updateItemsJson);
+      renderMeta();
+    </script>
+  </body>
+</html>

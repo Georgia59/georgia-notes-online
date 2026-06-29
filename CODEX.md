@@ -53,6 +53,7 @@
 20. HTML 在线预览文件统一放入 `notes/课程目录/`，首页只通过 `previewUrl` 链接到预览页，不直接嵌入完整 HTML 内容。
 21. 下载按钮优先使用 `downloadUrl`；未填写时使用 `path`。
 22. 如果资料本身是另一个 GitHub Pages 学习站点，可以作为课程索引里的 HTML 条目维护：填写 `course`、`category`、`type: "HTML"` 和外部 `previewUrl`，不需要 `path` 或 `downloadUrl`，首页只显示“在线预览”入口。
+23. `admin.html` 是半自动索引编辑器，只能导出新的 JSON 草稿；不得把它当作安全后台。用户通过它导出的 JSON 必须由 Codex 检查后，才能替换 `data/files.json`、运行脚本、提交和推送。
 
 ## 来源与医学准确性
 

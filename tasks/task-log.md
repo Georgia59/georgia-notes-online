@@ -1,5 +1,9 @@
 # 任务记录
 
+## 2026-06-29
+
+- 新增半自动后台页面 `admin.html`：支持浏览器内编辑 `data/files.json`、新增/复制/删除记录、调整顺序、基础校验、复制或下载 JSON 草稿；该页面不直接写入 GitHub。
+
 ## 2026-06-26
 
 - 覆盖更新流行病学期末复习笔记（五部分）第一部分 PDF：重做“基础概念与描述性流行病学”，补全描述性研究样本含量影响因素、公式、抽样方法、质量控制和覆盖检查表；路径：`files/epidemiology/2026-06-18-epidemiology-final-review-notes/01-basics-descriptive-epidemiology.pdf`。
