@@ -50,3 +50,5 @@
 - 发布资料：实验诊断主观病例分析 16 分模板库，类型：PDF，文件数：1，路径：`files/diagnostics/2026-06-29-lab-diagnostics-subjective-cases-template.pdf`，日期：2026-06-29。
 - 发布资料：实验诊断 A1+A2 选择题冲刺包，类型：PDF，文件数：1，路径：`files/diagnostics/2026-06-29-lab-diagnostics-a1-a2-crash-pack.pdf`，日期：2026-06-29。
 - 发布资料：化验单分析课堂病例：主观题四句模板笔记，类型：PDF，文件数：1，路径：`files/diagnostics/2026-06-30-lab-diagnostics-lab-form-cases-four-sentence-template.pdf`，日期：2026-06-30。
+- 发布资料：胰腺外科学：结构化中文学习版，类型：EPUB，文件数：1，路径：`files/surgery/2026-08-14-pancreatic-surgery-structured-chinese-ebook.epub`，日期：2026-08-14。
+- 发布资料：胰腺外科学：结构化中文学习版，类型：PDF，文件数：1，路径：`files/surgery/2026-08-14-pancreatic-surgery-structured-chinese-ebook.pdf`，日期：2026-08-14。

@@ -1,5 +1,27 @@
 [
   {
+    "note_id": "pancreatic-surgery-structured-chinese-ebook",
+    "course": "外科学",
+    "category": "surgery",
+    "title": "胰腺外科学：结构化中文学习版",
+    "type": "EPUB",
+    "date": "2026-08-14",
+    "path": "files/surgery/2026-08-14-pancreatic-surgery-structured-chinese-ebook.epub",
+    "source": "外科学教材结构化译编",
+    "description": "汇集胰腺移植、胰岛移植、胰腺神经内分泌肿瘤、胰腺外分泌疾病与胰腺癌五章，含原书图表、章内导航、术语表和参考文献。"
+  },
+  {
+    "note_id": "pancreatic-surgery-structured-chinese-ebook",
+    "course": "外科学",
+    "category": "surgery",
+    "title": "胰腺外科学：结构化中文学习版",
+    "type": "PDF",
+    "date": "2026-08-14",
+    "path": "files/surgery/2026-08-14-pancreatic-surgery-structured-chinese-ebook.pdf",
+    "source": "外科学教材结构化译编",
+    "description": "汇集胰腺移植、胰岛移植、胰腺神经内分泌肿瘤、胰腺外分泌疾病与胰腺癌五章，含原书图表、章内导航、术语表和参考文献。"
+  },
+  {
     "note_id": "lab-diagnostics-lab-form-cases-four-sentence-template",
     "course": "实验诊断学",
     "category": "diagnostics",
