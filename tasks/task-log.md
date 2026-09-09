@@ -52,3 +52,4 @@
 - 发布资料：化验单分析课堂病例：主观题四句模板笔记，类型：PDF，文件数：1，路径：`files/diagnostics/2026-06-30-lab-diagnostics-lab-form-cases-four-sentence-template.pdf`，日期：2026-06-30。
 - 发布资料：胰腺外科学：结构化中文学习版，类型：EPUB，文件数：1，路径：`files/surgery/2026-08-14-pancreatic-surgery-structured-chinese-ebook.epub`，日期：2026-08-14。
 - 发布资料：胰腺外科学：结构化中文学习版，类型：PDF，文件数：1，路径：`files/surgery/2026-08-14-pancreatic-surgery-structured-chinese-ebook.pdf`，日期：2026-08-14。
+- 发布资料：儿科学时间数据速查：生长发育、计划免疫与婴儿喂养，类型：PDF，文件数：1，路径：`files/pediatrics/2026-09-09-pediatrics-timeline-data-notes.pdf`，日期：2026-09-09。

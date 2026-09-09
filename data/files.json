@@ -1,5 +1,16 @@
 [
   {
+    "note_id": "pediatrics-timeline-data-notes",
+    "course": "儿科学",
+    "category": "pediatrics",
+    "title": "儿科学时间数据速查：生长发育、计划免疫与婴儿喂养",
+    "type": "PDF",
+    "date": "2026-09-09",
+    "path": "files/pediatrics/2026-09-09-pediatrics-timeline-data-notes.pdf",
+    "source": "《儿科学》第10版教材整理",
+    "description": "按年龄与时间轴整理儿童体格、神经心理发育、教材2021版免疫程序及婴儿喂养关键数据。"
+  },
+  {
     "note_id": "pancreatic-surgery-structured-chinese-ebook",
     "course": "外科学",
     "category": "surgery",
