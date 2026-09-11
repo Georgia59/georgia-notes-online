@@ -1,5 +1,16 @@
 [
   {
+    "note_id": "clinical-skills-course-textbook-extract",
+    "course": "外科学",
+    "category": "surgery",
+    "title": "临床技能训练课程原文讲义（2026-2027学年第一学期）",
+    "type": "PDF",
+    "date": "2026-09-11",
+    "path": "files/surgery/2026-09-11-clinical-skills-course-textbook-extract.pdf",
+    "source": "《临床技能训练导引》教材整理",
+    "description": "按本学期临床技能课程安排汇编清创、穿刺、止血包扎、骨折固定等教材原文与操作插图。"
+  },
+  {
     "note_id": "pediatrics-timeline-data-notes",
     "course": "儿科学",
     "category": "pediatrics",
