@@ -1,5 +1,16 @@
 [
   {
+    "note_id": "pediatrics-diarrhea-integrated-notes",
+    "course": "儿科学",
+    "category": "pediatrics",
+    "title": "儿科学腹泻病综合笔记",
+    "type": "PDF",
+    "date": "2026-10-19",
+    "path": "files/pediatrics/2026-10-19-pediatrics-diarrhea-integrated-notes.pdf",
+    "source": "《儿科学》第10版教材整理",
+    "description": "整合腹泻病、液体疗法及新生儿坏死性小肠结肠炎，含常见肠炎对照、重难点标注和自测。"
+  },
+  {
     "note_id": "clinical-skills-course-textbook-extract",
     "course": "外科学",
     "category": "surgery",

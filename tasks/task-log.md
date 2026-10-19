@@ -54,3 +54,4 @@
 - 发布资料：胰腺外科学：结构化中文学习版，类型：PDF，文件数：1，路径：`files/surgery/2026-08-14-pancreatic-surgery-structured-chinese-ebook.pdf`，日期：2026-08-14。
 - 发布资料：儿科学时间数据速查：生长发育、计划免疫与婴儿喂养，类型：PDF，文件数：1，路径：`files/pediatrics/2026-09-09-pediatrics-timeline-data-notes.pdf`，日期：2026-09-09。
 - 发布资料：临床技能训练课程原文讲义（2026-2027学年第一学期），类型：PDF，文件数：1，路径：`files/surgery/2026-09-11-clinical-skills-course-textbook-extract.pdf`，日期：2026-09-11。
+- 发布资料：儿科学腹泻病综合笔记，类型：PDF，文件数：1，路径：`files/pediatrics/2026-10-19-pediatrics-diarrhea-integrated-notes.pdf`，日期：2026-10-19。
