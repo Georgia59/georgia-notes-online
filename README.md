@@ -1,5 +1,7 @@
 # Georgia 的医学学习资料输出中心
 
+网站默认首页为本学期进度（index.html）；课程资料位于 courses.html，佛脚刷题位于 pages/banks.html。三个板块按“本学期进度、课程资料、佛脚刷题”排列，原进度页链接 pages/progress.html 自动进入新首页。
+
 ## 佛脚刷题入口
 
 本站新增 `pages/banks.html` 作为佛脚刷题题库入口页。题库入口数据保存在 `data/banks.json`，二维码图片放在 `images/banks/`。

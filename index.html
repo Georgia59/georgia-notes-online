@@ -3,411 +3,87 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>GEORGIA NOTES-ONLINE</title>
+    <meta name="color-scheme" content="light" />
+    <title>本学期进度 | GEORGIA NOTES-ONLINE</title>
     <link rel="stylesheet" href="assets/style.css" />
+    <link rel="stylesheet" href="assets/progress.css" />
+    <script src="assets/progress.js" defer></script>
   </head>
-  <body>
+  <body class="progress-page">
     <header class="site-header">
       <div class="header-inner">
         <div>
           <h1 class="site-title">GEORGIA NOTES-ONLINE</h1>
-          <p class="site-kicker">医学课程复习资料下载站</p>
-          <p class="site-subtitle">只发布整理后的系统性笔记；按课程查找，按格式下载。</p>
+          <p class="site-kicker">本学期进度</p>
+          <p class="site-subtitle">2026—2027 学年第一学期 · 每完成一节，离目标更近一点。</p>
         </div>
-        <aside class="library-stats" aria-label="资料统计">
-          <strong id="totalNoteCount">0 条笔记</strong>
-          <span id="courseCoverage">等待发布资料</span>
+        <aside class="library-stats" aria-label="本学期学习进度">
+          <strong id="semesterCount">正在读取进度</strong>
+          <span id="semesterClass">完成记录保存在当前浏览器</span>
         </aside>
       </div>
     </header>
 
     <main class="main-content">
       <nav class="site-switcher" aria-label="站点功能">
-        <a class="switcher-link" href="pages/progress.html">本学期进度</a>
-        <a class="switcher-link is-active" href="index.html">课程资料</a>
+        <a class="switcher-link is-active" href="index.html" aria-current="page">本学期进度</a>
+        <a class="switcher-link" href="courses.html">课程资料</a>
         <a class="switcher-link" href="pages/banks.html">佛脚刷题</a>
       </nav>
 
-      <nav id="courseNav" class="course-nav" aria-label="课程索引" hidden></nav>
+      <section id="status" class="status" role="status">正在加载本学期课程安排。</section>
+      <noscript><p class="status">请开启浏览器的 JavaScript，以查看课程安排和保存学习进度。</p></noscript>
 
-      <section id="status" class="status" role="status">正在加载 data/files.json。</section>
+      <div id="progressContent" hidden>
+        <section class="progress-overview" aria-labelledby="todayTitle">
+          <div class="progress-today-copy">
+            <p class="progress-eyebrow" id="todayDate"></p>
+            <h2 id="todayTitle">今天的学习安排</h2>
+            <p class="progress-today-subjects" id="todayText"></p>
+          </div>
+          <div class="progress-today-action">
+            <p class="progress-today-count" id="todayCount"></p>
+            <div id="todayTrack" class="progress-track" role="progressbar" aria-label="今日完成进度" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i id="todayBar"></i></div>
+            <button class="progress-button is-primary" id="finishToday" type="button">今天全部学完</button>
+          </div>
+        </section>
 
-      <section id="coursePanel" class="course-panel" aria-label="当前课程资料" hidden>
-        <div class="panel-summary">
-          <span id="activeCourseCount">0 条笔记</span>
+        <section class="progress-filters" aria-label="课程筛选">
+          <div class="progress-filter-row">
+            <span class="progress-label" id="classLabel">我的班级</span>
+            <div class="progress-segments" id="classSwitch" role="group" aria-labelledby="classLabel">
+              <button type="button" data-value="9、11班" aria-pressed="true">9、11班</button>
+              <button type="button" data-value="21、22班" aria-pressed="false">21、22班</button>
+            </div>
+            <span class="progress-filter-hint">集中见习可在“完整学期”中查看</span>
+          </div>
+          <div class="progress-filter-row progress-filter-options">
+            <div class="progress-segments progress-scope" id="scopeTabs" role="group" aria-label="时间范围">
+              <button type="button" data-value="today" aria-pressed="false">今天</button>
+              <button type="button" data-value="upcoming" aria-pressed="true">未来三周</button>
+              <button type="button" data-value="all" aria-pressed="false">完整学期</button>
+            </div>
+            <label class="progress-select"><span>学科</span><select id="subject" aria-label="筛选学科"></select></label>
+            <label class="progress-select"><span>课程形式</span><select id="type" aria-label="筛选课程形式"><option>全部形式</option><option>理论</option><option>见习</option><option>实训</option></select></label>
+          </div>
+        </section>
+
+        <div class="progress-list-heading">
+          <h2 id="resultTitle">接下来要上的课</h2>
+          <span id="resultCount"></span>
         </div>
-        <input
-          id="courseSearch"
-          class="course-search"
-          type="search"
-          placeholder="在当前课程中搜索"
-          aria-label="在当前课程中搜索资料"
-        />
-        <div id="fileGrid" class="file-grid"></div>
-        <p id="courseEmpty" class="course-empty" hidden>当前课程里没有匹配的资料。</p>
-      </section>
+        <div class="progress-timeline" id="timeline"></div>
+
+        <div class="progress-storage">
+          <p id="storageNote">进度自动保存在当前浏览器，每位访客独立记录。换设备、换浏览器或清除网站数据后不会自动同步。</p>
+          <button id="reset" class="progress-text-button" type="button">清除我的完成记录</button>
+        </div>
+        <p id="saveStatus" class="progress-feedback" role="status" aria-live="polite"></p>
+      </div>
     </main>
 
     <footer class="site-footer">
       <p>免责声明：资料仅用于课程学习与考试复习，不作为临床诊疗依据；待核实内容需以教材、指南或授课材料为准。</p>
     </footer>
-
-    <script>
-      const courseNames = {
-        imaging: "医学影像学",
-        diagnostics: "诊断学",
-        "preventive-medicine": "预防医学",
-        "medical-english": "医学英语",
-        pharmacoeconomics: "药物经济学",
-        surgery: "外科学",
-        others: "其他"
-      };
-
-      const courseOrder = [
-        "imaging",
-        "diagnostics",
-        "preventive-medicine",
-        "medical-english",
-        "pharmacoeconomics",
-        "surgery",
-        "others"
-      ];
-
-      const state = {
-        files: [],
-        notes: [],
-        courses: [],
-        activeCourseId: ""
-      };
-
-      const courseNavEl = document.getElementById("courseNav");
-      const statusEl = document.getElementById("status");
-      const coursePanelEl = document.getElementById("coursePanel");
-      const totalNoteCountEl = document.getElementById("totalNoteCount");
-      const courseCoverageEl = document.getElementById("courseCoverage");
-      const activeCourseCountEl = document.getElementById("activeCourseCount");
-      const courseSearchEl = document.getElementById("courseSearch");
-      const fileGridEl = document.getElementById("fileGrid");
-      const courseEmptyEl = document.getElementById("courseEmpty");
-
-      function escapeHtml(value) {
-        return String(value ?? "")
-          .replaceAll("&", "&amp;")
-          .replaceAll("<", "&lt;")
-          .replaceAll(">", "&gt;")
-          .replaceAll('"', "&quot;")
-          .replaceAll("'", "&#039;");
-      }
-
-      function normalizeText(value) {
-        return String(value ?? "").toLowerCase();
-      }
-
-      function getCourseId(file) {
-        return file.category || getCourseLabel(file);
-      }
-
-      function getCourseLabel(file) {
-        return file.course || courseNames[file.category] || file.category || "未分类";
-      }
-
-      function getNoteKey(file) {
-        return file.note_id || [getCourseId(file), file.title, file.date].map((item) => String(item || "")).join("|");
-      }
-
-      function isCollection(note) {
-        return note.kind === "collection" || note.type === "Collection" || Array.isArray(note.items);
-      }
-
-      function getDownloadables(note) {
-        if (isCollection(note)) {
-          return Array.isArray(note.items) ? note.items : [];
-        }
-        return Array.isArray(note.files) ? note.files : [note];
-      }
-
-      function getItemFiles(item) {
-        if (Array.isArray(item.files) && item.files.length) {
-          return item.files;
-        }
-        if (item.path) {
-          return [
-            {
-              title: item.title,
-              type: item.type || "PDF",
-              path: item.path,
-              downloadUrl: item.downloadUrl,
-              previewUrl: item.previewUrl
-            }
-          ];
-        }
-        return [];
-      }
-
-      function groupByNote(files) {
-        const groups = new Map();
-        files.forEach((file) => {
-          const key = getNoteKey(file);
-          if (!groups.has(key)) {
-            groups.set(key, {
-              ...file,
-              courseId: getCourseId(file),
-              courseLabel: getCourseLabel(file),
-              files: []
-            });
-          }
-          groups.get(key).files.push(file);
-        });
-
-        return Array.from(groups.values()).map((note) => {
-          note.files.sort((a, b) => String(a.type || "").localeCompare(String(b.type || ""), "zh-CN"));
-          note.previewUrl = note.previewUrl || note.files.find((file) => file.previewUrl)?.previewUrl || "";
-          note.types = isCollection(note)
-            ? ["章节合集"]
-            : [...new Set(note.files.map((file) => file.type).filter(Boolean))];
-          note.searchText = getSearchText(note);
-          return note;
-        });
-      }
-
-      function buildCourses(notes) {
-        const groups = new Map();
-        notes.forEach((note) => {
-          if (!groups.has(note.courseId)) {
-            groups.set(note.courseId, {
-              id: note.courseId,
-              label: note.courseLabel,
-              notes: []
-            });
-          }
-          groups.get(note.courseId).notes.push(note);
-        });
-
-        return Array.from(groups.values()).sort((a, b) => {
-          const ai = courseOrder.indexOf(a.id);
-          const bi = courseOrder.indexOf(b.id);
-          if (ai !== -1 || bi !== -1) {
-            return (ai === -1 ? 999 : ai) - (bi === -1 ? 999 : bi);
-          }
-          return a.label.localeCompare(b.label, "zh-CN");
-        });
-      }
-
-      function getSearchText(note) {
-        const downloadables = getDownloadables(note);
-        const values = [
-          note.title,
-          note.course,
-          note.category,
-          note.courseLabel,
-          note.type,
-          note.date,
-          note.source,
-          note.description,
-          note.previewUrl,
-          note.downloadUrl,
-          ...downloadables.flatMap((item) => [item.title, item.type, item.path, item.downloadUrl, item.previewUrl, item.source])
-        ];
-        return values.map(normalizeText).join(" ");
-      }
-
-      function renderCourseNav() {
-        courseNavEl.hidden = false;
-        courseNavEl.innerHTML = `
-          <span class="course-nav-label">课程索引</span>
-          <div class="course-tabs">
-            ${state.courses
-              .map((course) => {
-                const isActive = course.id === state.activeCourseId;
-                return `
-                  <button
-                    class="course-tab${isActive ? " is-active" : ""}"
-                    type="button"
-                    data-course-id="${escapeHtml(course.id)}"
-                    aria-pressed="${isActive}"
-                  >
-                    <span>${escapeHtml(course.label)}</span>
-                    <strong>${course.notes.length}</strong>
-                  </button>
-                `;
-              })
-              .join("")}
-          </div>
-        `;
-      }
-
-      function renderCollection(note) {
-        const items = getDownloadables(note);
-        if (!items.length) {
-          return `<p class="collection-empty">这个资料集暂时没有章节文件。</p>`;
-        }
-
-        return `
-          <details class="collection-detail">
-            <summary>
-              <span>查看章节</span>
-              <strong>${items.length} 个文件</strong>
-            </summary>
-            <div class="chapter-list">
-              ${items
-                .map((item, index) => {
-                  const chapterNumber = String(index + 1).padStart(2, "0");
-                  const itemFiles = getItemFiles(item);
-                  return `
-                    <div class="chapter-row">
-                      <span>${chapterNumber}. ${escapeHtml(item.title || "未命名章节")}</span>
-                      <div class="chapter-actions">
-                        ${itemFiles
-                          .map(
-                            (file) => `
-                              <a class="chapter-format-button${String(file.type || "").toLowerCase() === "pdf" ? " is-pdf" : ""}" href="${escapeHtml(file.downloadUrl || file.path || "#")}" download>
-                                ${escapeHtml(file.type || "下载")}
-                              </a>
-                            `
-                          )
-                          .join("")}
-                      </div>
-                    </div>
-                  `;
-                })
-                .join("")}
-            </div>
-          </details>
-        `;
-      }
-
-      function renderDownloadButtons(note) {
-        const downloadableFiles = getDownloadables(note);
-        return downloadableFiles
-          .filter((item) => item.downloadUrl || item.path)
-          .map((item, index) => {
-            const label = item.type || "下载";
-            return `<a class="download-link${note.previewUrl ? "" : index === 0 ? " is-primary" : ""}" href="${escapeHtml(item.downloadUrl || item.path || "#")}" download>${escapeHtml(label)}</a>`;
-          })
-          .join("");
-      }
-
-      function renderPreviewButton(note) {
-        if (!note.previewUrl) return "";
-        return `<a class="download-link preview-link is-primary" href="${escapeHtml(note.previewUrl)}" target="_blank" rel="noopener">在线预览</a>`;
-      }
-
-      function renderFileCard(note) {
-        const collection = isCollection(note);
-        const typeLabel = note.types && note.types.length ? note.types.join(" / ") : note.type || "未知";
-        const downloadHtml = collection ? renderCollection(note) : renderDownloadButtons(note);
-
-        return `
-          <article class="file-card${collection ? " is-collection" : ""}" data-search="${escapeHtml(note.searchText)}">
-            <div class="card-heading">
-              <h3 class="file-title">${escapeHtml(note.title || "未命名资料")}</h3>
-              ${collection ? `<span class="collection-badge">资料集</span>` : ""}
-            </div>
-            <p class="description" aria-label="简介">${escapeHtml(note.description || "暂无简介。")}</p>
-            <dl class="meta">
-              <div><dt>日期</dt><dd>${escapeHtml(note.date || "未填写")}</dd></div>
-              <div><dt>来源</dt><dd>${escapeHtml(note.source || "未填写")}</dd></div>
-              <div><dt>类型</dt><dd>${escapeHtml(typeLabel)}</dd></div>
-            </dl>
-            <div class="download-block">
-              <div class="download-label">${collection ? "章节下载" : "下载方式"}</div>
-              ${
-                collection
-                  ? downloadHtml
-                  : `<div class="download-list">
-                      ${renderPreviewButton(note)}
-                      ${downloadHtml}
-                    </div>`
-              }
-            </div>
-          </article>
-        `;
-      }
-
-      function getActiveCourse() {
-        return state.courses.find((course) => course.id === state.activeCourseId) || state.courses[0];
-      }
-
-      function renderActiveCourse() {
-        const course = getActiveCourse();
-        if (!course) return;
-
-        coursePanelEl.hidden = false;
-        activeCourseCountEl.textContent = `${course.notes.length} 条笔记`;
-        courseSearchEl.value = "";
-        courseSearchEl.placeholder = `在 ${course.label} 中搜索`;
-        fileGridEl.innerHTML = course.notes.map(renderFileCard).join("");
-        courseEmptyEl.hidden = course.notes.length > 0;
-      }
-
-      function render() {
-        state.notes = groupByNote(state.files);
-        state.courses = buildCourses(state.notes);
-
-        if (!state.files.length || !state.courses.length) {
-          totalNoteCountEl.textContent = "0 条笔记";
-          courseCoverageEl.textContent = "等待发布资料";
-          courseNavEl.hidden = true;
-          coursePanelEl.hidden = true;
-          statusEl.hidden = false;
-          statusEl.className = "status";
-          statusEl.textContent = "还没有发布资料。新增文件后，这里会自动显示课程索引和下载入口。";
-          return;
-        }
-
-        statusEl.hidden = true;
-        totalNoteCountEl.textContent = `${state.notes.length} 条笔记`;
-        courseCoverageEl.textContent = `覆盖 ${state.courses.length} 门课程`;
-        if (!state.activeCourseId || !state.courses.some((course) => course.id === state.activeCourseId)) {
-          state.activeCourseId = state.courses[0].id;
-        }
-
-        renderCourseNav();
-        renderActiveCourse();
-      }
-
-      function filterActiveCourse(query) {
-        const cards = Array.from(fileGridEl.querySelectorAll(".file-card"));
-        let visibleCount = 0;
-        cards.forEach((card) => {
-          const isVisible = !query || card.dataset.search.includes(query);
-          card.hidden = !isVisible;
-          if (isVisible) visibleCount += 1;
-        });
-        courseEmptyEl.hidden = visibleCount > 0;
-        activeCourseCountEl.textContent = `${visibleCount} 条笔记`;
-      }
-
-      async function loadFiles() {
-        try {
-          const response = await fetch("data/files.json", { cache: "no-store" });
-          if (!response.ok) throw new Error(`HTTP ${response.status}`);
-          const files = await response.json();
-          if (!Array.isArray(files)) throw new Error("data/files.json 必须是数组");
-          state.files = files;
-          render();
-        } catch (error) {
-          courseNavEl.hidden = true;
-          coursePanelEl.hidden = true;
-          statusEl.hidden = false;
-          statusEl.className = "status warning";
-          statusEl.textContent = `无法读取 data/files.json：${error.message}。在 GitHub Pages 或本地网页服务中打开即可动态加载。`;
-        }
-      }
-
-      courseNavEl.addEventListener("click", (event) => {
-        const button = event.target.closest(".course-tab");
-        if (!button) return;
-        state.activeCourseId = button.dataset.courseId;
-        renderCourseNav();
-        renderActiveCourse();
-      });
-
-      courseSearchEl.addEventListener("input", (event) => {
-        filterActiveCourse(normalizeText(event.target.value.trim()));
-      });
-
-      loadFiles();
-    </script>
   </body>
 </html>
