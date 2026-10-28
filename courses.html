@@ -12,7 +12,7 @@
         <div>
           <h1 class="site-title">GEORGIA NOTES-ONLINE</h1>
           <p class="site-kicker">医学课程复习资料下载站</p>
-          <p class="site-subtitle">只发布整理后的系统性笔记；按课程查找，按格式下载。</p>
+          <p class="site-subtitle">只发布整理后的系统性笔记；按栏目查找，按格式下载。</p>
         </div>
         <aside class="library-stats" aria-label="资料统计">
           <strong id="totalNoteCount">0 条笔记</strong>
@@ -28,11 +28,11 @@
         <a class="switcher-link" href="pages/banks.html">佛脚刷题</a>
       </nav>
 
-      <nav id="courseNav" class="course-nav" aria-label="课程索引" hidden></nav>
+      <nav id="courseNav" class="course-nav" aria-label="资料栏目" hidden></nav>
 
       <section id="status" class="status" role="status">正在加载 data/files.json。</section>
 
-      <section id="coursePanel" class="course-panel" aria-label="当前课程资料" hidden>
+      <section id="coursePanel" class="course-panel" aria-label="当前栏目资料" hidden>
         <div class="panel-summary">
           <span id="activeCourseCount">0 条笔记</span>
         </div>
@@ -40,11 +40,11 @@
           id="courseSearch"
           class="course-search"
           type="search"
-          placeholder="在当前课程中搜索"
-          aria-label="在当前课程中搜索资料"
+          placeholder="在当前栏目中搜索"
+          aria-label="在当前栏目中搜索资料"
         />
         <div id="fileGrid" class="file-grid"></div>
-        <p id="courseEmpty" class="course-empty" hidden>当前课程里没有匹配的资料。</p>
+        <p id="courseEmpty" class="course-empty" hidden>当前栏目里没有匹配的资料。</p>
       </section>
     </main>
 
@@ -54,6 +54,7 @@
 
     <script>
       const courseNames = {
+        pediatrics: "儿科学",
         imaging: "医学影像学",
         diagnostics: "诊断学",
         "preventive-medicine": "预防医学",
@@ -63,15 +64,7 @@
         others: "其他"
       };
 
-      const courseOrder = [
-        "imaging",
-        "diagnostics",
-        "preventive-medicine",
-        "medical-english",
-        "pharmacoeconomics",
-        "surgery",
-        "others"
-      ];
+      const courseOrder = ["pediatrics", "surgery", "others"];
 
       const state = {
         files: [],
@@ -170,27 +163,26 @@
         });
       }
 
-      function buildCourses(notes) {
-        const groups = new Map();
-        notes.forEach((note) => {
-          if (!groups.has(note.courseId)) {
-            groups.set(note.courseId, {
-              id: note.courseId,
-              label: note.courseLabel,
-              notes: []
-            });
-          }
-          groups.get(note.courseId).notes.push(note);
-        });
+      function getSectionId(note) {
+        const course = String(note.course || "").trim();
+        const category = String(note.category || "").toLowerCase();
+        if (category === "pediatrics" || course.startsWith("儿科学")) {
+          return "pediatrics";
+        }
+        if (category === "surgery" || course === "外科学") {
+          return "surgery";
+        }
+        return "others";
+      }
 
-        return Array.from(groups.values()).sort((a, b) => {
-          const ai = courseOrder.indexOf(a.id);
-          const bi = courseOrder.indexOf(b.id);
-          if (ai !== -1 || bi !== -1) {
-            return (ai === -1 ? 999 : ai) - (bi === -1 ? 999 : bi);
-          }
-          return a.label.localeCompare(b.label, "zh-CN");
-        });
+      function buildCourses(notes) {
+        const groups = new Map(courseOrder.map((id) => [id, {
+          id,
+          label: courseNames[id],
+          notes: []
+        }]));
+        notes.forEach((note) => groups.get(getSectionId(note)).notes.push(note));
+        return Array.from(groups.values());
       }
 
       function getSearchText(note) {
@@ -214,7 +206,7 @@
       function renderCourseNav() {
         courseNavEl.hidden = false;
         courseNavEl.innerHTML = `
-          <span class="course-nav-label">课程索引</span>
+          <span class="course-nav-label">资料栏目</span>
           <div class="course-tabs">
             ${state.courses
               .map((course) => {
@@ -305,6 +297,7 @@
             </div>
             <p class="description" aria-label="简介">${escapeHtml(note.description || "暂无简介。")}</p>
             <dl class="meta">
+              <div><dt>课程</dt><dd>${escapeHtml(note.courseLabel || getCourseLabel(note))}</dd></div>
               <div><dt>日期</dt><dd>${escapeHtml(note.date || "未填写")}</dd></div>
               <div><dt>来源</dt><dd>${escapeHtml(note.source || "未填写")}</dd></div>
               <div><dt>类型</dt><dd>${escapeHtml(typeLabel)}</dd></div>
@@ -337,6 +330,7 @@
         courseSearchEl.value = "";
         courseSearchEl.placeholder = `在 ${course.label} 中搜索`;
         fileGridEl.innerHTML = course.notes.map(renderFileCard).join("");
+        courseEmptyEl.textContent = course.notes.length ? "当前栏目里没有匹配的资料。" : `暂无${course.label}资料。`;
         courseEmptyEl.hidden = course.notes.length > 0;
       }
 
@@ -351,15 +345,15 @@
           coursePanelEl.hidden = true;
           statusEl.hidden = false;
           statusEl.className = "status";
-          statusEl.textContent = "还没有发布资料。新增文件后，这里会自动显示课程索引和下载入口。";
+          statusEl.textContent = "还没有发布资料。新增文件后，这里会自动显示资料栏目和下载入口。";
           return;
         }
 
         statusEl.hidden = true;
         totalNoteCountEl.textContent = `${state.notes.length} 条笔记`;
-        courseCoverageEl.textContent = `覆盖 ${state.courses.length} 门课程`;
+        courseCoverageEl.textContent = `${state.courses.length} 个资料栏目`;
         if (!state.activeCourseId || !state.courses.some((course) => course.id === state.activeCourseId)) {
-          state.activeCourseId = state.courses[0].id;
+          state.activeCourseId = (state.courses.find((course) => course.notes.length) || state.courses[0]).id;
         }
 
         renderCourseNav();

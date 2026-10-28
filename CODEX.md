@@ -39,7 +39,7 @@
 2026-06-17-acute-osteomyelitis-review.pdf
 ```
 
-9. index.html 为本学期进度默认首页；课程资料页 courses.html 读取并展示 data/files.json 中的文件列表。
+9. index.html 为本学期进度默认首页；课程资料页 courses.html 读取并展示 data/files.json 中的文件列表。课程资料顶部固定为“儿科学、外科学、其他”三个栏目；其余科目统一在“其他”中展示，索引保留原课程与分类信息。
 10. 每份正式资料应在首页、封面、页脚或文末保留免责声明。
 11. 当前默认课程目录固定为 `imaging`、`diagnostics`、`preventive-medicine`、`pharmacoeconomics`、`surgery`、`others`。
 12. 系统必须保持可扩展；新增课程时，可新增 `files/新课程目录/`，并在 `data/files.json` 中使用新的 `category`。
